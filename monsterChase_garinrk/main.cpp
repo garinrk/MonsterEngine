@@ -54,6 +54,11 @@ int main() {
 
 
 
+/// <summary>
+/// Gets input from the console while also checking for
+///a quit flag
+/// </summary>
+/// <returns>string from the console via getline</returns>
 string GetConsoleInput()
 {
 	string r;
@@ -66,6 +71,13 @@ string GetConsoleInput()
 	return r;
 }
 
+
+
+/// <summary>
+/// Checks for name validity.
+/// </summary>
+/// <param name="input">string to check</param>
+/// <returns>true if valid, false ow</returns>
 bool CheckForNameValidity(string input) {
 
 
