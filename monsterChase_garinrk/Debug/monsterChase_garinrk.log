@@ -1,1 +1,3 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppCommon.targets(356,5): warning MSB4220: Waiting for the currently executing task "CL" to cancel.
+﻿  main.cpp
+  monsterChase_garinrk.vcxproj -> E:\repos\cplusplus_playground\monsterChase_garinrk\Debug\monsterChase_garinrk.exe
+  monsterChase_garinrk.vcxproj -> E:\repos\cplusplus_playground\monsterChase_garinrk\Debug\monsterChase_garinrk.pdb (Full PDB)
