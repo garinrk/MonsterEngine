@@ -5,6 +5,8 @@ using namespace std;
 //forward declarations
 bool CheckForNameValidity(string input);
 bool CheckForNumberValidity(string input);
+void InitalizeMonsters(int numberOfMonsters);
+void PlayGame();
 void ExitGame();
 
 bool askingForPlayerInfo = true;
@@ -113,6 +115,11 @@ bool CheckForNumberValidity(string input) {
 		return true;
 	}
 }
+
+void PlayGame()
+{
+}
+
 
 void ExitGame() {
 	cout << "Goodbye!" << endl;
