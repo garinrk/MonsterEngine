@@ -1,4 +1,5 @@
 ﻿  main.cpp
-e:\repos\cplusplus_playground\monsterchase_garinrk\main.cpp(103): warning C4715: 'CheckForNumberValidity': not all control paths return a value
-  monsterChase_garinrk.vcxproj -> E:\repos\cplusplus_playground\monsterChase_garinrk\Debug\monsterChase_garinrk.exe
-  monsterChase_garinrk.vcxproj -> E:\repos\cplusplus_playground\monsterChase_garinrk\Debug\monsterChase_garinrk.pdb (Full PDB)
+c:\users\u0738045\desktop\repos\cplusplus_playground\monsterchase_garinrk\main.cpp(27): error C3863: array type 'char [45]' is not assignable
+c:\users\u0738045\desktop\repos\cplusplus_playground\monsterchase_garinrk\main.cpp(70): error C3861: 'getline': identifier not found
+  Monster.cpp
+  Generating Code...

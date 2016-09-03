@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string.h>
-#include <stdio.h>
-
+#include "Monster.h"
 bool CheckForNumberValidity(char* input);
 void InitializeMonsters(int numberOfMonsters);
 void CreateGame();
@@ -18,6 +17,7 @@ int maxUserInputLength = 255;
 
 char userInput[80];
 char numberOfMonsters[3];
+Monster* monsterList;
 
 
 int main() {
@@ -40,10 +40,21 @@ int main() {
 		
 		printf("%s", "Invalid");
 	}
+
 	printf("Creating %s monsters", numberOfMonsters);
-
-
 	
+	//allocate array of monsters
+	monsterList = new Monster[atoi(numberOfMonsters)];
+
+	for (int i = 0; i < atoi(numberOfMonsters); i++) {
+		Monster tempMon;
+
+		monsterList[i] = tempMon;
+	}
+
+
+	delete[]monsterList;
+	monsterList = NULL;
 	return 0;
 }
 
