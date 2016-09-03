@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <string.h>
 using namespace std;
 
 //forward declarations
@@ -18,13 +18,15 @@ string GetConsoleInput();
 string userInput;
 bool validCheck;
 int maxUserInputLength = 255;
-string welcomeMessage1 = "=======================================";
+char welcomeMessage1[45]; 
 string welcomeMessage2 = "==============MONSTER CHASE============";
 string welcomeMessage3 = "================Q to quit=============";
 
 int main() {
 
-	cout << welcomeMessage1 << endl << welcomeMessage2 << endl << welcomeMessage3 << endl;
+	welcomeMessage1 = "=======================================";
+
+	//std::cout << welcomeMessage1 << endl << welcomeMessage2 << endl << welcomeMessage3 << endl;
 
 	while (askingForPlayerInfo){ 
 		cout << "Please enter your name (Letters only): ";
