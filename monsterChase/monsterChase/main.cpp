@@ -5,7 +5,6 @@
 // Garin Richards
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
 #include <string.h>
 #include <ctype.h>
 #include "Monster.h"
@@ -40,6 +39,7 @@ int boardSizeY = 1000;
 
 int playerPosX = 0;
 int playerPosY = 0;
+int timeStep = 0;
 
 int numberOfMonsters;
 Monster *masterMonsterList;
@@ -68,6 +68,16 @@ int main() {
 	return 0;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Check for number validity, specifically if 
+/// 			the user inputted a number less than 100 </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+///
+/// <param name="input">	[in,out] If non-null, the input. </param>
+///
+/// <returns>	true if it succeeds, false if it fails. </returns>
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool CheckForNumberValidity(char* input)
 {
@@ -78,7 +88,11 @@ bool CheckForNumberValidity(char* input)
 	return true;
 }
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Gets user name using printf a </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void GetUserName() {
 
@@ -94,6 +108,13 @@ void GetUserName() {
 
 	printf("%s%s\n", "Accepted!\n\tWelcome ", userNameInput);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Gets number of monsters via scanf </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void GetNumberOfMonsters()
 {
 	while (askingForNumberOfMonsters) {
@@ -111,12 +132,19 @@ void GetNumberOfMonsters()
 
 	numberOfMonsters = atoi(numberInput);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Main gameplay function. </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void PlayGame()
 {
-	printf("GAME START\n");
+	printf("\nGAME START\n");
 	while (inMainGameplayLoop) {
 		
-
+		DisplayGameState();
 		//get user input and process it
 		GetPlayerInput();
 		if (quitGameFlag)
@@ -142,21 +170,27 @@ void PlayGame()
 				masterMonsterList[i].Update();
 			}
 		}
-
+		timeStep += 1;
 		//maybe add or destroy monsters
 		MaybeAddMonsters();
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Gets player input for the game. Acceptable input: WASD and Q </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void GetPlayerInput() {
 	bool valid;
 	printf("%s", "[wasd or q for quit]: ");
-	scanf_s("%s", &gameplayInput, 1);
+	scanf_s("%s", &gameplayInput, 3);
 
 	valid = CheckForValidGameInput(gameplayInput[0]);
 
-	if (quitGameFlag)
-		return;
+	/*if (quitGameFlag)
+		return;*/
 
 	if (valid == 1)
 		ProcessPlayerInput(gameplayInput[0]);
@@ -165,7 +199,26 @@ void GetPlayerInput() {
 
 void DisplayGameState()
 {
+	printf("%s %d\n", "Timestep:",timeStep);
+	printf("%s", "Monsters:\n");
+
+	for (int i = 0; i < numberOfMonsters; i++) {
+
+		Monster temp = masterMonsterList[i];
+		printf("Monster %d is at %d,%d and is %d old\n",temp.GetName(),temp.xPos,temp.yPos,temp.age);
+	}
+
+	printf("You are at (%d,%d)\n", playerPosX, playerPosY);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Process the player input described by n. WASD moves the player
+/// 			in the appropriate direction on the gameboard </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+///
+/// <param name="n">	The char to process. </param>
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void ProcessPlayerInput(char n) {
 	n = tolower(n);
@@ -182,6 +235,16 @@ void ProcessPlayerInput(char n) {
 
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Check for valid game input. WASD or N / Q </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+///
+/// <param name="n">	The char to process. </param>
+///
+/// <returns>	true if it succeeds, false if it fails. </returns>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 bool CheckForValidGameInput(char n) {
 	n = tolower(n);
 	if (n == 'w' || n == 'a' || n == 's' || n == 'd' || n == 'q')
@@ -192,6 +255,14 @@ bool CheckForValidGameInput(char n) {
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Initializes the monsters based on the amount of monsters
+/// 			specified </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+///
+/// <param name="n">	The int to process. </param>
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void InitializeMonsters(int n)
 {
@@ -203,10 +274,17 @@ void InitializeMonsters(int n)
 		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
 		tempMon.SetPos();
 		masterMonsterList[i] = tempMon;
-		printf("%s%d\n", "Creating monster ", i+1);
+		//printf("%s%d\n", "Creating monster ", i+1);
 
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Decide whether or not we should add a mosnter using
+/// 			a random true or false function. </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void MaybeAddMonsters()
 {
@@ -216,6 +294,16 @@ void MaybeAddMonsters()
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Kills a monster based on its given index in the 
+/// 			master monster list. Does this by copying over it and 
+/// 			shifting the array over. </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+///
+/// <param name="monsterPos">	The monster position. </param>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void KillMonster(int monsterPos)
 {
 	for (int i = monsterPos; i < numberOfMonsters; i++) {
@@ -223,11 +311,28 @@ void KillMonster(int monsterPos)
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Gets random number in bounds. A helper function </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+///
+/// <param name="min">	The minimum. </param>
+/// <param name="max">	The maximum. </param>
+///
+/// <returns>	The random number in bounds. </returns>
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 int GetRandomNumberInBounds(int min, int max) {
 
 	srand((unsigned int)time(NULL));
 	return min + rand() % (max - min + 1);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/// <summary>	Adds a new monster to the master monster list. </summary>
+///
+/// <remarks>	Garin, 9/4/2016. </remarks>
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void AddMonster() {
 	numberOfMonsters++;

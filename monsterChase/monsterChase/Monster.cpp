@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Monster.h"
-#include <iostream>
+
 
 //constructor
 Monster::Monster() {
@@ -18,6 +18,7 @@ void Monster::SetName(int n) {
 	name = n;
 	//printf("Set name to %d\n", n);
 }
+
 
 void Monster::MoveMonster() {
 
@@ -54,7 +55,6 @@ void Monster::MakeOlder() {
 void Monster::SetPos() {
 	xPos = rand() % (boundX + 1);
 	yPos = rand() % (boundY+ 1);
-	//min + rand() % (max - min+1);
 }
 
 void Monster::SetBoardBounds(int x, int y) {

@@ -24,16 +24,16 @@ class Monster {
 		void SetBoardBounds(int x, int y);
 		void Update();
 		int GetName();
-		
+		int xPos;
+		int yPos;
+		int age = 1;
+
 	private:
 		void MakeOlder(); 
 		int boundX;
 		int boundY;
-		int xPos;
-		int yPos;
-		int age = 0;
 		int name;
-		int maxAge = 6;
+		int maxAge = 30;
 };
 
 
