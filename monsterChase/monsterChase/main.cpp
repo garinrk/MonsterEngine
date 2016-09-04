@@ -1,11 +1,12 @@
 #include <iostream>
 #include <string.h>
 #include "Monster.h"
+
 bool CheckForNumberValidity(char* input);
 void InitializeMonsters(int numberOfMonsters);
-void CreateGame();
+void GetUserName();
+void GetNumberOfMonsters();
 void PlayGame();
-void ExitGame();
 
 bool askingForPlayerInfo = true;
 bool askingForNumberOfMonsters = true;
@@ -13,11 +14,12 @@ bool inMainGameplayLoop = true;
 bool quitGameFlag = false;
 
 bool validCheck;
-int maxUserInputLength = 255;
-
-char userInput[80];
-char numberOfMonsters[3];
-Monster* monsterList;
+char userNameInput[255];
+char numberInput[3];
+int boardSizeX = 100;
+int boardSizeY = 100;
+int numberOfMonsters;
+Monster *masterMonsterList;
 
 
 int main() {
@@ -25,36 +27,15 @@ int main() {
 	printf("%s", "==============MONSTER CHASE============\n");
 	printf("%s", "=======================================\n");
 
-	//TODO: User input error checking
-	printf("%s", "What is your name: ");
-	scanf_s("%s", &userInput,80);
-	printf("\nWelcome %s\n", userInput);
-
-	while (askingForNumberOfMonsters) {
-
-		printf("%s", "\nHow many monsters would you like to create [100 max]: ");
-		scanf_s("%s", &numberOfMonsters, 255);
-
-		if (CheckForNumberValidity(numberOfMonsters))
-			askingForNumberOfMonsters = false;
-		
-		printf("%s", "Invalid");
-	}
-
-	printf("Creating %s monsters", numberOfMonsters);
-	
-	//allocate array of monsters
-	monsterList = new Monster[atoi(numberOfMonsters)];
-
-	for (int i = 0; i < atoi(numberOfMonsters); i++) {
-		Monster tempMon;
-
-		monsterList[i] = tempMon;
-	}
+	GetUserName();
+	GetNumberOfMonsters();
+	//printf("\nCreating %d monsters\n", numberOfMonsters);
+	InitializeMonsters(numberOfMonsters);
+	PlayGame();
 
 
-	delete[]monsterList;
-	monsterList = NULL;
+	delete [] masterMonsterList;
+	masterMonsterList = NULL;
 	return 0;
 }
 
@@ -68,18 +49,65 @@ bool CheckForNumberValidity(char* input)
 	return true;
 }
 
-void InitializeMonsters(int numberOfMonsters)
-{
-}
 
-void CreateGame()
-{
-}
 
+void GetUserName() {
+
+	while (askingForPlayerInfo) {
+		printf("%s","\nWhat is your name [Max length of 80]: ");
+		scanf_s("%s", &userNameInput, 80);
+
+		if (userNameInput != 0)
+			askingForPlayerInfo = false;
+		else
+			printf("%s", "Invalid");
+	}
+
+	printf("%s%s\n", "Accepted!\n\tWelcome ", userNameInput);
+}
+void GetNumberOfMonsters()
+{
+	while (askingForNumberOfMonsters) {
+
+		printf("%s", "\nHow many monsters would you like to create [100 max]: ");
+		scanf_s("%s", &numberInput, 255);
+
+		if (CheckForNumberValidity(numberInput))
+			askingForNumberOfMonsters = false;
+		else
+			printf("%s", "Invalid");
+
+
+	}
+
+	numberOfMonsters = atoi(numberInput);
+}
 void PlayGame()
 {
+	printf("Welcome to Monster Game!");
+	while (inMainGameplayLoop) {
+		
+		//get user input
+
+		//update monsters
+
+		for (int i = 0; i < numberOfMonsters; i++) {
+			masterMonsterList[i].Update();
+		}
+	}
+}
+void InitializeMonsters(int n)
+{
+	masterMonsterList = new Monster[n];
+
+	for (int i = 0; i < n; i++) {
+		Monster tempMon;
+		tempMon.SetName(i);
+		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
+		tempMon.SetPos();
+		masterMonsterList[i] = tempMon;
+		printf("%s%d\n", "Creating monster ", i+1);
+
+	}
 }
 
-void ExitGame()
-{
-}

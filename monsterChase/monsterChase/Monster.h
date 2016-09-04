@@ -2,7 +2,9 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
+#include <random>
 #include <time.h>
+
 
 
 class Monster {
@@ -11,17 +13,20 @@ class Monster {
 		Monster();
 		void MoveMonster();
 		void CheckForDeath();
+		void SetName(int n);
+		void SetPos();
+		void SetBoardBounds(int x, int y);
+		void Update();
 		
-
 	private:
+		void MakeOlder();
+		int boundX;
+		int boundY;
 		int xPos;
 		int yPos;
-		int health;
-		int age;
-		double name;
-		struct tm timeSinceNewYear;
-		time_t rawTime;
-		tm now;
+		int age = 0;
+		int name;
+		int maxAge = 6;
 };
 
 
