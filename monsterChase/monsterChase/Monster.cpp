@@ -1,12 +1,16 @@
-//Monster.cpp - Garin Richards
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// file:	Monster.cpp
+//
+// summary:	Implements the monster class for MonsterChase game.
+// Garin Richards
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include "Monster.h"
 #include <iostream>
 
 //constructor
 Monster::Monster() {
-	time_t current;
-	time(&current);
-	srand(current);
+	srand((unsigned int)time(NULL));
 
 }
 

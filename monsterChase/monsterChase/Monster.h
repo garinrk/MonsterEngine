@@ -1,4 +1,10 @@
-//Monster.h - Garin Richards
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// file:	Monster.h
+//
+// summary:	Declares the monster class
+// Garin Richards
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #ifndef MONSTER_H
 #define MONSTER_H
 
@@ -20,7 +26,7 @@ class Monster {
 		int GetName();
 		
 	private:
-		void MakeOlder();
+		void MakeOlder(); 
 		int boundX;
 		int boundY;
 		int xPos;

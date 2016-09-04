@@ -1,7 +1,15 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////
+// file:	main.cpp
+//
+// summary:	Main class for MonsterChase game.
+// Garin Richards
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #include <iostream>
 #include <string.h>
 #include <ctype.h>
 #include "Monster.h"
+
 
 bool CheckForNumberValidity(char* input);
 void InitializeMonsters(int numberOfMonsters);
@@ -96,7 +104,7 @@ void GetNumberOfMonsters()
 		if (CheckForNumberValidity(numberInput))
 			askingForNumberOfMonsters = false;
 		else
-			printf("%s", "Invalid");
+			printf("%s", "Invalid\n");
 
 
 	}
@@ -105,7 +113,7 @@ void GetNumberOfMonsters()
 }
 void PlayGame()
 {
-	printf("Welcome to Monster Game!");
+	printf("GAME START\n");
 	while (inMainGameplayLoop) {
 		
 
@@ -142,7 +150,7 @@ void PlayGame()
 
 void GetPlayerInput() {
 	bool valid;
-	printf("%s", "Input [wasd or q for quit]: ");
+	printf("%s", "[wasd or q for quit]: ");
 	scanf_s("%s", &gameplayInput, 1);
 
 	valid = CheckForValidGameInput(gameplayInput[0]);
