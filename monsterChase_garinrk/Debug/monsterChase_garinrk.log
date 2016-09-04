@@ -1,5 +1,0 @@
-﻿  main.cpp
-c:\users\u0738045\desktop\repos\cplusplus_playground\monsterchase_garinrk\main.cpp(27): error C3863: array type 'char [45]' is not assignable
-c:\users\u0738045\desktop\repos\cplusplus_playground\monsterchase_garinrk\main.cpp(70): error C3861: 'getline': identifier not found
-  Monster.cpp
-  Generating Code...

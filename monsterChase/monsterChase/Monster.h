@@ -12,11 +12,12 @@ class Monster {
 	public:
 		Monster();
 		void MoveMonster();
-		void CheckForDeath();
+		bool CheckForDeath();
 		void SetName(int n);
 		void SetPos();
 		void SetBoardBounds(int x, int y);
 		void Update();
+		int GetName();
 		
 	private:
 		void MakeOlder();

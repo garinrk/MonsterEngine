@@ -4,7 +4,9 @@
 
 //constructor
 Monster::Monster() {
-	srand(time(NULL));
+	time_t current;
+	time(&current);
+	srand(current);
 
 }
 
@@ -15,15 +17,29 @@ void Monster::SetName(int n) {
 
 void Monster::MoveMonster() {
 
+	int moveOrNot = rand() % 2;
+
+	if (moveOrNot == 1) {
+		int moveX = rand() % (2);
+		int moveY = rand() % (2);
+
+		xPos += moveX;
+		yPos += moveY;
+	}
 }
 
-void Monster::CheckForDeath() {
+bool Monster::CheckForDeath() {
+	int killOrNot = rand() % 2;
+
+	if (killOrNot == 1) {
+		return true;
+	}
 	
+	return false;
 }
 
 void Monster::Update() {
 	MoveMonster();
-	CheckForDeath();
 	MakeOlder();
 }
 
@@ -40,4 +56,8 @@ void Monster::SetPos() {
 void Monster::SetBoardBounds(int x, int y) {
 	boundX = x;
 	boundY = y;
+}
+
+int Monster::GetName() {
+	return name;
 }
