@@ -52,7 +52,6 @@ int main() {
 
 	GetUserName();
 	GetNumberOfMonsters();
-	//printf("\nCreating %d monsters\n", numberOfMonsters);
 	InitializeMonsters(numberOfMonsters);
 	PlayGame();
 
@@ -161,14 +160,15 @@ void PlayGame()
 */
 		//UPDATE
 		for (int i = 0; i < numberOfMonsters; i++) {
-			int kill = masterMonsterList[i].CheckForDeath();
+			/*int kill = masterMonsterList[i].CheckForDeath();
 			if (kill == 1) {
 				KillMonster(i);
 				break;
 			}
 			else {
 				masterMonsterList[i].Update();
-			}
+			}*/
+			masterMonsterList[i].Update();
 		}
 		timeStep += 1;
 		//maybe add or destroy monsters
@@ -205,8 +205,8 @@ void DisplayGameState()
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
-		Monster temp = masterMonsterList[i];
-		printf("Monster %d is at %d,%d and is %d day old\n",temp.GetName(),temp.xPos,temp.yPos,temp.age);
+		//Monster temp = masterMonsterList[i];
+		printf("Monster %d is at %d,%d and is %d day old\n", masterMonsterList[i].GetName(), masterMonsterList[i].xPos, masterMonsterList[i].yPos, masterMonsterList[i].age);
 	}
 
 	printf("You are at (%d,%d)\n", playerPosX, playerPosY);
@@ -325,7 +325,7 @@ void KillMonster(int monsterPos)
 
 int GetRandomNumberInBounds(int min, int max) {
 
-	srand((unsigned int)time(NULL));
+	//srand((unsigned int)time(NULL));
 	return min + rand() % (max - min + 1);
 }
 
