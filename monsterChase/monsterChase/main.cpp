@@ -34,12 +34,12 @@ bool validCheck;
 char userNameInput[255];
 char numberInput[3];
 char gameplayInput[1];
-int boardSizeX = 1000;
-int boardSizeY = 1000;
+int boardSizeX = 100;
+int boardSizeY = 100;
 
-int playerPosX = 0;
-int playerPosY = 0;
-int timeStep = 0;
+int playerPosX = 50;
+int playerPosY = 50;
+int timeStep = 1;
 
 int numberOfMonsters;
 Monster *masterMonsterList;
@@ -62,9 +62,9 @@ int main() {
 		printf("%s", "=======================================\n");
 	}
 
-
+/*
 	delete [] masterMonsterList;
-	masterMonsterList = NULL;
+	masterMonsterList = NULL;*/
 	return 0;
 }
 
@@ -199,13 +199,14 @@ void GetPlayerInput() {
 
 void DisplayGameState()
 {
+	//TODO:Not showing names correctly?
 	printf("%s %d\n", "Timestep:",timeStep);
 	printf("%s", "Monsters:\n");
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
 		Monster temp = masterMonsterList[i];
-		printf("Monster %d is at %d,%d and is %d old\n",temp.GetName(),temp.xPos,temp.yPos,temp.age);
+		printf("Monster %d is at %d,%d and is %d day old\n",temp.GetName(),temp.xPos,temp.yPos,temp.age);
 	}
 
 	printf("You are at (%d,%d)\n", playerPosX, playerPosY);
@@ -335,7 +336,10 @@ int GetRandomNumberInBounds(int min, int max) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void AddMonster() {
+
+	//TODO: This definitely needs to be looked at.
 	numberOfMonsters++;
+	printf("%s", "\n\t\tA monster has appeared!");
 	Monster newMon;
 	newMon.SetName(999);
 	newMon.SetBoardBounds(boardSizeX, boardSizeY);
