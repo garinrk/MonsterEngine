@@ -62,9 +62,9 @@ int main() {
 		printf("%s", "=======================================\n");
 	}
 
-/*
-	delete [] masterMonsterList;
-	masterMonsterList = NULL;*/
+
+	//free array
+	delete[] masterMonsterList;
 	return 0;
 }
 
@@ -161,14 +161,17 @@ void PlayGame()
 */
 		//UPDATE
 		for (int i = 0; i < numberOfMonsters; i++) {
-			int kill = masterMonsterList[i].CheckForDeath();
+			/*int kill = masterMonsterList[i].CheckForDeath();
 			if (kill == 1) {
 				KillMonster(i);
 				break;
 			}
 			else {
 				masterMonsterList[i].Update();
-			}
+			}*/
+
+			masterMonsterList[i].Update();
+
 		}
 		timeStep += 1;
 		//maybe add or destroy monsters
@@ -201,7 +204,7 @@ void DisplayGameState()
 {
 	//TODO:Not showing names correctly?
 	printf("%s %d\n", "Timestep:",timeStep);
-	printf("%s", "Monsters:\n");
+	printf("%s%d%s\n", "There are ",numberOfMonsters," monsters in the dungeon");
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
@@ -265,13 +268,13 @@ bool CheckForValidGameInput(char n) {
 /// <param name="n">	The int to process. </param>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void InitializeMonsters(int n)
+void InitializeMonsters(const int n)
 {
 	masterMonsterList = new Monster[n];
 
 	for (int i = 0; i < n; i++) {
 		Monster tempMon;
-		tempMon.SetName(i);
+		tempMon.SetName(i+1);
 		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
 		tempMon.SetPos();
 		masterMonsterList[i] = tempMon;
@@ -337,18 +340,28 @@ int GetRandomNumberInBounds(int min, int max) {
 
 void AddMonster() {
 
-	//TODO: This definitely needs to be looked at.
 	numberOfMonsters++;
-	printf("%s", "\n\t\tA monster has appeared!");
+	printf("%s", "\n\t\tA monster has appeared!\n");
+
+	//create new array
 	Monster newMon;
-	newMon.SetName(999);
+	newMon.SetName(numberOfMonsters);
 	newMon.SetBoardBounds(boardSizeX, boardSizeY);
 	newMon.SetPos();
+	
+	Monster *newArray = new Monster[numberOfMonsters];
 
-	Monster *newMonsterList = new Monster[numberOfMonsters];
-	newMonsterList = masterMonsterList;
-	newMonsterList[numberOfMonsters] = newMon;
+	for (int i = 0; i < numberOfMonsters; i++) {
 
+		if (i < numberOfMonsters - 1) {
+			newArray[i] = masterMonsterList[i];
+		}
+		if (i == numberOfMonsters-1)
+			newArray[i] = newMon;
+		
+	}
+
+	masterMonsterList = newArray;
 }
 
 int RandomTrueOrFalse() {
