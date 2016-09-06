@@ -20,6 +20,7 @@ void DisplayGameState();
 void ProcessPlayerInput(char n);
 bool CheckForValidGameInput(char n);
 void MaybeAddMonsters();
+bool MaybeKillMonster();
 void KillMonster(int monsterPos);
 void AddMonster();
 int GetRandomNumberInBounds(int min, int max);
@@ -29,6 +30,7 @@ bool askingForPlayerInfo = true;
 bool askingForNumberOfMonsters = true;
 bool inMainGameplayLoop = true;
 bool quitGameFlag = false;
+bool killOrSpawnFlag = false;
 
 bool validCheck;
 char userNameInput[255];
@@ -41,7 +43,10 @@ int playerPosX = 50;
 int playerPosY = 50;
 int timeStep = 1;
 
+int killMonstersEvery = 5;
+int killMonsterCounter = killMonstersEvery;
 int numberOfMonsters;
+
 Monster *masterMonsterList;
 
 
@@ -95,6 +100,8 @@ bool CheckForNumberValidity(char* input)
 
 void GetUserName() {
 
+	//TODO: Currently a space in the username results in two "returns". Must only
+	// take the first name of the user.
 	while (askingForPlayerInfo) {
 		printf("%s","\nWhat is your name [Max length of 80]: ");
 		scanf_s("%s", &userNameInput, 80);
@@ -159,20 +166,18 @@ void PlayGame()
 			Go to step 1.
 */
 		//UPDATE
+		
+		if (MaybeKillMonster()) {
+			int monsterToKill = GetRandomNumberInBounds(0, numberOfMonsters - 1);
+			KillMonster(monsterToKill);
+		}
 		for (int i = 0; i < numberOfMonsters; i++) {
-			/*int kill = masterMonsterList[i].CheckForDeath();
-			if (kill == 1) {
-				KillMonster(i);
-				break;
-			}
-			else {
-				masterMonsterList[i].Update();
-			}*/
 			masterMonsterList[i].Update();
 		}
 		timeStep += 1;
 		//maybe add or destroy monsters
 		MaybeAddMonsters();
+
 	}
 }
 
@@ -200,8 +205,8 @@ void GetPlayerInput() {
 void DisplayGameState()
 {
 	//TODO:Not showing names correctly?
-	printf("%s %d\n", "Timestep:",timeStep);
-	printf("%s%d%s\n", "There are ",numberOfMonsters," monsters in the dungeon");
+	//printf("%s %d\n", "Timestep:",timeStep);
+	printf("\n\n%s%d%s\n", "There are ",numberOfMonsters," monster(s) in the dungeon");
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
@@ -295,6 +300,18 @@ void MaybeAddMonsters()
 	}
 }
 
+bool MaybeKillMonster()
+{
+	killMonsterCounter--;
+	if (killMonsterCounter == 0) {
+		killMonsterCounter = killMonstersEvery;
+		return true;
+	}
+
+	return false;
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <summary>	Kills a monster based on its given index in the 
 /// 			master monster list. Does this by copying over it and 
@@ -307,8 +324,11 @@ void MaybeAddMonsters()
 
 void KillMonster(int monsterPos)
 {
-	for (int i = monsterPos; i < numberOfMonsters; i++) {
+	printf("\n\t\t%s\n", "A monster has died!");
+	numberOfMonsters--;
+	for (int i = monsterPos; i < numberOfMonsters-1; i++) {
 		masterMonsterList[i] = masterMonsterList[i + 1];
+		masterMonsterList[i].SetName(i+1);
 	}
 }
 
@@ -325,7 +345,7 @@ void KillMonster(int monsterPos)
 
 int GetRandomNumberInBounds(int min, int max) {
 
-	//srand((unsigned int)time(NULL));
+	srand((unsigned int)time(NULL));
 	return min + rand() % (max - min + 1);
 }
 
