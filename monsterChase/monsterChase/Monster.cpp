@@ -10,13 +10,11 @@
 
 //constructor
 Monster::Monster() {
-	/*srand((unsigned int)time(NULL));*/
 
 }
 
 void Monster::SetName(int n) {
 	name = n;
-	//printf("Set name to %d\n", n);
 }
 
 

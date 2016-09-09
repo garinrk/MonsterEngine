@@ -8,6 +8,7 @@
 #include <string.h>
 #include <ctype.h>
 #include "Monster.h"
+#include <conio.h>
 
 
 bool CheckForNumberValidity(char* input);
@@ -18,7 +19,6 @@ void PlayGame();
 void GetPlayerInput();
 void DisplayGameState();
 void ProcessPlayerInput(char n);
-bool CheckForValidGameInput(char n);
 void MaybeAddMonsters();
 bool MaybeKillMonster();
 void KillMonster(int monsterPos);
@@ -33,9 +33,9 @@ bool quitGameFlag = false;
 bool killOrSpawnFlag = false;
 
 bool validCheck;
-char userNameInput[255];
-char numberInput[3];
-char gameplayInput[1];
+char userNameInput[4096];
+char numberInput[4096];
+
 int boardSizeX = 100;
 int boardSizeY = 100;
 
@@ -43,7 +43,7 @@ int playerPosX = 50;
 int playerPosY = 50;
 int timeStep = 1;
 
-int killMonstersEvery = 5;
+int killMonstersEvery = 3;
 int killMonsterCounter = killMonstersEvery;
 int numberOfMonsters;
 
@@ -104,15 +104,21 @@ void GetUserName() {
 	// take the first name of the user.
 	while (askingForPlayerInfo) {
 		printf("%s","\nWhat is your name [Max length of 80]: ");
-		scanf_s("%s", &userNameInput, 80);
+		//scanf_s("%[^ ]s", &userNameInput, 80);
+		//scanf_s("%[a-z 0-9 ' ']", &userNameInput);
+		fgets(userNameInput, sizeof(userNameInput), stdin);
 
-		if (userNameInput != 0)
+		if (userNameInput != 0) {
 			askingForPlayerInfo = false;
+		}
 		else
 			printf("%s", "Invalid");
 	}
 
+
 	printf("%s%s\n", "Accepted!\n\tWelcome ", userNameInput);
+
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -123,20 +129,37 @@ void GetUserName() {
 
 void GetNumberOfMonsters()
 {
+	//while (askingForNumberOfMonsters) {
+
+	//	printf("%s", "\nHow many monsters would you like to create [100 max]: ");
+	//	scanf_s("%s", &numberInput, 255);
+
+	//	if (CheckForNumberValidity(numberInput))
+	//		askingForNumberOfMonsters = false;
+	//	else
+	//		printf("%s", "Invalid\n");
+
+
+	//}
+
+	//numberOfMonsters = atoi(numberInput);
 	while (askingForNumberOfMonsters) {
 
-		printf("%s", "\nHow many monsters would you like to create [100 max]: ");
-		scanf_s("%s", &numberInput, 255);
+		printf("\nHow many monsters would you like to create? [100 Max]: ");
+		
+		fgets(numberInput, sizeof(numberInput), stdin);
 
-		if (CheckForNumberValidity(numberInput))
-			askingForNumberOfMonsters = false;
-		else
+		size_t result = strlen(numberInput);
+		int userNumber = atoi(numberInput);
+		if (userNumber > 100 || result == 0 || userNumber == 0) {
 			printf("%s", "Invalid\n");
-
+		}
+		else {
+			numberOfMonsters = userNumber;
+			askingForNumberOfMonsters = false;
+		}
 
 	}
-
-	numberOfMonsters = atoi(numberInput);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -147,7 +170,9 @@ void GetNumberOfMonsters()
 
 void PlayGame()
 {
-	printf("\nGAME START\n");
+	printf("=======================================\n");
+	printf("==============GAME START===============\n");
+	printf("=======================================\n\n\n");
 	while (inMainGameplayLoop) {
 		
 		DisplayGameState();
@@ -188,33 +213,47 @@ void PlayGame()
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void GetPlayerInput() {
-	bool valid;
-	printf("%s", "[wasd or q for quit]: ");
-	scanf_s("%s", &gameplayInput, 3);
 
-	valid = CheckForValidGameInput(gameplayInput[0]);
+	bool processingPlayerInput = true;
+	bool valid = true;
+	char gameplayInput[3];
 
-	/*if (quitGameFlag)
-		return;*/
+	while (processingPlayerInput) {
+		
+		printf("%s", "Move in the dungeon with WASD [q for quit]: ");
+		char input = _getch();
 
-	if (valid == 1)
-		ProcessPlayerInput(gameplayInput[0]);
+		if (input != 'w' && input != 'a' && input != 's' && input != 'd' && input != 'q')
+		{
+			printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
+			valid = false;
+			continue;
+		}
+
+		else {
+			ProcessPlayerInput(input);
+			processingPlayerInput = false;
+		}
+	}
+
 	
 }
 
 void DisplayGameState()
 {
-	//TODO:Not showing names correctly?
-	//printf("%s %d\n", "Timestep:",timeStep);
+
+ 	printf("\n\n=======================================\n");
+	printf("==============Day Number %d=============\n",timeStep);
+	printf("=======================================\n");
 	printf("\n\n%s%d%s\n", "There are ",numberOfMonsters," monster(s) in the dungeon");
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
 		//Monster temp = masterMonsterList[i];
-		printf("Monster %d is at %d,%d and is %d day old\n", masterMonsterList[i].GetName(), masterMonsterList[i].xPos, masterMonsterList[i].yPos, masterMonsterList[i].age);
+		printf("Monster %d is at %d,%d and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].xPos, masterMonsterList[i].yPos, masterMonsterList[i].age);
 	}
 
-	printf("You are at (%d,%d)\n", playerPosX, playerPosY);
+	printf("You are at (%d,%d)\n\n", playerPosX, playerPosY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -241,25 +280,6 @@ void ProcessPlayerInput(char n) {
 
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary>	Check for valid game input. WASD or N / Q </summary>
-///
-/// <remarks>	Garin, 9/4/2016. </remarks>
-///
-/// <param name="n">	The char to process. </param>
-///
-/// <returns>	true if it succeeds, false if it fails. </returns>
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-bool CheckForValidGameInput(char n) {
-	n = tolower(n);
-	if (n == 'w' || n == 'a' || n == 's' || n == 'd' || n == 'q')
-		return true;
-	else {
-		printf("%s", "\nInvalid Input ");
-		return false;
-	}
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <summary>	Initializes the monsters based on the amount of monsters
@@ -324,7 +344,9 @@ bool MaybeKillMonster()
 
 void KillMonster(int monsterPos)
 {
-	printf("\n\t\t%s\n", "A monster has died!");
+	printf("\n\n=======================================\n");
+	printf("===========A MONSTER HAS DIED==========\n");
+	printf("=======================================\n\n");
 	numberOfMonsters--;
 	for (int i = monsterPos; i < numberOfMonsters-1; i++) {
 		masterMonsterList[i] = masterMonsterList[i + 1];
@@ -358,7 +380,9 @@ int GetRandomNumberInBounds(int min, int max) {
 void AddMonster() {
 
 	numberOfMonsters++;
-	printf("%s", "\n\t\tA monster has appeared!\n");
+	printf("\n\n=======================================\n");
+	printf("===========A MONSTER HAS APPEARED======\n");
+	printf("=======================================\n\n");
 
 	//create new array
 	Monster newMon;

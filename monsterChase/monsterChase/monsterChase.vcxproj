@@ -148,11 +148,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
-    <ClCompile Include="MonsterDatabase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Monster.h" />
-    <ClInclude Include="MonsterDatabase.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
