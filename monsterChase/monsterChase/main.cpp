@@ -19,8 +19,6 @@ void PlayGame();
 void GetPlayerInput();
 void DisplayGameState();
 void ProcessPlayerInput(char n);
-void MaybeAddMonsters();
-bool MaybeKillMonster();
 void KillMonster(int monsterPos);
 void AddMonster();
 int GetRandomNumberInBounds(int min, int max);
@@ -176,7 +174,7 @@ void PlayGame()
 	while (inMainGameplayLoop) {
 		
 		DisplayGameState();
-		//get user input and process it
+
 		GetPlayerInput();
 		if (quitGameFlag)
 			return;
@@ -189,20 +187,28 @@ void PlayGame()
 			Determine if any Monsters need to be created or destroyed and do so.
 			Update Player position based on user input.
 			Go to step 1.
-*/
-		//UPDATE
-		
-		if (MaybeKillMonster()) {
+		*/
+
+		//kill a monster randomly.
+		killMonsterCounter--;
+		if (killMonsterCounter == 0) {
+			killMonsterCounter = killMonstersEvery;
 			int monsterToKill = GetRandomNumberInBounds(0, numberOfMonsters - 1);
 			KillMonster(monsterToKill);
+
 		}
+
+		
 		for (int i = 0; i < numberOfMonsters; i++) {
 			masterMonsterList[i].Update();
 		}
-		timeStep += 1;
-		//maybe add or destroy monsters
-		MaybeAddMonsters();
+		
+		//add a monster randomly
+		if (RandomTrueOrFalse())
+			AddMonster();
 
+		
+		timeStep += 1;
 	}
 }
 
@@ -305,32 +311,6 @@ void InitializeMonsters(int n)
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary>	Decide whether or not we should add a mosnter using
-/// 			a random true or false function. </summary>
-///
-/// <remarks>	Garin, 9/4/2016. </remarks>
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void MaybeAddMonsters()
-{
-	int shouldAddMonster = RandomTrueOrFalse();
-	if (shouldAddMonster == 1) {
-		AddMonster();
-	}
-}
-
-bool MaybeKillMonster()
-{
-	killMonsterCounter--;
-	if (killMonsterCounter == 0) {
-		killMonsterCounter = killMonstersEvery;
-		return true;
-	}
-
-	return false;
-
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 /// <summary>	Kills a monster based on its given index in the 
