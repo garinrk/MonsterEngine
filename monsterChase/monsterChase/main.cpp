@@ -110,7 +110,7 @@ void GetUserName() {
 			askingForPlayerInfo = false;
 		}
 		else
-			printf("%s", "Invalid");
+			printf("%s", "Invalid"); 
 	}
 
 
@@ -222,8 +222,7 @@ void GetPlayerInput() {
 
 	bool processingPlayerInput = true;
 	bool valid = true;
-	char gameplayInput[3];
-
+	 
 	while (processingPlayerInput) {
 		
 		printf("%s", "Move in the dungeon with WASD [q for quit]: ");
