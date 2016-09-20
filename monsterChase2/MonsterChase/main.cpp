@@ -221,7 +221,6 @@ void GetPlayerInput() {
 
 	bool processingPlayerInput = true;
 	bool valid = true;
-	char gameplayInput[3];
 
 	while (processingPlayerInput) {
 		
