@@ -8,9 +8,10 @@
 #include "Monster.h"
 
 
+
 //constructor
 Monster::Monster() {
-
+	
 }
 
 void Monster::SetName(int n) {
@@ -19,15 +20,18 @@ void Monster::SetName(int n) {
 
 
 void Monster::MoveMonster() {
-
+	
 	int moveOrNot = rand() % 2;
 
 	if (moveOrNot == 1) {
 		int moveX = rand() % (2);
 		int moveY = rand() % (2);
 
-		xPos += moveX;
-		yPos += moveY;
+		Point2D posChange;
+		posChange.x(moveX);
+		posChange.y(moveY);
+		pos = pos + posChange;
+
 	}
 }
 
@@ -50,9 +54,11 @@ void Monster::MakeOlder() {
 	age++;
 }
 
-void Monster::SetPos() {
-	xPos = rand() % (boundX + 1);
-	yPos = rand() % (boundY+ 1);
+void Monster::SetRandomPos() {
+	double x = rand() % (boundX + 1);
+	double y = rand() % (boundY+ 1);
+	pos.x(x);
+	pos.y(y);
 }
 
 void Monster::SetBoardBounds(int x, int y) {

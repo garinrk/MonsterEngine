@@ -97,12 +97,8 @@ bool CheckForNumberValidity(char* input)
 
 void GetUserName() {
 
-	//TODO: Currently a space in the username results in two "returns". Must only
-	// take the first name of the user.
 	while (askingForPlayerInfo) {
 		printf("%s","\nWhat is your name [Max length of 80]: ");
-		//scanf_s("%[^ ]s", &userNameInput, 80);
-		//scanf_s("%[a-z 0-9 ' ']", &userNameInput);
 		fgets(userNameInput, sizeof(userNameInput), stdin);
 
 		if (userNameInput != 0) {
@@ -254,7 +250,7 @@ void DisplayGameState()
 	for (int i = 0; i < numberOfMonsters; i++) {
 
 		//Monster temp = masterMonsterList[i];
-		printf("Monster %d is at %d,%d and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].xPos, masterMonsterList[i].yPos, masterMonsterList[i].age);
+		printf("Monster %d is at %d,%d and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].pos.x(), masterMonsterList[i].pos.y(), masterMonsterList[i].age);
 	}
 
 	printf("You are at (%d,%d)\n\n", playerPosX, playerPosY);
@@ -302,7 +298,7 @@ void InitializeMonsters(int n)
 		Monster tempMon;
 		tempMon.SetName(i+1);
 		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
-		tempMon.SetPos();
+		tempMon.SetRandomPos();
 		masterMonsterList[i] = tempMon;
 		//printf("%s%d\n", "Creating monster ", i+1);
 
@@ -366,7 +362,7 @@ void AddMonster() {
 	Monster newMon;
 	newMon.SetName(numberOfMonsters);
 	newMon.SetBoardBounds(boardSizeX, boardSizeY);
-	newMon.SetPos();
+	newMon.SetRandomPos();
 	
 	Monster *newArray = new Monster[numberOfMonsters];
 

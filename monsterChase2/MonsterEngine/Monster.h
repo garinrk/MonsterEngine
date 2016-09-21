@@ -10,6 +10,7 @@
 
 #include <random>
 #include <time.h>
+#include "Point2D.h"
 
 
 
@@ -20,12 +21,14 @@ class Monster {
 		void MoveMonster();
 		bool CheckForDeath();
 		void SetName(int n);
-		void SetPos();
+		void SetRandomPos();
 		void SetBoardBounds(int x, int y);
 		void Update();
 		int GetName();
-		int xPos;
-		int yPos;
+		Point2D pos;
+		//int xPos;
+		//int yPos;
+
 		int age = 1;
 
 	private:

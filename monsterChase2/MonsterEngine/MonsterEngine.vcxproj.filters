@@ -24,12 +24,18 @@
     <ClInclude Include="MonsterEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Point2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Monster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MonsterEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
