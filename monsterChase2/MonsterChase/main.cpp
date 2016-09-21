@@ -36,8 +36,8 @@ char numberInput[4096];
 int boardSizeX = 100;
 int boardSizeY = 100;
 
-int playerPosX = 50;
-int playerPosY = 50;
+double playerPosX = 50;
+double playerPosY = 50;
 int timeStep = 1;
 
 int killMonstersEvery = 3;
@@ -108,7 +108,7 @@ void GetUserName() {
 			printf("%s", "Invalid");
 	}
 
-
+	 
 	printf("%s%s\n", "Accepted!\n\tWelcome ", userNameInput);
 
 	
@@ -250,10 +250,10 @@ void DisplayGameState()
 	for (int i = 0; i < numberOfMonsters; i++) {
 
 		//Monster temp = masterMonsterList[i];
-		printf("Monster %d is at %d,%d and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].pos.x(), masterMonsterList[i].pos.y(), masterMonsterList[i].age);
+		printf("Monster %d is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].pos.x(), masterMonsterList[i].pos.y(), masterMonsterList[i].age);
 	}
 
-	printf("You are at (%d,%d)\n\n", playerPosX, playerPosY);
+	printf("You are at (%.1f, %.1f)\n\n", playerPosX, playerPosY);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -22,7 +22,7 @@ double Point2D::DotProduct(Point2D other) {
 
 void Point2D::Normalize() {
 	coord_x = coord_x / Magnitude();
-	coord_y = coord_y / Magnitude();
+	coord_y = coord_y / Magnitude(); 
 }
 
 Point2D Point2D::operator+(Point2D rhs)

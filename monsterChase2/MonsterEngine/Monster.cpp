@@ -11,7 +11,7 @@
 
 //constructor
 Monster::Monster() {
-	
+	 
 }
 
 void Monster::SetName(int n) {
