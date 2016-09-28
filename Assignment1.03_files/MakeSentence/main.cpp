@@ -2,6 +2,8 @@
 #include <conio.h>
 #include <stdlib.h>
 
+#define BUFFER 4096
+
 char * MakeSentence(const char ** input);
 
 void main(int i_argc, char ** i_argl) {
@@ -13,6 +15,24 @@ void main(int i_argc, char ** i_argl) {
 		"test",
 		NULL
 	};
+
+	char inputBuffer[BUFFER];
+
+	bool gettingInput = true;
+	const char * inputs[];
+	while (gettingInput) {
+		printf("Please enter a word [ENTER to finish]: ");
+		fgets(inputBuffer, BUFFER, stdin);
+		char c = inputBuffer[0];
+		if (inputBuffer[0] == '\n') {
+			gettingInput = false;
+			break;
+		}
+		else {
+
+		}
+		
+	}
 
 	char * result = MakeSentence(strings);
 
