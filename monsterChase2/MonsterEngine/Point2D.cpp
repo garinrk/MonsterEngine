@@ -8,6 +8,23 @@ Point2D::Point2D()
 	y(0);
 }
 
+double Point2D::x() {
+	return coord_x;
+}
+
+double Point2D::y() {
+	return coord_y;
+}
+
+void Point2D::y(double val) {
+	coord_y = val;
+}
+
+void Point2D::x(double val) {
+	coord_x = val;
+}
+
+
 double Point2D::Magnitude() {
 	//magnitude
 	double val = coord_x * coord_x + coord_y * coord_y;
@@ -17,12 +34,12 @@ double Point2D::Magnitude() {
 
 double Point2D::DotProduct(Point2D other) {
 	//Ax*Bx + Ay*By
-	return coord_x * other.x() + coord_y * other.y();	
+	return coord_x * other.x() + coord_y * other.y();
 }
 
 void Point2D::Normalize() {
 	coord_x = coord_x / Magnitude();
-	coord_y = coord_y / Magnitude(); 
+	coord_y = coord_y / Magnitude();
 }
 
 Point2D Point2D::operator+(Point2D rhs)
