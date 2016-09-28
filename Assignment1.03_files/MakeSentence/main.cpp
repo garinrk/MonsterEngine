@@ -2,10 +2,10 @@
 #include <conio.h>
 #include <stdlib.h>
 
-char * test(const char ** input);
+char * MakeSentence(const char ** input);
 
 void main(int i_argc, char ** i_argl) {
-	printf("Hello world!");
+
 	const char * strings[] = {
 		"This",
 		"is",
@@ -13,7 +13,8 @@ void main(int i_argc, char ** i_argl) {
 		"test",
 		NULL
 	};
-	char * result = test(strings);
+
+	char * result = MakeSentence(strings);
 
 	printf("The Sentence is: %s", result);
 
@@ -22,28 +23,55 @@ void main(int i_argc, char ** i_argl) {
 	_getch();
 }
 
-char * test(const char ** input) {
+char * MakeSentence(const char ** input) {
 
-	char * r;
+
 	
-	char currentChar = 0;
-	int currentWord = 0;
-
+	int currentCharIndex = 0;
+	int amountOfWords = 0;
 	int numberOfChars = 0;
 
-	while (input[currentWord] != NULL) {
-		while (input[currentWord][currentChar] != '\0') {
+	while (input[amountOfWords] != NULL) {
+		while (input[amountOfWords][currentCharIndex] != '\0') {
 			numberOfChars++;
-			currentChar++;
+			currentCharIndex++;
 
 		}
-		currentWord++;
-		currentChar = 0;
+		amountOfWords++;
+		currentCharIndex = 0;
 
 	}
 
-	_getch();
+	int spacesNeeded = amountOfWords-1; //amount of words - 1
+	int totalNeeded = spacesNeeded + numberOfChars+2; //including period and null terminator
 
-	return r;
+	char* ptr = (char*)malloc(totalNeeded);
+
+	//create sentence
+	amountOfWords = 0;
+	currentCharIndex = 0;
+	int place = 0;
+	while (input[amountOfWords] != NULL) {
+		while (input[amountOfWords][currentCharIndex] != '\0') {
+			ptr[place] = input[amountOfWords][currentCharIndex];
+			currentCharIndex++;
+			place++;
+		}
+		amountOfWords++;
+		if (input[amountOfWords] != NULL) {
+			ptr[place] = ' ';
+			place++;
+		}
+		
+		currentCharIndex = 0;
+		
+	}
+
+	//period and null terminator
+	ptr[place] = '.';
+	++place;
+	ptr[place] = '\0';
+
+	return ptr;
 
 }
