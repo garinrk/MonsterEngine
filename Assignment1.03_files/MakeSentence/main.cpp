@@ -3,51 +3,71 @@
 #include <stdlib.h>
 
 #define BUFFER 4096
-#define WORDS 15
-char * MakeSentence(const char ** input);
+#define WORDS 11
+char * MakeSentence(const char * input[]);
+char * Sanitize(char* in);
 
 void main(int i_argc, char ** i_argl) {
 
-	const char * strings[] = {
-		"This",
-		"is",
-		"a",
-		"test",
-		NULL
-	};
+	//const char * strings[] = {
+	//	"This",
+	//	"is",
+	//	"a",
+	//	"test",
+	//	NULL
+	//};
 
-	char inputBuffer[BUFFER];
-	const char * words[WORDS];
+	
 	int currentWord = 0;
+	int wordLimit = 10;
+	const char * words[WORDS];
+
+	printf("MAKE_SENTENCE\nCharacter Limit: 140\nWord Limit: 10\n\n");
 
 	bool gettingInput = true;
-
-	while (gettingInput) {
-		printf("Please enter a word [ENTER to finish]: ");
-		fgets(inputBuffer, BUFFER, stdin);
-		char c = inputBuffer[0];
-		if (inputBuffer[0] == '\n') {
-			break;
-		}
-		else {
-			words[currentWord] = BUFFER;
-		}
+	while (wordLimit > 0 && gettingInput == true) {
+		char* inputBuffer = (char*)malloc(256 * sizeof(char));
+		printf("Please enter 10 words (%d left): ", wordLimit);
+		fgets(inputBuffer, 256, stdin);
 		
+		if (inputBuffer[0] == '\n')
+			continue;
+
+		inputBuffer = Sanitize(inputBuffer);
+		
+		words[currentWord] = inputBuffer;
+		currentWord++;
+		wordLimit--;
+		
+
 	}
 
-	char * result = MakeSentence(strings);
-
+	words[10] = NULL;
+	char * result = MakeSentence(words);
+	
 	printf("The Sentence is: %s", result);
 
 	free(result);
+	for (int i = 0; i, i < wordLimit; i++) {
+		free((void*)words[i]);
+	}
 
 	_getch();
 }
 
-char * MakeSentence(const char ** input) {
+char * Sanitize(char* in) {
+	int place = 0;
+	while (in[place] != '\n' && in[place] != '\0') {
+		place++;
+	}
+	if (in[place] != '\0')
+		in[place] = ' ';
 
+	return in;
+}
 
-	
+char * MakeSentence(const char * input[]) {
+
 	int currentCharIndex = 0;
 	int amountOfWords = 0;
 	int numberOfChars = 0;
@@ -73,7 +93,10 @@ char * MakeSentence(const char ** input) {
 	currentCharIndex = 0;
 	int place = 0;
 	while (input[amountOfWords] != NULL) {
+		
 		while (input[amountOfWords][currentCharIndex] != '\0') {
+			if (input[amountOfWords][currentCharIndex] == ' ')
+				break;
 			ptr[place] = input[amountOfWords][currentCharIndex];
 			currentCharIndex++;
 			place++;
@@ -83,6 +106,7 @@ char * MakeSentence(const char ** input) {
 			ptr[place] = ' ';
 			place++;
 		}
+
 		
 		currentCharIndex = 0;
 		
