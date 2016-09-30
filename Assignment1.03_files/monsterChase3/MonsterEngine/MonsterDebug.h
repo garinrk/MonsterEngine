@@ -8,7 +8,7 @@
 
 class MonsterDebug
 {
-public:
+public: 
 	static void DebugPrint(const char * input, ...);
 
 
@@ -17,6 +17,8 @@ public:
 
 #ifdef _DEBUG
 #define DEBUGLOG(fmt,...) MonsterDebug::DebugPrint(fmt,__VA_ARGS__)
+#else
+#define DEBUGLOG(fmt,...) void(0)
 #endif
 
 #endif

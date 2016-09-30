@@ -10,6 +10,7 @@
 #include <conio.h>
 #include "Monster.h"
 #include "MonsterDebug.h"
+#include <assert.h>
 
 bool CheckForNumberValidity(char* input);
 void InitializeMonsters(int numberOfMonsters);
@@ -52,7 +53,6 @@ int main() {
 	printf("%s", "=======================================\n");
 	printf("%s", "==============MONSTER CHASE============\n");
 	printf("%s", "=======================================\n");
-	DEBUGLOG("%d %c %d", 123, '<', 456);
 	GetUserName();
 	GetNumberOfMonsters();
 	InitializeMonsters(numberOfMonsters);
@@ -112,6 +112,7 @@ void GetUserName() {
 	 
 	printf("%s%s\n", "Accepted!\n\tWelcome ", userNameInput);
 
+	DEBUGLOG("%s\nLine: %d \n%s: %s", __FILE__, __LINE__, "Username: ", userNameInput);
 	
 }
 
@@ -123,37 +124,30 @@ void GetUserName() {
 
 void GetNumberOfMonsters()
 {
-	//while (askingForNumberOfMonsters) {
 
-	//	printf("%s", "\nHow many monsters would you like to create [100 max]: ");
-	//	scanf_s("%s", &numberInput, 255);
-
-	//	if (CheckForNumberValidity(numberInput))
-	//		askingForNumberOfMonsters = false;
-	//	else
-	//		printf("%s", "Invalid\n");
-
-
-	//}
-
-	//numberOfMonsters = atoi(numberInput);
 	while (askingForNumberOfMonsters) {
 
 		printf("\nHow many monsters would you like to create? [100 Max]: ");
 		
 		fgets(numberInput, sizeof(numberInput), stdin);
 
+		assert(strtol(numberInput,NULL,0) != 0 && "Non-Numerical Integer detected!");
 		size_t result = strlen(numberInput);
 		int userNumber = atoi(numberInput);
-		if (userNumber > 100 || result == 0 || userNumber == 0) {
-			printf("%s", "Invalid\n");
-		}
-		else {
-			numberOfMonsters = userNumber;
-			askingForNumberOfMonsters = false;
+		assert(userNumber <= 100 && "You can only have 100 monsters or less!");
+
+		if (userNumber == 0) {
+			printf("You either supplied 0 or a non numerical integer, please try again\n");
+			continue;
 		}
 
+		numberOfMonsters = userNumber;
+		askingForNumberOfMonsters = false;
+
+
 	}
+
+	DEBUGLOG("%s\nLine: %d \n%s: %d\n", __FILE__, __LINE__, "Number of Monsters: ", numberOfMonsters);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -221,12 +215,13 @@ void GetPlayerInput() {
 
 	while (processingPlayerInput) {
 		
-		printf("%s", "Move in the dungeon with WASD [q for quit]: ");
+		printf("%s", "\nMove in the dungeon with WASD [q for quit]: ");
 		char input = _getch();
 
 		if (input != 'w' && input != 'a' && input != 's' && input != 'd' && input != 'q')
 		{
-			printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
+			DEBUGLOG("User input invalid: %c\n",input);
+			//printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
 			valid = false;
 			continue;
 		}
@@ -301,7 +296,7 @@ void InitializeMonsters(int n)
 		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
 		tempMon.SetRandomPos();
 		masterMonsterList[i] = tempMon;
-		//printf("%s%d\n", "Creating monster ", i+1);
+		DEBUGLOG("%s\nLine: %d \n%s: %d\n", __FILE__, __LINE__, "Creating Monster: ", i+1);
 
 	}
 }
