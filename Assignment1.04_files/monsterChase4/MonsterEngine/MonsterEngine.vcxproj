@@ -137,11 +137,13 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MonsterAllocator.h" />
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine.h" />
     <ClInclude Include="Point2D.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="MonsterAllocator.cpp" />
     <ClCompile Include="MonsterDebug.cpp" />
     <ClCompile Include="MonsterEngine.cpp" />
     <ClCompile Include="Point2D.cpp" />
