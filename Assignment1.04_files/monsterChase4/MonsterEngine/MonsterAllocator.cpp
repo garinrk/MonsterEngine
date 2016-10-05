@@ -70,15 +70,30 @@ void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
 		while (conductor->next != NULL) {
 			conductor = conductor->next;
 		}
-	}
-	conductor->next = toInsert;
-	toInsert->prev = conductor;
 
+		conductor->next = toInsert;
+		toInsert->prev = conductor;
+	}
 
 }
 
 void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
 {
+	BlockDescriptor* conductor;
+	conductor = unallocatedRoot;
+
+	if (unallocatedRoot == 0) {
+		unallocatedRoot = toInsert;
+		return;
+	}
+	else {
+		while (conductor->next != NULL) {
+			conductor = conductor->next;
+		}
+
+		conductor->next = toInsert;
+		toInsert->prev = conductor;
+	}
 }
 
 void MonsterAllocator::InitializeFreeList()

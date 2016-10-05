@@ -52,25 +52,26 @@ Monster *masterMonsterList;
 
 int main() {
 	MonsterAllocator malloc;
-	char* first = malloc.MonsterMalloc((size_t)3);
-	char* second = malloc.MonsterMalloc((size_t)6);
-	//printf("%s", "=======================================\n");
-	//printf("%s", "==============MONSTER CHASE============\n");
-	//printf("%s", "=======================================\n");
-	//GetUserName();
-	//GetNumberOfMonsters();
-	//InitializeMonsters(numberOfMonsters);
-	//PlayGame();
+	char* first = malloc.MonsterMalloc((size_t)1);
+	char* second = malloc.MonsterMalloc((size_t)1);
+	*first = 23;
+	printf("%s", "=======================================\n");
+	printf("%s", "==============MONSTER CHASE============\n");
+	printf("%s", "=======================================\n");
+	GetUserName();
+	GetNumberOfMonsters();
+	InitializeMonsters(numberOfMonsters);
+	PlayGame();
 
-	//if (quitGameFlag) {
-	//	printf("%s", "=======================================\n");
-	//	printf("%s", "==============EXITING GAME=============\n");
-	//	printf("%s", "=======================================\n");
-	//}
+	if (quitGameFlag) {
+		printf("%s", "=======================================\n");
+		printf("%s", "==============EXITING GAME=============\n");
+		printf("%s", "=======================================\n");
+	}
 
 
-	//free array
-	//delete[] masterMonsterList;
+	free array
+	delete[] masterMonsterList;
 	return 0;
 }
 
