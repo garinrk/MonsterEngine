@@ -16,8 +16,9 @@ MonsterAllocator::MonsterAllocator()
 
 	backOfChunk = frontOfChunk + HEAPSIZE;
 
-	//allocated = NULL;
-	//unallocated = NULL;
+/*
+	allocated->prev =  NULL;
+	unallocated->prev = NULL;*/
 
 	InitializeFreeList();
 	
@@ -34,6 +35,11 @@ MonsterAllocator::~MonsterAllocator()
 char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	char * result;
 
+	if (free->next != NULL) {
+		BlockDescriptor* usersBD = free;
+		
+	}
+
 
 
 	return result;
@@ -41,17 +47,20 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 
 void MonsterAllocator::InitializeFreeList()
 {
-	BlockDescriptor * frontOfBlockDescriptor = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * NUMBEROFDESCRIPTORS));
-
+	frontOfBD = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * NUMBEROFDESCRIPTORS));
 	
-	frontOfBlockDescriptor->blockBase = NULL;
-	frontOfBlockDescriptor->sizeOfBlock = 0;
+	frontOfBD->prev = NULL;
+	frontOfBD->blockBase = NULL;
+	frontOfBD->sizeOfBlock = 0;
 
-	BlockDescriptor * current = frontOfBlockDescriptor+1;
+	BlockDescriptor * current = frontOfBD +1;
 	current->blockBase = NULL;
 	current->sizeOfBlock = 0;
+	current->prev = frontOfBD;
 
-	frontOfBlockDescriptor->next = current;
+	frontOfBD->next = current;
+	
+
 	
 	
 	for (int i = 0; i < NUMBEROFDESCRIPTORS-2; i++) {
@@ -59,11 +68,15 @@ void MonsterAllocator::InitializeFreeList()
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
 		current->next = newBD;
+		newBD->prev = current;
 		newBD->blockBase = NULL;
 		newBD->sizeOfBlock = 0;
 		
 		current = newBD;
 	}
 
-	free = frontOfBlockDescriptor;
+	free = frontOfBD;
+
+	bytesLeft = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
+	bytesLeft = bytesLeft * 32;
 }
