@@ -35,14 +35,50 @@ MonsterAllocator::~MonsterAllocator()
 char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	char * result;
 
-	if (free->next != NULL) {
-		BlockDescriptor* usersBD = free;
-		
+	if (bytesLeft >= amt) {
+
+		if (endOfFree->prev != NULL) {
+			DEBUGLOG("Hello");
+			BlockDescriptor* newBD;
+			newBD = endOfFree;
+			endOfFree = endOfFree->prev;
+			newBD->next = NULL;
+			newBD->blockBase = frontOfChunk;
+			newBD->sizeOfBlock = amt;
+			frontOfChunk += amt;
+			bytesLeft -= amt;
+			AddToAllocated(newBD);
+			result = (char*)newBD->blockBase;
+		}
 	}
 
 
 
 	return result;
+}
+
+void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
+{
+	BlockDescriptor* conductor;
+	conductor = allocatedRoot;
+
+	if (allocatedRoot == 0) {
+		allocatedRoot = toInsert;
+		return;
+	}
+	else {
+		while (conductor->next != NULL) {
+			conductor = conductor->next;
+		}
+	}
+	conductor->next = toInsert;
+	toInsert->prev = conductor;
+
+
+}
+
+void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
+{
 }
 
 void MonsterAllocator::InitializeFreeList()
@@ -75,7 +111,8 @@ void MonsterAllocator::InitializeFreeList()
 		current = newBD;
 	}
 
-	free = frontOfBD;
+	freeRoot = frontOfBD;
+	endOfFree = current;
 
 	bytesLeft = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
 	bytesLeft = bytesLeft * 32;
