@@ -10,6 +10,7 @@
 #include <conio.h>
 #include "Monster.h"
 #include "MonsterDebug.h"
+#include "MonsterAllocator.h"
 #include <assert.h>
 
 bool CheckForNumberValidity(char* input);
@@ -50,23 +51,25 @@ Monster *masterMonsterList;
 
 
 int main() {
-	printf("%s", "=======================================\n");
-	printf("%s", "==============MONSTER CHASE============\n");
-	printf("%s", "=======================================\n");
-	GetUserName();
-	GetNumberOfMonsters();
-	InitializeMonsters(numberOfMonsters);
-	PlayGame();
+	MonsterAllocator malloc;
+	malloc.MonsterMalloc((size_t)3);
+	//printf("%s", "=======================================\n");
+	//printf("%s", "==============MONSTER CHASE============\n");
+	//printf("%s", "=======================================\n");
+	//GetUserName();
+	//GetNumberOfMonsters();
+	//InitializeMonsters(numberOfMonsters);
+	//PlayGame();
 
-	if (quitGameFlag) {
-		printf("%s", "=======================================\n");
-		printf("%s", "==============EXITING GAME=============\n");
-		printf("%s", "=======================================\n");
-	}
+	//if (quitGameFlag) {
+	//	printf("%s", "=======================================\n");
+	//	printf("%s", "==============EXITING GAME=============\n");
+	//	printf("%s", "=======================================\n");
+	//}
 
 
 	//free array
-	delete[] masterMonsterList;
+	//delete[] masterMonsterList;
 	return 0;
 }
 
