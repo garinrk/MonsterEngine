@@ -35,6 +35,9 @@ MonsterAllocator::~MonsterAllocator()
 char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	char * result;
 
+	assert(amt <= bytesLeft && "You ran out of memory!");
+	assert(endOfFree != frontOfBD && "You ran out of block descriptors!");
+
 	if (bytesLeft >= amt) {
 
 		if (endOfFree->prev != NULL) {
