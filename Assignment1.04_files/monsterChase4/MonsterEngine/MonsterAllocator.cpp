@@ -16,15 +16,7 @@ MonsterAllocator::MonsterAllocator()
 
 	backOfChunk = frontOfChunk + TOTALHEAPSIZE;
 
-/*
-	allocated->prev =  NULL;
-	unallocated->prev = NULL;*/
-
 	InitializeFreeList();
-	
-
-
-
 
 }
 
@@ -35,9 +27,19 @@ MonsterAllocator::~MonsterAllocator()
 char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	char * result;
 
-	//check for amount of memory 
+
 	assert(amt <= bytesLeft && "You ran out of memory!");
 	assert(endOfFree != NULL && "No more descriptors!");
+
+	//check for amount of memory 
+	if (amt > bytesLeft) {
+		return NULL;
+	}
+	if (endOfFree == NULL) {
+		return NULL;
+	}
+
+
 
 	//if there's still stuff left in the free list
 	if (endOfFree->prev != NULL) {
