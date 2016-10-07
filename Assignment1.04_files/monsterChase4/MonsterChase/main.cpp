@@ -55,12 +55,10 @@ int main() {
 	char* first = malloc.MonsterMalloc((size_t)1);
 	char* second = malloc.MonsterMalloc((size_t)1);
 	char* third = malloc.MonsterMalloc((size_t)1);
-	char* tooMuch = malloc.MonsterMalloc((size_t)9000);
-	////char* fifth = malloc.MonsterMalloc((size_t)1);
-	*first = 170;
-	*second = 187;
-	*third = 204;
-	//char* fourth = malloc.MonsterMalloc((size_t)1);
+	char* tooMuch = malloc.MonsterMalloc((size_t)9000); //null because too much
+	//*first = 170; //check out the memory window to see these AA
+	//*second = 187; //BB
+	//*third = 204; //CC
 	printf("%s", "=======================================\n");
 	printf("%s", "==============MONSTER CHASE============\n");
 	printf("%s", "=======================================\n");
