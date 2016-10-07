@@ -4,17 +4,17 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <assert.h>
-#define HEAPSIZE 4096
+#define TOTALHEAPSIZE 4096
 #define ALIGNMENT 4
 #define NUMBEROFDESCRIPTORS 64
 
 MonsterAllocator::MonsterAllocator()
 {
-	frontOfChunk = (char*) _aligned_malloc(HEAPSIZE, ALIGNMENT);
+	frontOfChunk = (char*) _aligned_malloc(TOTALHEAPSIZE, ALIGNMENT);
 
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
 
-	backOfChunk = frontOfChunk + HEAPSIZE;
+	backOfChunk = frontOfChunk + TOTALHEAPSIZE;
 
 /*
 	allocated->prev =  NULL;
@@ -35,25 +35,45 @@ MonsterAllocator::~MonsterAllocator()
 char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	char * result;
 
+	//check for amount of memory 
 	assert(amt <= bytesLeft && "You ran out of memory!");
-	assert(endOfFree != frontOfBD && "You ran out of block descriptors!");
+	assert(endOfFree != NULL && "No more descriptors!");
 
-	if (bytesLeft >= amt) {
-
-		if (endOfFree->prev != NULL) {
-			DEBUGLOG("Hello");
-			BlockDescriptor* newBD;
-			newBD = endOfFree;
-			endOfFree = endOfFree->prev;
-			newBD->next = NULL;
-			newBD->blockBase = frontOfChunk;
-			newBD->sizeOfBlock = amt;
-			frontOfChunk += amt;
-			bytesLeft -= amt;
-			AddToAllocated(newBD);
-			result = (char*)newBD->blockBase;
-		}
+	//if there's still stuff left in the free list
+	if (endOfFree->prev != NULL) {
+		BlockDescriptor* newBD;
+		newBD = endOfFree;
+		endOfFree = endOfFree->prev;
+		newBD->next = NULL;
+		newBD->blockBase = frontOfChunk;
+		newBD->sizeOfBlock = amt;
+		frontOfChunk += amt;
+		bytesLeft -= amt;
+		AddToAllocated(newBD);
+		result = (char*)newBD->blockBase;
 	}
+	
+	//if the only thing left is the root node
+	else if(endOfFree == freeRoot && freeRoot->blockBase == NULL) {
+		BlockDescriptor * newBD;
+		newBD = endOfFree;
+		endOfFree = NULL;
+		newBD->next = NULL;
+		newBD->blockBase = frontOfChunk;
+		newBD->sizeOfBlock = amt;
+		frontOfChunk += amt;
+		bytesLeft -= amt;
+		AddToAllocated(newBD);
+		result = (char*)newBD->blockBase;
+	}
+
+	//TODO: Free 
+	//if there's no more block descriptors in the free list, we have to go look in the unallocated
+	//list
+	//if (endOfFree == NULL) {
+	//	//go do that.
+	//}
+
 
 
 
@@ -106,18 +126,20 @@ void MonsterAllocator::InitializeFreeList()
 	frontOfBD->prev = NULL;
 	frontOfBD->blockBase = NULL;
 	frontOfBD->sizeOfBlock = 0;
-
+/*
 	BlockDescriptor * current = frontOfBD +1;
 	current->blockBase = NULL;
 	current->sizeOfBlock = 0;
-	current->prev = frontOfBD;
-
-	frontOfBD->next = current;
+	current->prev = frontOfBD;*/
+	
+	BlockDescriptor * current;
+	current = frontOfBD;
+	//frontOfBD->next = current;
 	
 
 	
 	
-	for (int i = 0; i < NUMBEROFDESCRIPTORS-2; i++) {
+	for (int i = 0; i < NUMBEROFDESCRIPTORS-1; i++) {
 		BlockDescriptor * newBD = current+1;
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
@@ -125,6 +147,7 @@ void MonsterAllocator::InitializeFreeList()
 		newBD->prev = current;
 		newBD->blockBase = NULL;
 		newBD->sizeOfBlock = 0;
+		newBD->next = NULL;
 		
 		current = newBD;
 	}
