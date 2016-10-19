@@ -2,6 +2,14 @@
 #include <conio.h>
 #include <stdlib.h>
 
+#ifdef _DEBUG
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#else
+#include <stdlib.h>
+#endif // _DEBUG
+
 #define BUFFER 4096
 #define WORDS 11
 char * MakeSentence(const char * input[]);
@@ -52,7 +60,16 @@ void main(int i_argc, char ** i_argl) {
 		free((void*)words[i]);
 	}
 
+
+
+
 	_getch();
+
+#if defined(_DEBUG)
+	_CrtDumpMemoryLeaks();
+#endif // _DEBUG
+
+
 }
 
 char * Sanitize(char* in) {
