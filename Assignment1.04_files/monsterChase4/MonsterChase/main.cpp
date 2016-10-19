@@ -25,6 +25,7 @@ void KillMonster(int monsterPos);
 void AddMonster();
 int GetRandomNumberInBounds(int min, int max);
 int RandomTrueOrFalse();
+void AllocatorTesting();
 
 bool askingForPlayerInfo = true;
 bool askingForNumberOfMonsters = true;
@@ -51,14 +52,15 @@ Monster *masterMonsterList;
 
 
 int main() {
-	MonsterAllocator malloc;
-	char* first = malloc.MonsterMalloc((size_t)1);
-	char* second = malloc.MonsterMalloc((size_t)1);
-	char* third = malloc.MonsterMalloc((size_t)1);
-	char* tooMuch = malloc.MonsterMalloc((size_t)9000); //null because too much
+
 	//*first = 170; //check out the memory window to see these AA
 	//*second = 187; //BB
 	//*third = 204; //CC
+	MonsterAllocator malloc;
+	char* first = malloc.MonsterMalloc((size_t)12);
+	char* second = malloc.MonsterMalloc((size_t)12);
+	malloc.MonsterFree(first);
+	malloc.MonsterFree(second);
 	printf("%s", "=======================================\n");
 	printf("%s", "==============MONSTER CHASE============\n");
 	printf("%s", "=======================================\n");
@@ -77,6 +79,21 @@ int main() {
 	
 	delete[] masterMonsterList;
 	return 0;
+}
+
+void AllocatorTesting() {
+
+	//char* first = MonsterAllocator::MonsterMalloc((size_t)12);
+	//char* second = MonsterAllocator::MonsterMalloc((size_t)34);
+	//char* third = MonsterAllocator::MonsterMalloc((size_t)34);
+	//*first = 99;
+	//*second = 88;
+	//*third = 77;
+	////char* tooMuch = malloc.MonsterMalloc((size_t)9000); //null because too much
+	//MonsterAllocator::MonsterFree(first);
+	//MonsterAllocator::MonsterFree(second);
+
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

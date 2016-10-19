@@ -88,6 +88,7 @@ void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
 	conductor = allocatedRoot;
 
 	if (allocatedRoot == 0) {
+		toInsert->prev = NULL;
 		allocatedRoot = toInsert;
 		return;
 	}
@@ -95,7 +96,6 @@ void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
 		while (conductor->next != NULL) {
 			conductor = conductor->next;
 		}
-
 		conductor->next = toInsert;
 		toInsert->prev = conductor;
 	}
@@ -109,6 +109,7 @@ void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
 
 	if (unallocatedRoot == 0) {
 		unallocatedRoot = toInsert;
+		unallocatedRoot->prev = NULL;
 		return;
 	}
 	else {
@@ -141,7 +142,7 @@ void MonsterAllocator::GarbageCollect()
 		BlockDescriptor * foundBlock = SearchForBlock(addrToSearchFor);
 
 		if (foundBlock == NULL) {
-			continue;
+			placeHolder = placeHolder->next;
 		}
 		else {
 			//we found a block right after, combine them.
@@ -159,7 +160,7 @@ BlockDescriptor * MonsterAllocator::SearchForBlock(void * baseAddr)
 	BlockDescriptor * conductor;
 	conductor = unallocatedRoot;
 
-	while (conductor->next != NULL) {
+	while (conductor!= NULL) {
 		if (conductor->blockBase == baseAddr)
 			return conductor;
 		else
@@ -188,7 +189,7 @@ void MonsterAllocator::RemoveFromUnallocated(BlockDescriptor * toRemove)
 	BlockDescriptor * conductor;
 	conductor = unallocatedRoot;
 
-	while (conductor->next != NULL) {
+	while (conductor != NULL) {
 		if (conductor == toRemove)
 			break;
 		else {
@@ -197,9 +198,20 @@ void MonsterAllocator::RemoveFromUnallocated(BlockDescriptor * toRemove)
 
 	}
 
-	//move pointers around
-	conductor->prev->next = conductor->next;
-	conductor->next->prev = conductor->prev;
+	if (conductor->prev != NULL && conductor->next == NULL) {
+		//bd is at tail of a list
+		conductor->prev->next = NULL;
+	}
+	else if (conductor->prev == NULL && conductor->next != NULL) {
+		unallocatedRoot = conductor->next;
+		conductor->next->prev = NULL;
+		
+	}
+	else if (conductor->prev != NULL && conductor->next != NULL) {
+		//bd isn't at the head or tail of a list
+		conductor->prev->next = conductor->next;
+		conductor->next->prev = conductor->prev;
+	}
 }
 
 BlockDescriptor * MonsterAllocator::RemoveFromAllocated(void * addr)
@@ -207,15 +219,33 @@ BlockDescriptor * MonsterAllocator::RemoveFromAllocated(void * addr)
 	BlockDescriptor * conductor;
 	conductor = allocatedRoot;
 
-	while (conductor->next != NULL) {
+	while (conductor!= NULL) {
 		if (conductor->blockBase == addr) {
-			conductor->prev->next = NULL;
+
+			if (conductor->prev != NULL && conductor->next == NULL) {
+				//bd is at tail of a list
+				conductor->prev->next = NULL;
+			}
+			else if (conductor->prev == NULL && conductor->next != NULL) {
+				//bd is at head
+				allocatedRoot = conductor->next;
+				allocatedRoot->prev = NULL;
+
+			}
+			else if (conductor->prev != NULL && conductor->next != NULL) {
+				//bd isn't at the head or tail of a list
+				conductor->prev->next = conductor->next;
+				conductor->next->prev = conductor->prev;
+			}
+
 			return conductor;
 		}
 		else {
 			conductor = conductor->next;
 		}
 	}
+
+	return NULL;
 
 }
 
@@ -245,19 +275,10 @@ void MonsterAllocator::InitializeFreeList()
 	
 	frontOfBD->prev = NULL;
 	frontOfBD->blockBase = NULL;
-	frontOfBD->sizeOfBlock = 0;
-/*
-	BlockDescriptor * current = frontOfBD +1;
-	current->blockBase = NULL;
-	current->sizeOfBlock = 0;
-	current->prev = frontOfBD;*/
+	frontOfBD->sizeOfBlock = 0;\
 	
 	BlockDescriptor * current;
 	current = frontOfBD;
-	//frontOfBD->next = current;
-	
-
-	
 	
 	for (int i = 0; i < NUMBEROFDESCRIPTORS-1; i++) {
 		BlockDescriptor * newBD = current+1;
