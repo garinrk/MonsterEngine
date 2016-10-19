@@ -55,7 +55,7 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 		result = (char*)newBD->blockBase;
 	}
 	
-	//if the only thing left is the root node
+	//if the only thing left is the free-root node
 	else if(endOfFree == freeRoot && freeRoot->blockBase == NULL) {
 		BlockDescriptor * newBD;
 		newBD = endOfFree;
@@ -120,6 +120,124 @@ void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
 		toInsert->prev = conductor;
 	}
 }
+
+void MonsterAllocator::GarbageCollect()
+{
+	//looks through the list of free memory blocks
+	//combing any that can be combined into a single larger free block.
+
+	BlockDescriptor * placeHolder;
+	placeHolder = unallocatedRoot;
+
+	bool finished = false;
+
+	if (unallocatedRoot == 0)
+		return;
+
+	while (!finished) {
+
+		char * addrToSearchFor;
+		addrToSearchFor = static_cast<char*>(placeHolder->blockBase) + placeHolder->sizeOfBlock;
+		BlockDescriptor * foundBlock = SearchForBlock(addrToSearchFor);
+
+		if (foundBlock == NULL) {
+			continue;
+		}
+		else {
+			//we found a block right after, combine them.
+			ConsolidateBlocks(placeHolder, foundBlock);
+		}
+		
+		if (placeHolder->next == NULL)
+			finished = true;
+	}
+
+}
+
+BlockDescriptor * MonsterAllocator::SearchForBlock(void * baseAddr)
+{
+	BlockDescriptor * conductor;
+	conductor = unallocatedRoot;
+
+	while (conductor->next != NULL) {
+		if (conductor->blockBase == baseAddr)
+			return conductor;
+		else
+			conductor = conductor->next;
+	}
+	
+	return nullptr;
+}
+
+void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescriptor * second)
+{
+	size_t newSize = first->sizeOfBlock + second->sizeOfBlock;
+
+	first->sizeOfBlock = newSize;
+	
+	//remove the second from the list and put back in the free list
+
+	RemoveFromUnallocated(second);
+	AddToFree(second);
+
+}
+
+void MonsterAllocator::RemoveFromUnallocated(BlockDescriptor * toRemove)
+{
+
+	BlockDescriptor * conductor;
+	conductor = unallocatedRoot;
+
+	while (conductor->next != NULL) {
+		if (conductor == toRemove)
+			break;
+		else {
+			conductor = conductor->next;
+		}
+
+	}
+
+	//move pointers around
+	conductor->prev->next = conductor->next;
+	conductor->next->prev = conductor->prev;
+}
+
+BlockDescriptor * MonsterAllocator::RemoveFromAllocated(void * addr)
+{
+	BlockDescriptor * conductor;
+	conductor = allocatedRoot;
+
+	while (conductor->next != NULL) {
+		if (conductor->blockBase == addr) {
+			conductor->prev->next = NULL;
+			return conductor;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
+}
+
+void MonsterAllocator::AddToFree(BlockDescriptor * toAdd)
+{
+	endOfFree->next = toAdd;
+	toAdd->prev = endOfFree;
+
+	endOfFree = toAdd;
+}
+
+void MonsterAllocator::MonsterFree(void * addr)
+{
+	BlockDescriptor * toMoveToUnallocated = RemoveFromAllocated(addr);
+	AddToUnallocated(toMoveToUnallocated);
+	GarbageCollect();
+	//remove from allocated, put into unallocated, garbage collect.
+}
+
+
+
+
 
 void MonsterAllocator::InitializeFreeList()
 {
