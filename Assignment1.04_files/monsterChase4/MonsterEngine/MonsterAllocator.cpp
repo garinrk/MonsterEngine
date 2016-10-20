@@ -110,6 +110,7 @@ void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
 	if (unallocatedRoot == 0) {
 		unallocatedRoot = toInsert;
 		unallocatedRoot->prev = NULL;
+		unallocatedRoot->next = NULL;
 		return;
 	}
 	else {
@@ -149,7 +150,7 @@ void MonsterAllocator::GarbageCollect()
 			ConsolidateBlocks(placeHolder, foundBlock);
 		}
 		
-		if (placeHolder->next == NULL)
+		if (placeHolder == NULL )
 			finished = true;
 	}
 

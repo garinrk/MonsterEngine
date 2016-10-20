@@ -59,8 +59,9 @@ int main() {
 	MonsterAllocator malloc;
 	char* first = malloc.MonsterMalloc((size_t)12);
 	char* second = malloc.MonsterMalloc((size_t)12);
-	malloc.MonsterFree(first);
+	char* third = malloc.MonsterMalloc((size_t)12);
 	malloc.MonsterFree(second);
+	malloc.MonsterFree(first);
 	printf("%s", "=======================================\n");
 	printf("%s", "==============MONSTER CHASE============\n");
 	printf("%s", "=======================================\n");
