@@ -4,7 +4,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <assert.h>
-#define TOTALHEAPSIZE 4096
+#define TOTALHEAPSIZE 8192
 #define ALIGNMENT 4
 #define NUMBEROFDESCRIPTORS 64
 
@@ -27,51 +27,61 @@ MonsterAllocator::~MonsterAllocator()
 char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	char * result;
 
-
-	assert(amt <= bytesLeft && "You ran out of memory!");
-	assert(endOfFree != NULL && "No more descriptors!");
+	DEBUGLOG("USER REQUEST %zu BYTES", amt);
+#ifdef _DEBUG
+	PrintLists();
+#endif
 
 	//check for amount of memory 
-	if (amt > bytesLeft) {
+	if (amt > totalBytes) {
 		return NULL;
 	}
-	
-	//OLD, PREVIOUS CHECK WAS IF WE RAN OUT OF FREE BLOCK DESCRIPTORS
-	//if (endOfFree == NULL) {
-	//	return NULL;
-	//}
 
+	//no more free block descriptors, attempt to get some by garbage collecting.
+	if (endOfFree == NULL) {
+		GarbageCollect();
+	}
+	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(amt);
 
+	//if even after garbage collecting we don't have a descriptor.
+	if (sufficientBlock == NULL)
+		return nullptr;
+
+	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,amt);
+	AddToAllocated(newBD);
+	result = (char*)newBD->blockBase;
+
+	//take only what we need from the block, modify that unallocated block
 
 	//if there's still stuff left in the free list
-	if (endOfFree->prev != NULL) {
-		BlockDescriptor* newBD;
-		newBD = endOfFree;
-		endOfFree = endOfFree->prev;
-		endOfFree->next = NULL;
-		newBD->next = NULL;
-		newBD->blockBase = frontOfChunk;
-		newBD->sizeOfBlock = amt;
-		frontOfChunk += amt;
-		bytesLeft -= amt;
-		AddToAllocated(newBD);
-		result = (char*)newBD->blockBase;
-	}
-	
-	//if the only thing left is the free-root node
-	else if(endOfFree == freeRoot && freeRoot->blockBase == NULL) {
-		BlockDescriptor * newBD;
-		newBD = endOfFree;
-		endOfFree = NULL;
-		endOfFree->next = NULL;
-		newBD->next = NULL;
-		newBD->blockBase = frontOfChunk;
-		newBD->sizeOfBlock = amt;
-		frontOfChunk += amt;
-		bytesLeft -= amt;
-		AddToAllocated(newBD);
-		result = (char*)newBD->blockBase;
-	}
+	//if (endOfFree->prev != NULL) {
+	//	BlockDescriptor* newBD;
+	//	newBD = endOfFree;
+	//	endOfFree = endOfFree->prev;
+	//	endOfFree->next = NULL;
+	//	newBD->next = NULL;
+	//	newBD->blockBase = frontOfChunk;
+	//	newBD->sizeOfBlock = amt;
+	//	frontOfChunk += amt;
+	//	totalBytes -= amt;
+	//	AddToAllocated(newBD);
+	//	result = (char*)newBD->blockBase;
+	//}
+	//
+	////if the only thing left is the free-root node
+	//else if(endOfFree == freeRoot && freeRoot->blockBase == NULL) {
+	//	BlockDescriptor * newBD;
+	//	newBD = endOfFree;
+	//	endOfFree = NULL;
+	//	endOfFree->next = NULL;
+	//	newBD->next = NULL;
+	//	newBD->blockBase = frontOfChunk;
+	//	newBD->sizeOfBlock = amt;
+	//	frontOfChunk += amt;
+	//	totalBytes -= amt;
+	//	AddToAllocated(newBD);
+	//	result = (char*)newBD->blockBase;
+	//}
 
 	//TODO: Free 
 	//if there's no more block descriptors in the free list, we have to go look in the unallocated
@@ -80,9 +90,7 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	//	//go do that.
 	//}
 
-#ifdef _DEBUG
-	PrintLists();
-#endif
+
 
 
 	return result;
@@ -134,7 +142,7 @@ void MonsterAllocator::GarbageCollect()
 {
 	//looks through the list of free memory blocks
 	//combing any that can be combined into a single larger free block.
-
+	DEBUGLOG("==GARBAGE COLLECT BEGIN==");
 	BlockDescriptor * placeHolder;
 	placeHolder = unallocatedRoot;
 
@@ -147,7 +155,7 @@ void MonsterAllocator::GarbageCollect()
 
 		char * addrToSearchFor;
 		addrToSearchFor = static_cast<char*>(placeHolder->blockBase) + placeHolder->sizeOfBlock;
-		BlockDescriptor * foundBlock = SearchForBlock(addrToSearchFor);
+		BlockDescriptor * foundBlock = UnallocBlockSearch(addrToSearchFor);
 
 		if (foundBlock == NULL) {
 			placeHolder = placeHolder->next;
@@ -161,12 +169,12 @@ void MonsterAllocator::GarbageCollect()
 			finished = true;
 	}
 
-	
+	DEBUGLOG("==GARBAGE COLLECT END==");
 
 }
 
 
-BlockDescriptor * MonsterAllocator::SearchForBlock(void * baseAddr)
+BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * baseAddr)
 {
 	BlockDescriptor * conductor;
 	conductor = unallocatedRoot;
@@ -181,8 +189,23 @@ BlockDescriptor * MonsterAllocator::SearchForBlock(void * baseAddr)
 	return nullptr;
 }
 
+BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt)
+{
+	BlockDescriptor * conductor;
+	conductor = unallocatedRoot;
+
+	while (conductor != NULL) {
+		if (conductor->sizeOfBlock > amt) {
+			return conductor;
+		}
+	}
+
+	return nullptr;
+}
+
 void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescriptor * second)
 {
+	DEBUGLOG("Combining block %d into %d", second->id, first->id);
 	size_t newSize = first->sizeOfBlock + second->sizeOfBlock;
 	first->sizeOfBlock = newSize;
 	//remove the second from the list and put back in the free list
@@ -195,6 +218,7 @@ void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescripto
 
 void MonsterAllocator::AddToFree(BlockDescriptor * toAdd)
 {
+	toAdd->blockBase = NULL;
 	endOfFree->next = toAdd;
 	toAdd->prev = endOfFree;
 
@@ -253,39 +277,61 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 	return nullptr;
 }
 
+BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t amt)
+{
+	//get a bd from the free list
+	BlockDescriptor * thief = endOfFree;
+	endOfFree = endOfFree->prev;
+	endOfFree->next = NULL;
+	thief->prev = NULL;
+	thief->blockBase = victim->blockBase; //we're going to take the front of the victim space
+	thief->sizeOfBlock = amt;
+
+	victim->sizeOfBlock -= amt;
+	char * modifiedBlockBase = (char*)victim->blockBase + amt;
+	victim->blockBase = modifiedBlockBase;
+
+
+
+	return thief;
+}
+
 void MonsterAllocator::PrintLists()
 {
 	//print free lists
-	DEBUGLOG("START");
-	DEBUGLOG("FREE");
+	DEBUGLOG("=========PRINT START");
+
 	BlockDescriptor * conductor;
 	conductor = freeRoot;
 
 
 	while (conductor != NULL) {
-		DEBUGLOG("FREE NODE: %d with ptr %p and size %zd", conductor->id, conductor->blockBase, conductor->sizeOfBlock);
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
 		conductor = conductor->next;
 	}
 
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("ALLOC NODE: %d with ptr %p and size %zd", conductor->id, conductor->blockBase, conductor->sizeOfBlock);
+		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("UNALLOC NODE: %d with ptr %p and size %zd", conductor->id, conductor->blockBase, conductor->sizeOfBlock);
+		DEBUGLOG("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
+
+	DEBUGLOG("=========PRINT END");
 
 }
 
 
 void MonsterAllocator::MonsterFree(void * addr)
 {
+	
 	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocatedRoot);
 
 	assert(toMoveToUnallocated != NULL && "Attempted to free a non valid addr");
@@ -294,7 +340,16 @@ void MonsterAllocator::MonsterFree(void * addr)
 		return;
 	}
 	AddToUnallocated(toMoveToUnallocated);
+	DEBUGLOG("==USER FREE: %04X BEFORE GARBAGE COLLECT==", addr);
+#ifdef _DEBUG
+	PrintLists();
+#endif // _DEBUG
+
 	GarbageCollect();
+	DEBUGLOG("==AFTER GARBAGE COLLECT==", addr);
+#ifdef _DEBUG
+	PrintLists();
+#endif // _DEBUG
 }
 
 
@@ -314,11 +369,12 @@ void MonsterAllocator::InitializeFreeList()
 	BlockDescriptor * current;
 	current = frontOfBD;
 
+
 #ifdef _DEBUG
 	current->id = 0;
 #endif
 	
-	for (int i = 0; i < NUMBEROFDESCRIPTORS-1; i++) {
+	for (int i = 0; i < NUMBEROFDESCRIPTORS-2; i++) {
 		BlockDescriptor * newBD = current+1;
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
@@ -338,8 +394,22 @@ void MonsterAllocator::InitializeFreeList()
 	freeRoot = frontOfBD;
 	endOfFree = current;
 
-	bytesLeft = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
-	bytesLeft = bytesLeft * 32;
+	totalBytes = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
+	totalBytes = totalBytes * 32;
+
+	//set up initial unallocated block
+	BlockDescriptor * initialUnallocatedBlock;
+	initialUnallocatedBlock = endOfFree; //use the end of free
+	endOfFree = endOfFree->prev;
+	endOfFree->next = NULL; //update end of free
+
+	initialUnallocatedBlock->prev = NULL;
+	initialUnallocatedBlock->blockBase = frontOfChunk;
+	initialUnallocatedBlock->sizeOfBlock = totalBytes;
+	initialUnallocatedBlock->next = NULL;
+
+	AddToUnallocated(initialUnallocatedBlock);
+
 
 }
 

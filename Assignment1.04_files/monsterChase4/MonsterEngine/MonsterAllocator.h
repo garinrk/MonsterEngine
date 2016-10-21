@@ -20,8 +20,8 @@ public:
 	char * MonsterMalloc(size_t amt);
 	void MonsterFree(void * addr);
 	void GarbageCollect();
-	size_t bytesLeft;
-
+	size_t totalBytes;
+	void PrintLists();
 private:
 	void InitializeFreeList();
 	void AddToAllocated(BlockDescriptor* toInsert);
@@ -30,10 +30,11 @@ private:
 
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
 
-	BlockDescriptor * SearchForBlock(void * baseAddr);
+	BlockDescriptor * UnallocBlockSearch(void * baseAddr);
+	BlockDescriptor * FindSuitableUnallocBlock(size_t amt);
 	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
+	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
-	void PrintLists();
 	
 	char * frontOfChunk;
 	char * backOfChunk;
