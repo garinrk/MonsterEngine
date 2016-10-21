@@ -35,7 +35,7 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	if (amt > bytesLeft) {
 		return NULL;
 	}
-
+	
 	//OLD, PREVIOUS CHECK WAS IF WE RAN OUT OF FREE BLOCK DESCRIPTORS
 	//if (endOfFree == NULL) {
 	//	return NULL;
@@ -48,6 +48,7 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 		BlockDescriptor* newBD;
 		newBD = endOfFree;
 		endOfFree = endOfFree->prev;
+		endOfFree->next = NULL;
 		newBD->next = NULL;
 		newBD->blockBase = frontOfChunk;
 		newBD->sizeOfBlock = amt;
@@ -62,6 +63,7 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 		BlockDescriptor * newBD;
 		newBD = endOfFree;
 		endOfFree = NULL;
+		endOfFree->next = NULL;
 		newBD->next = NULL;
 		newBD->blockBase = frontOfChunk;
 		newBD->sizeOfBlock = amt;
@@ -339,8 +341,5 @@ void MonsterAllocator::InitializeFreeList()
 	bytesLeft = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
 	bytesLeft = bytesLeft * 32;
 
-#ifdef _DEBUG
-	PrintLists();
-#endif
 }
 
