@@ -35,9 +35,11 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	if (amt > bytesLeft) {
 		return NULL;
 	}
-	if (endOfFree == NULL) {
-		return NULL;
-	}
+
+	//OLD, PREVIOUS CHECK WAS IF WE RAN OUT OF FREE BLOCK DESCRIPTORS
+	//if (endOfFree == NULL) {
+	//	return NULL;
+	//}
 
 
 
@@ -76,7 +78,9 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	//	//go do that.
 	//}
 
-
+#ifdef _DEBUG
+	PrintLists();
+#endif
 
 
 	return result;
@@ -89,6 +93,7 @@ void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
 
 	if (allocatedRoot == 0) {
 		toInsert->prev = NULL;
+		toInsert->next = NULL;
 		allocatedRoot = toInsert;
 		return;
 	}
@@ -154,7 +159,10 @@ void MonsterAllocator::GarbageCollect()
 			finished = true;
 	}
 
+	
+
 }
+
 
 BlockDescriptor * MonsterAllocator::SearchForBlock(void * baseAddr)
 {
@@ -174,81 +182,14 @@ BlockDescriptor * MonsterAllocator::SearchForBlock(void * baseAddr)
 void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescriptor * second)
 {
 	size_t newSize = first->sizeOfBlock + second->sizeOfBlock;
-
 	first->sizeOfBlock = newSize;
-	
 	//remove the second from the list and put back in the free list
 
-	RemoveFromUnallocated(second);
+	RemoveFromList(second->blockBase, unallocatedRoot);
 	AddToFree(second);
 
 }
 
-void MonsterAllocator::RemoveFromUnallocated(BlockDescriptor * toRemove)
-{
-
-	BlockDescriptor * conductor;
-	conductor = unallocatedRoot;
-
-	while (conductor != NULL) {
-		if (conductor == toRemove)
-			break;
-		else {
-			conductor = conductor->next;
-		}
-
-	}
-
-	if (conductor->prev != NULL && conductor->next == NULL) {
-		//bd is at tail of a list
-		conductor->prev->next = NULL;
-	}
-	else if (conductor->prev == NULL && conductor->next != NULL) {
-		unallocatedRoot = conductor->next;
-		conductor->next->prev = NULL;
-		
-	}
-	else if (conductor->prev != NULL && conductor->next != NULL) {
-		//bd isn't at the head or tail of a list
-		conductor->prev->next = conductor->next;
-		conductor->next->prev = conductor->prev;
-	}
-}
-
-BlockDescriptor * MonsterAllocator::RemoveFromAllocated(void * addr)
-{
-	BlockDescriptor * conductor;
-	conductor = allocatedRoot;
-
-	while (conductor!= NULL) {
-		if (conductor->blockBase == addr) {
-
-			if (conductor->prev != NULL && conductor->next == NULL) {
-				//bd is at tail of a list
-				conductor->prev->next = NULL;
-			}
-			else if (conductor->prev == NULL && conductor->next != NULL) {
-				//bd is at head
-				allocatedRoot = conductor->next;
-				allocatedRoot->prev = NULL;
-
-			}
-			else if (conductor->prev != NULL && conductor->next != NULL) {
-				//bd isn't at the head or tail of a list
-				conductor->prev->next = conductor->next;
-				conductor->next->prev = conductor->prev;
-			}
-
-			return conductor;
-		}
-		else {
-			conductor = conductor->next;
-		}
-	}
-
-	return NULL;
-
-}
 
 void MonsterAllocator::AddToFree(BlockDescriptor * toAdd)
 {
@@ -258,13 +199,103 @@ void MonsterAllocator::AddToFree(BlockDescriptor * toAdd)
 	endOfFree = toAdd;
 }
 
+BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor * root)
+{
+	BlockDescriptor * conductor;
+	conductor = root;
+
+	while (conductor != NULL) {
+		if (conductor->blockBase == addr) //found the block
+		{
+			//head case
+			if (conductor->prev == NULL && conductor->next != NULL) {
+				conductor->next->prev = NULL;
+				conductor->next = NULL;
+
+				if (conductor == freeRoot) {
+					freeRoot = NULL;
+				}
+				else if (conductor == allocatedRoot) {
+					allocatedRoot = NULL;
+				}
+				else if (conductor == unallocatedRoot) {
+					unallocatedRoot = NULL;
+				}
+			}
+			//middle
+			else if (conductor->prev != NULL && conductor->next != NULL) {
+				conductor->next->prev = conductor->prev;
+				conductor->prev->next = conductor->next;
+				conductor->next = NULL;
+				conductor->prev = NULL;
+			} 
+			//tail
+			else if (conductor->prev != NULL && conductor->next == NULL) {
+				conductor->prev->next = NULL;
+				
+				if (conductor == endOfFree) {
+					endOfFree = NULL;
+				}
+			}
+
+			return conductor;
+
+		}//if
+
+		else {
+			//move on
+			conductor = conductor->next;
+		}
+	}//while
+
+	return nullptr;
+}
+
+void MonsterAllocator::PrintLists()
+{
+	//print free lists
+	DEBUGLOG("START");
+	DEBUGLOG("FREE");
+	BlockDescriptor * conductor;
+	conductor = freeRoot;
+
+
+	while (conductor != NULL) {
+		DEBUGLOG("FREE NODE: %d with ptr %p and size %zd", conductor->id, conductor->blockBase, conductor->sizeOfBlock);
+		conductor = conductor->next;
+	}
+
+	conductor = allocatedRoot;
+
+	while (conductor != NULL) {
+		DEBUGLOG("ALLOC NODE: %d with ptr %p and size %zd", conductor->id, conductor->blockBase, conductor->sizeOfBlock);
+		conductor = conductor->next;
+	}
+
+	conductor = unallocatedRoot;
+
+	while (conductor != NULL) {
+		DEBUGLOG("UNALLOC NODE: %d with ptr %p and size %zd", conductor->id, conductor->blockBase, conductor->sizeOfBlock);
+		conductor = conductor->next;
+	}
+
+}
+
+
 void MonsterAllocator::MonsterFree(void * addr)
 {
-	BlockDescriptor * toMoveToUnallocated = RemoveFromAllocated(addr);
+	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocatedRoot);
+
+	assert(toMoveToUnallocated != NULL && "Attempted to free a non valid addr");
+	//if they free things that don't exist in the allocated list
+	if (toMoveToUnallocated == NULL) {
+		return;
+	}
 	AddToUnallocated(toMoveToUnallocated);
 	GarbageCollect();
-	//remove from allocated, put into unallocated, garbage collect.
 }
+
+
 
 
 
@@ -280,6 +311,10 @@ void MonsterAllocator::InitializeFreeList()
 	
 	BlockDescriptor * current;
 	current = frontOfBD;
+
+#ifdef _DEBUG
+	current->id = 0;
+#endif
 	
 	for (int i = 0; i < NUMBEROFDESCRIPTORS-1; i++) {
 		BlockDescriptor * newBD = current+1;
@@ -290,7 +325,11 @@ void MonsterAllocator::InitializeFreeList()
 		newBD->blockBase = NULL;
 		newBD->sizeOfBlock = 0;
 		newBD->next = NULL;
-		
+
+#ifdef _DEBUG
+		newBD->id = i + 1;
+#endif
+
 		current = newBD;
 	}
 
@@ -299,4 +338,9 @@ void MonsterAllocator::InitializeFreeList()
 
 	bytesLeft = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
 	bytesLeft = bytesLeft * 32;
+
+#ifdef _DEBUG
+	PrintLists();
+#endif
 }
+

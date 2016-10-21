@@ -6,7 +6,7 @@
 void MonsterDebug::DebugPrint(const char * format, ...)
 {
 	const size_t tempSize = 256;
-	char tempString[tempSize] = "===\nDEBUGLOG: ";
+	char tempString[tempSize] = "\n";
 
 	//stick args on
 	strcat_s(tempString, format);

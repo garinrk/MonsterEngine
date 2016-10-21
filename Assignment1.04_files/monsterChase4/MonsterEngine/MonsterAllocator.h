@@ -3,8 +3,13 @@ struct BlockDescriptor {
 	BlockDescriptor * prev;
 	void * blockBase;
 	size_t sizeOfBlock;
-	BlockDescriptor * next;
 
+
+#if _DEBUG
+	int id;
+#endif // DEBUG
+
+		BlockDescriptor * next;
 };
 class MonsterAllocator
 {
@@ -21,11 +26,14 @@ private:
 	void InitializeFreeList();
 	void AddToAllocated(BlockDescriptor* toInsert);
 	void AddToUnallocated(BlockDescriptor* toInsert);
-	BlockDescriptor * SearchForBlock(void * baseAddr);
-	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
-	void RemoveFromUnallocated(BlockDescriptor * toRemove);
-	BlockDescriptor * RemoveFromAllocated(void * addr);
 	void AddToFree(BlockDescriptor * toAdd);
+
+	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
+
+	BlockDescriptor * SearchForBlock(void * baseAddr);
+	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
+
+	void PrintLists();
 	
 	char * frontOfChunk;
 	char * backOfChunk;
@@ -35,6 +43,13 @@ private:
 	BlockDescriptor * allocatedRoot = 0;
 	BlockDescriptor * unallocatedRoot = 0;
 	BlockDescriptor * frontOfBD;
+
+	int num_free = 0;
+	int num_alloc = 0;
+	int num_unalloc = 0;
+
+
+	
 
 
 };
