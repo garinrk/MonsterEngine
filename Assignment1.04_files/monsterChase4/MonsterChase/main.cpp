@@ -80,13 +80,21 @@ int main() {
 void AllocatorTesting() {
 
 	MonsterAllocator malloc;
-	malloc.PrintLists();
-	char* first = malloc.MonsterMalloc((size_t)212);
-	char* second = malloc.MonsterMalloc((size_t)234);
-	char* third = malloc.MonsterMalloc((size_t)868);
-	malloc.MonsterFree(second);
+	char* first = malloc.MonsterMalloc((size_t)1);
+	char* second = malloc.MonsterMalloc((size_t)1);
+	char* third = malloc.MonsterMalloc((size_t)1);
+	char* fourth = malloc.MonsterMalloc((size_t)1);
+	char* fifth = malloc.MonsterMalloc((size_t)1);
+	*first = 170;
+	*second = 187;
+	*third = 204;
+	*fourth = 221;
+	*fifth = 238;
+	malloc.MonsterFree(fifth);
+	malloc.MonsterFree(fourth);
 	malloc.MonsterFree(third);
-
+	malloc.MonsterFree(second);
+	malloc.MonsterFree(first);
 
 }
 

@@ -53,6 +53,44 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 	AddToAllocated(newBD);
 	result = (char*)newBD->blockBase;
 
+	//take only what we need from the block, modify that unallocated block
+
+	//if there's still stuff left in the free list
+	//if (endOfFree->prev != NULL) {
+	//	BlockDescriptor* newBD;
+	//	newBD = endOfFree;
+	//	endOfFree = endOfFree->prev;
+	//	endOfFree->next = NULL;
+	//	newBD->next = NULL;
+	//	newBD->blockBase = frontOfChunk;
+	//	newBD->sizeOfBlock = amt;
+	//	frontOfChunk += amt;
+	//	totalBytes -= amt;
+	//	AddToAllocated(newBD);
+	//	result = (char*)newBD->blockBase;
+	//}
+	//
+	////if the only thing left is the free-root node
+	//else if(endOfFree == freeRoot && freeRoot->blockBase == NULL) {
+	//	BlockDescriptor * newBD;
+	//	newBD = endOfFree;
+	//	endOfFree = NULL;
+	//	endOfFree->next = NULL;
+	//	newBD->next = NULL;
+	//	newBD->blockBase = frontOfChunk;
+	//	newBD->sizeOfBlock = amt;
+	//	frontOfChunk += amt;
+	//	totalBytes -= amt;
+	//	AddToAllocated(newBD);
+	//	result = (char*)newBD->blockBase;
+	//}
+
+	//TODO: Free 
+	//if there's no more block descriptors in the free list, we have to go look in the unallocated
+	//list
+	//if (endOfFree == NULL) {
+	//	//go do that.
+	//}
 
 	DEBUGLOG("USER REQUEST %zu BYTES", amt);
 #ifdef _DEBUG
@@ -173,9 +211,40 @@ void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescripto
 	DEBUGLOG("Combining blocks %d and %d", first->id, second->id);
 	size_t newSize = first->sizeOfBlock + second->sizeOfBlock;
 	
+
+	////first grows into second
+	//if (second > first) {
+	//	first->sizeOfBlock = newSize;
+
+	//	//second->blockBase = NULL;
+	//	//second->sizeOfBlock = NULL;
+	//	
+	//	RemoveFromList(second->blockBase,unallocatedRoot);
+	//	AddToFree(second);
+	//	
+	//}
+	//else {
+	//	second->sizeOfBlock = newSize;
+	//	//first->blockBase = NULL;
+	//	//first->sizeOfBlock = NULL;
+	//	RemoveFromList(first->blockBase, unallocatedRoot);
+	//	AddToFree(first);
+	//}
 	second->sizeOfBlock = newSize;
 	RemoveFromList(first->blockBase, unallocatedRoot);
 	AddToFree(first);
+	//remove the second from the list and put back in the free list
+	//if (second == unallocatedRoot) {
+	//	unallocatedRoot = first;
+	//	AddToFree(second);
+	//	
+	//}
+	//else {
+
+	//	RemoveFromList(second->blockBase, unallocatedRoot);
+	//	AddToFree(second);
+
+	//}
 
 	
 

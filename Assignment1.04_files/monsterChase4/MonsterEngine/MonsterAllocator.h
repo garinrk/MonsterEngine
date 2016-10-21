@@ -30,7 +30,7 @@ private:
 
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
 
-	BlockDescriptor * UnallocBlockSearch(void * baseAddr);
+	BlockDescriptor * UnallocBlockSearch(void * baseAddr, BlockDescriptor * start);
 	BlockDescriptor * FindSuitableUnallocBlock(size_t amt);
 	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
