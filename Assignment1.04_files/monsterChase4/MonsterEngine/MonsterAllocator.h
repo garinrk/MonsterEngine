@@ -17,7 +17,7 @@ class MonsterAllocator
 public:
 	MonsterAllocator();
 	~MonsterAllocator();
-	char * MonsterMalloc(size_t amt);
+	void * MonsterMalloc(size_t amt);
 	void MonsterFree(void * addr);
 	void GarbageCollect();
 	size_t totalBytes;

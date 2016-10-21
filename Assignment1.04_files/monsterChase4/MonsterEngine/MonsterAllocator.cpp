@@ -18,9 +18,7 @@ MonsterAllocator::MonsterAllocator()
 
 	InitializeFreeList();
 
-#ifdef _DEBUG
-	PrintLists();
-#endif // _DEBUG
+	DEBUG_LIST_DISPLAY;
 
 
 }
@@ -29,10 +27,7 @@ MonsterAllocator::~MonsterAllocator()
 {
 }
 
-char * MonsterAllocator::MonsterMalloc(size_t amt) {
-	char * result;
-
-
+void * MonsterAllocator::MonsterMalloc(size_t amt) {
 
 	//check for amount of memory 
 	if (amt > totalBytes) {
@@ -51,16 +46,12 @@ char * MonsterAllocator::MonsterMalloc(size_t amt) {
 
 	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,amt);
 	AddToAllocated(newBD);
-	result = (char*)newBD->blockBase;
-
 
 	DEBUGLOG("USER REQUEST %zu BYTES", amt);
-#ifdef _DEBUG
-	PrintLists();
-#endif
+	DEBUG_LIST_DISPLAY;
 
 
-	return result;
+	return newBD->blockBase;
 }
 
 void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
@@ -177,12 +168,7 @@ void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescripto
 	RemoveFromList(first->blockBase, unallocatedRoot);
 	AddToFree(first);
 
-	
-
-
-#ifdef _DEBUG
-	PrintLists();
-#endif // _DEBUG
+	DEBUG_LIST_DISPLAY;
 
 
 }
@@ -330,15 +316,13 @@ void MonsterAllocator::MonsterFree(void * addr)
 	}
 	AddToUnallocated(toMoveToUnallocated);
 	DEBUGLOG("==USER FREE: %04X BEFORE GARBAGE COLLECT==", addr);
-#ifdef _DEBUG
-	PrintLists();
-#endif // _DEBUG
+
+	DEBUG_LIST_DISPLAY;
 
 	GarbageCollect();
 	DEBUGLOG("==AFTER GARBAGE COLLECT==", addr);
-#ifdef _DEBUG
-	PrintLists();
-#endif // _DEBUG
+
+	DEBUG_LIST_DISPLAY;
 }
 
 

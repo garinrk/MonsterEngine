@@ -53,10 +53,8 @@ Monster *masterMonsterList;
 
 int main() {
 
-	//*first = 170; //check out the memory window to see these AA
-	//*second = 187; //BB
-	//*third = 204; //CC
 	AllocatorTesting();
+
 	//printf("%s", "=======================================\n");
 	//printf("%s", "==============MONSTER CHASE============\n");
 	//printf("%s", "=======================================\n");
@@ -79,22 +77,18 @@ int main() {
 
 void AllocatorTesting() {
 
-	MonsterAllocator malloc;
-	char* first = malloc.MonsterMalloc((size_t)1);
-	char* second = malloc.MonsterMalloc((size_t)1);
-	char* third = malloc.MonsterMalloc((size_t)1);
-	char* fourth = malloc.MonsterMalloc((size_t)1);
-	char* fifth = malloc.MonsterMalloc((size_t)1);
-	*first = 170;
-	*second = 187;
-	*third = 204;
-	*fourth = 221;
-	*fifth = 238;
-	malloc.MonsterFree(fifth);
-	malloc.MonsterFree(fourth);
-	malloc.MonsterFree(third);
-	malloc.MonsterFree(second);
-	malloc.MonsterFree(first);
+
+	MonsterAllocator m;
+	void* first = m.MonsterMalloc((size_t)1);
+	void* second = m.MonsterMalloc((size_t)1);
+	void* third = m.MonsterMalloc((size_t)1);
+	void* fourth = m.MonsterMalloc((size_t)1);
+	void* fifth = m.MonsterMalloc((size_t)1);
+	//malloc.MonsterFree(first);
+	m.MonsterFree(second);
+	//malloc.MonsterFree(third);
+	m.MonsterFree(fourth);
+	//malloc.MonsterFree(fifth);
 
 }
 
