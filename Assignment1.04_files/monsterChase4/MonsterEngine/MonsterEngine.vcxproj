@@ -140,12 +140,14 @@
     <ClInclude Include="MonsterAllocator.h" />
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine.h" />
+    <ClInclude Include="MonsterTesting.h" />
     <ClInclude Include="Point2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterAllocator.cpp" />
     <ClCompile Include="MonsterDebug.cpp" />
     <ClCompile Include="MonsterEngine.cpp" />
+    <ClCompile Include="MonsterTesting.cpp" />
     <ClCompile Include="Point2D.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

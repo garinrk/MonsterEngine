@@ -15,18 +15,26 @@ class MonsterAllocator
 {
 
 public:
-	MonsterAllocator();
+	MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors, size_t initialAlignment);
 	~MonsterAllocator();
 	void * MonsterMalloc(size_t amt);
-	void MonsterFree(void * addr);
+	bool MonsterFree(void * addr);
 	void GarbageCollect();
 	size_t totalBytes;
+
 	void PrintLists();
+	void PrintAllocatedList();
+	void PrintFreeList();
+	void PrintUnallocatedList();
+	bool Contains(void * addr);
+	bool isAllocated(void * addr);
+
 private:
-	void InitializeFreeList();
+	void InitializeFreeList(int numDescriptors);
 	void AddToAllocated(BlockDescriptor* toInsert);
 	void AddToUnallocated(BlockDescriptor* toInsert);
 	void AddToFree(BlockDescriptor * toAdd);
+	
 
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
 

@@ -8,15 +8,16 @@
 #define ALIGNMENT 4
 #define NUMBEROFDESCRIPTORS 64
 
-MonsterAllocator::MonsterAllocator()
+MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors, size_t initialAlignment)
 {
-	frontOfChunk = (char*) _aligned_malloc(TOTALHEAPSIZE, ALIGNMENT);
+	
+	frontOfChunk = (char*) _aligned_malloc(sizeOfChunk, initialAlignment);
 
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
 
-	backOfChunk = frontOfChunk + TOTALHEAPSIZE;
+	backOfChunk = frontOfChunk + sizeOfChunk;
 
-	InitializeFreeList();
+	InitializeFreeList(numDescriptors);
 
 	DEBUG_LIST_DISPLAY;
 
@@ -28,11 +29,11 @@ MonsterAllocator::~MonsterAllocator()
 }
 
 void * MonsterAllocator::MonsterMalloc(size_t amt) {
-
+	DEBUG_LIST_DISPLAY;
 	//check for amount of memory 
-	if (amt > totalBytes) {
-		return NULL;
-	}
+	//if (amt > totalBytes) {
+	//	return NULL;
+	//}
 
 	//no more free block descriptors, attempt to get some by garbage collecting.
 	if (endOfFree == NULL) {
@@ -48,7 +49,7 @@ void * MonsterAllocator::MonsterMalloc(size_t amt) {
 	AddToAllocated(newBD);
 
 	DEBUGLOG("USER REQUEST %zu BYTES", amt);
-	DEBUG_LIST_DISPLAY;
+	
 
 
 	return newBD->blockBase;
@@ -274,17 +275,40 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 void MonsterAllocator::PrintLists()
 {
 	//print free lists
-	DEBUGLOG("=========PRINT START");
+	DEBUGLOG2("=========PRINT START");
 
 	BlockDescriptor * conductor;
 	conductor = freeRoot;
 
 
 	while (conductor != NULL) {
-		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
+		DEBUGLOG2("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
 		conductor = conductor->next;
 	}
 
+	conductor = allocatedRoot;
+
+	while (conductor != NULL) {
+		DEBUGLOG2("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		conductor = conductor->next;
+	}
+
+	conductor = unallocatedRoot;
+
+	while (conductor != NULL) {
+		DEBUGLOG2("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		conductor = conductor->next;
+	}
+
+	DEBUGLOG2("=========PRINT END");
+
+}
+
+void MonsterAllocator::PrintAllocatedList() {
+	//print allocated lists
+	DEBUGLOG("=========PRINT ALLOCATED START");
+
+	BlockDescriptor * conductor;
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
@@ -292,19 +316,41 @@ void MonsterAllocator::PrintLists()
 		conductor = conductor->next;
 	}
 
-	conductor = unallocatedRoot;
+}
+
+void MonsterAllocator::PrintFreeList()
+{
+	//print free lists
+	DEBUGLOG("=========PRINT FREE START");
+
+	BlockDescriptor * conductor;
+	conductor = freeRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
-
-	DEBUGLOG("=========PRINT END");
 
 }
 
 
-void MonsterAllocator::MonsterFree(void * addr)
+void MonsterAllocator::PrintUnallocatedList()
+{
+	//print free lists
+	DEBUGLOG("=========PRINT UNALLOCATED START");
+
+	BlockDescriptor * conductor;
+	conductor = unallocatedRoot;
+
+	while (conductor != NULL) {
+		DEBUGLOG("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		conductor = conductor->next;
+	}
+
+}
+
+
+bool MonsterAllocator::MonsterFree(void * addr)
 {
 	
 	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocatedRoot);
@@ -312,7 +358,7 @@ void MonsterAllocator::MonsterFree(void * addr)
 	assert(toMoveToUnallocated != NULL && "Attempted to free a non valid addr");
 	//if they free things that don't exist in the allocated list
 	if (toMoveToUnallocated == NULL) {
-		return;
+		return false;
 	}
 	AddToUnallocated(toMoveToUnallocated);
 	DEBUGLOG("==USER FREE: %04X BEFORE GARBAGE COLLECT==", addr);
@@ -323,6 +369,8 @@ void MonsterAllocator::MonsterFree(void * addr)
 	DEBUGLOG("==AFTER GARBAGE COLLECT==", addr);
 
 	DEBUG_LIST_DISPLAY;
+
+	return true;
 }
 
 
@@ -331,9 +379,9 @@ void MonsterAllocator::MonsterFree(void * addr)
 
 
 
-void MonsterAllocator::InitializeFreeList()
+void MonsterAllocator::InitializeFreeList(int numDescriptors)
 {
-	frontOfBD = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * NUMBEROFDESCRIPTORS));
+	frontOfBD = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * numDescriptors));
 	
 	frontOfBD->prev = NULL;
 	frontOfBD->blockBase = NULL;
@@ -347,7 +395,7 @@ void MonsterAllocator::InitializeFreeList()
 	current->id = 0;
 #endif
 	
-	for (int i = 0; i < NUMBEROFDESCRIPTORS-1; i++) {
+	for (int i = 0; i < numDescriptors -1; i++) {
 		BlockDescriptor * newBD = current+1;
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
@@ -383,6 +431,39 @@ void MonsterAllocator::InitializeFreeList()
 
 	AddToUnallocated(initialUnallocatedBlock);
 
+}
 
+bool MonsterAllocator::Contains(void * addr)
+{
+
+	//look through allocated first
+
+	BlockDescriptor * conductor;
+	conductor = allocatedRoot;
+
+	while (conductor != NULL) {
+		if (conductor->blockBase == addr)
+			return true;
+	}
+
+	conductor = unallocatedRoot;
+
+	while (conductor != NULL) {
+		if (conductor->blockBase == addr)
+			return true;
+	}
+	return false;
+}
+
+bool MonsterAllocator::isAllocated(void * addr)
+{
+	BlockDescriptor * conductor;
+	conductor = allocatedRoot;
+
+	while (conductor != NULL) {
+		if (conductor->blockBase == addr)
+			return true;
+	}
+	return false;
 }
 
