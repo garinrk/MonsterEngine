@@ -29,6 +29,8 @@ public:
 	bool Contains(void * addr);
 	bool isAllocated(void * addr);
 
+	size_t GetLargestFreeBlock();
+
 private:
 	void InitializeFreeList(int numDescriptors);
 	void AddToAllocated(BlockDescriptor* toInsert);

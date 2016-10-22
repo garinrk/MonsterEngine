@@ -26,10 +26,11 @@ MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDes
 
 MonsterAllocator::~MonsterAllocator()
 {
+	_aligned_free(frontOfChunk);
 }
 
 void * MonsterAllocator::MonsterMalloc(size_t amt) {
-	DEBUG_LIST_DISPLAY;
+	//DEBUG_LIST_DISPLAY;
 	//check for amount of memory 
 	//if (amt > totalBytes) {
 	//	return NULL;
@@ -155,6 +156,7 @@ BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt)
 		if (conductor->sizeOfBlock > amt) {
 			return conductor;
 		}
+		conductor = conductor->next;
 	}
 
 	return nullptr;
@@ -306,13 +308,13 @@ void MonsterAllocator::PrintLists()
 
 void MonsterAllocator::PrintAllocatedList() {
 	//print allocated lists
-	DEBUGLOG("=========PRINT ALLOCATED START");
+	DEBUGLOG2("=========PRINT ALLOCATED START");
 
 	BlockDescriptor * conductor;
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG2("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -321,13 +323,13 @@ void MonsterAllocator::PrintAllocatedList() {
 void MonsterAllocator::PrintFreeList()
 {
 	//print free lists
-	DEBUGLOG("=========PRINT FREE START");
+	DEBUGLOG2("=========PRINT FREE START");
 
 	BlockDescriptor * conductor;
 	conductor = freeRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG2("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -337,13 +339,13 @@ void MonsterAllocator::PrintFreeList()
 void MonsterAllocator::PrintUnallocatedList()
 {
 	//print free lists
-	DEBUGLOG("=========PRINT UNALLOCATED START");
+	DEBUGLOG2("=========PRINT UNALLOCATED START");
 
 	BlockDescriptor * conductor;
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG2("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -415,7 +417,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	freeRoot = frontOfBD;
 	endOfFree = current;
 
-	totalBytes = (size_t)(frontOfBD - (BlockDescriptor*)frontOfChunk);
+	totalBytes = (size_t)((BlockDescriptor*)frontOfChunk - frontOfBD);
 	totalBytes = totalBytes * 32;
 
 	//set up initial unallocated block
@@ -444,6 +446,8 @@ bool MonsterAllocator::Contains(void * addr)
 	while (conductor != NULL) {
 		if (conductor->blockBase == addr)
 			return true;
+		else
+			conductor = conductor->next;
 	}
 
 	conductor = unallocatedRoot;
@@ -451,6 +455,8 @@ bool MonsterAllocator::Contains(void * addr)
 	while (conductor != NULL) {
 		if (conductor->blockBase == addr)
 			return true;
+		else
+			conductor = conductor->next;
 	}
 	return false;
 }
@@ -463,7 +469,27 @@ bool MonsterAllocator::isAllocated(void * addr)
 	while (conductor != NULL) {
 		if (conductor->blockBase == addr)
 			return true;
+		else
+			conductor = conductor->next;
 	}
 	return false;
+}
+
+size_t MonsterAllocator::GetLargestFreeBlock()
+{
+	size_t largest = 0;
+
+	BlockDescriptor * conductor;
+	conductor = unallocatedRoot;
+
+	while (conductor != NULL) {
+		if (conductor->sizeOfBlock >= largest)
+			largest = conductor->sizeOfBlock;
+		else
+			conductor = conductor->next;
+	}
+
+
+	return largest;
 }
 

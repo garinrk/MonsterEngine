@@ -4,18 +4,18 @@
 #include <assert.h>
 #include <algorithm>
 #include <vector>
-//#define TEST_SINGLE_LARGE_ALLOCATION
-#define __TRACK_ALLOCATIONS
+#define TEST_SINGLE_LARGE_ALLOCATION
+//#define __TRACK_ALLOCATIONS
 
 bool MonsterTesting::RunTests()
 {
 
-	const size_t 		sizeHeap = 1024;
+	const size_t 		sizeHeap = 1024*1024;
 	const unsigned int 	numDescriptors = 64;
 	const size_t		align = 4;
 	// Allocate memory for my test heap.
-	void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
-	assert(pHeapMemory);
+	//void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
+	//assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
 	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors, align);
@@ -24,9 +24,10 @@ bool MonsterTesting::RunTests()
 	// This is a test I wrote to check to see if using the whole block if it was almost consumed by 
 	// an allocation worked. Also helped test my ShowFreeBlocks() and ShowOutstandingAllocations().
 	{
-		ShowFreeBlocks(pHeapManager);
+		//ShowFreeBlocks(pHeapManager);
 
-		size_t largestBeforeAlloc = GetLargestFreeBlock(pHeapManager);
+		//size_t largestBeforeAlloc = GetLargestFreeBlock(pHeapManager);
+		size_t largestBeforeAlloc = pHeapManager.GetLargestFreeBlock();
 		void * pPtr = alloc(pHeapManager, largestBeforeAlloc - HeapManager::s_MinumumToLeave);
 
 		if (pPtr)
@@ -74,11 +75,11 @@ bool MonsterTesting::RunTests()
 	{
 		const size_t		maxTestAllocationSize = 1024;
 
-		const unsigned int	alignments[] = { 4, 8, 16, 32, 64 };
+		//const unsigned int	alignments[] = { 4, 8, 16, 32, 64 };
 
-		unsigned int	index = rand() % (sizeof(alignments) / sizeof(alignments[0]));
+		//unsigned int	index = rand() % (sizeof(alignments) / sizeof(alignments[0]));
 
-		unsigned int	alignment = alignments[index];
+		//unsigned int	alignment = alignments[index];
 
 		size_t			sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
 
@@ -94,12 +95,16 @@ bool MonsterTesting::RunTests()
 
 			//pPtr = alloc(pHeapManager, sizeAlloc, alignment);
 			void * pPtr = pHeapManager.MonsterMalloc(sizeAlloc);
+
+			
 			if (pPtr == NULL)
 			{
 				done = true;
 				break;
 			}
 		}
+
+		pHeapManager.PrintLists();
 
 		AllocatedAddresses.push_back(pPtr);
 		numAllocs++;
@@ -129,7 +134,7 @@ bool MonsterTesting::RunTests()
 
 	} while (1);
 
-	printf("After exhausting allocations:\n");
+	//printf("After exhausting allocations:\n");
 	pHeapManager.PrintAllocatedList();
 	//ShowFreeBlocks(pHeapManager);
 	pHeapManager.PrintUnallocatedList();
@@ -138,7 +143,7 @@ bool MonsterTesting::RunTests()
 	//ShowOutstandingAllocations(pHeapManager);
 	pHeapManager.PrintAllocatedList();
 #endif // __TRACK_ALLOCATIONS
-	printf("\n");
+
 
 	// now free those blocks in a random order
 	if (!AllocatedAddresses.empty())
@@ -165,7 +170,6 @@ bool MonsterTesting::RunTests()
 			assert(success);
 		}
 
-		printf("After freeing allocations:\n");
 
 		//ShowFreeBlocks(pHeapManager);
 		pHeapManager.PrintFreeList();
@@ -177,9 +181,10 @@ bool MonsterTesting::RunTests()
 		// do garbage collection
 		//Collect(pHeapManager);
 		pHeapManager.GarbageCollect();
+
+		pHeapManager.PrintLists();
 		// our heap should be one single block, all the memory it started with
 
-		printf("After garbage collection:\n");
 
 		//ShowFreeBlocks(pHeapManager);
 		pHeapManager.PrintFreeList();
@@ -188,7 +193,7 @@ bool MonsterTesting::RunTests()
 		pHeapManager.PrintAllocatedList();
 #endif // __TRACK_ALLOCATIONS
 
-		printf("\n");		// do a large test allocation to see if garbage collection worked
+	// do a large test allocation to see if garbage collection worked
 		//void * pPtr = alloc(pHeapManager, sizeHeap / 2);
 		void * pPtr = pHeapManager.MonsterMalloc(sizeHeap / 2);
 		assert(pPtr);
@@ -205,7 +210,7 @@ bool MonsterTesting::RunTests()
 	//Destroy(pHeapManager);
 	//pHeapManager = NULL;
 
-	_aligned_free(pHeapMemory);
+	//_aligned_free(pHeapMemory);
 
 	// we succeeded
 	return true;
