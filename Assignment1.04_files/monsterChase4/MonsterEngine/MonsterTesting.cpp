@@ -11,7 +11,7 @@ bool MonsterTesting::RunTests()
 {
 
 	const size_t 		sizeHeap = 1024;
-	const unsigned int 	numDescriptors = 64;
+	const unsigned int 	numDescriptors = 8;
 	const size_t		align = 4;
 	// Allocate memory for my test heap.
 	//void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
@@ -66,7 +66,6 @@ bool MonsterTesting::RunTests()
 	}
 #endif
 
-	return true;
 	std::vector<void *> AllocatedAddresses;
 
 	long	numAllocs = 0;
@@ -79,7 +78,7 @@ bool MonsterTesting::RunTests()
 	// until it runs out of memory
 	do
 	{
-		const size_t		maxTestAllocationSize = 1024;
+		const size_t		maxTestAllocationSize = 512;
 
 		//const unsigned int	alignments[] = { 4, 8, 16, 32, 64 };
 
@@ -91,7 +90,7 @@ bool MonsterTesting::RunTests()
 
 		//void * pPtr = alloc(pHeapManager, sizeAlloc, alignment);
 		void * pPtr = pHeapManager.MonsterMalloc(sizeAlloc);
-
+		pHeapManager.PrintLists();
 		//assert((reinterpret_cast<uintptr_t>(pPtr) & (alignment - 1)) == 0);
 
 		if (pPtr == NULL)
@@ -186,9 +185,10 @@ bool MonsterTesting::RunTests()
 
 		// do garbage collection
 		//Collect(pHeapManager);
+		pHeapManager.PrintLists();
 		pHeapManager.GarbageCollect();
 
-		pHeapManager.PrintLists();
+	
 		// our heap should be one single block, all the memory it started with
 
 

@@ -259,23 +259,18 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 
 	//get a bd from the free list
 	BlockDescriptor * thief = endOfFree;
-	if (endOfFree->next != NULL) {
-
-		endOfFree->next = NULL;
+	if (thief->prev != NULL) {
+		endOfFree = thief->prev;
 	}
-	if (endOfFree->prev != NULL) {
-		endOfFree = endOfFree->prev;
-	}
-
+	endOfFree->next = NULL;
+	thief->prev = NULL;
+	thief->next = NULL;
 	thief->blockBase = victim->blockBase; //we're going to take the front of the victim space
 	thief->sizeOfBlock = amt;
 
 	victim->sizeOfBlock -= amt;
 	char * modifiedBlockBase = (char*)victim->blockBase + amt;
 	victim->blockBase = modifiedBlockBase;
-
-
-	RemoveFromList(thief->blockBase, freeRoot);
 	return thief;
 }
 
@@ -392,7 +387,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	
 	frontOfBD->prev = NULL;
 	frontOfBD->blockBase = NULL;
-	frontOfBD->sizeOfBlock = 0;\
+	frontOfBD->sizeOfBlock = 0;
 	
 	BlockDescriptor * current;
 	current = frontOfBD;
@@ -422,8 +417,8 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	freeRoot = frontOfBD;
 	endOfFree = current;
 
-	totalBytes = (size_t)((BlockDescriptor*)frontOfChunk - frontOfBD);
-	totalBytes = totalBytes * 32;
+	totalBytes = (size_t)((char*)frontOfBD - frontOfChunk);
+	//totalBytes = totalBytes * 32;
 
 	//set up initial unallocated block
 	BlockDescriptor * initialUnallocatedBlock;
