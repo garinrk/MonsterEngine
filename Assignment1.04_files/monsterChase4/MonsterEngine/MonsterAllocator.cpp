@@ -26,15 +26,12 @@ MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDes
 
 MonsterAllocator::~MonsterAllocator()
 {
+	DEBUG_LIST_DISPLAY;
 	_aligned_free(frontOfChunk);
 }
 
 void * MonsterAllocator::MonsterMalloc(size_t amt) {
-	//DEBUG_LIST_DISPLAY;
-	//check for amount of memory 
-	//if (amt > totalBytes) {
-	//	return NULL;
-	//}
+
 
 	//no more free block descriptors, attempt to get some by garbage collecting.
 	if (endOfFree == NULL) {
@@ -47,11 +44,13 @@ void * MonsterAllocator::MonsterMalloc(size_t amt) {
 		return nullptr;
 
 	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,amt);
+	if (newBD == NULL)
+		return nullptr;
 	AddToAllocated(newBD);
 
 	DEBUGLOG("USER REQUEST %zu BYTES", amt);
+	DEBUG_LIST_DISPLAY;
 	
-
 
 	return newBD->blockBase;
 }
@@ -153,7 +152,7 @@ BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt)
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		if (conductor->sizeOfBlock > amt) {
+		if (conductor->sizeOfBlock >= amt) {
 			return conductor;
 		}
 		conductor = conductor->next;
@@ -257,11 +256,17 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 
 BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t amt)
 {
+
 	//get a bd from the free list
 	BlockDescriptor * thief = endOfFree;
-	endOfFree = endOfFree->prev;
-	endOfFree->next = NULL;
-	thief->prev = NULL;
+	if (endOfFree->next != NULL) {
+
+		endOfFree->next = NULL;
+	}
+	if (endOfFree->prev != NULL) {
+		endOfFree = endOfFree->prev;
+	}
+
 	thief->blockBase = victim->blockBase; //we're going to take the front of the victim space
 	thief->sizeOfBlock = amt;
 
@@ -270,7 +275,7 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	victim->blockBase = modifiedBlockBase;
 
 
-
+	RemoveFromList(thief->blockBase, freeRoot);
 	return thief;
 }
 
@@ -284,21 +289,21 @@ void MonsterAllocator::PrintLists()
 
 
 	while (conductor != NULL) {
-		DEBUGLOG2("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
+		DEBUGLOG2("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
 		conductor = conductor->next;
 	}
 
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG2("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG2("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -483,7 +488,7 @@ size_t MonsterAllocator::GetLargestFreeBlock()
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		if (conductor->sizeOfBlock >= largest)
+		if (conductor->sizeOfBlock > largest)
 			largest = conductor->sizeOfBlock;
 		else
 			conductor = conductor->next;

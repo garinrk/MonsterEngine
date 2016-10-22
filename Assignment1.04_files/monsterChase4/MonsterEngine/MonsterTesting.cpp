@@ -10,7 +10,7 @@
 bool MonsterTesting::RunTests()
 {
 
-	const size_t 		sizeHeap = 1024*1024;
+	const size_t 		sizeHeap = 1024;
 	const unsigned int 	numDescriptors = 64;
 	const size_t		align = 4;
 	// Allocate memory for my test heap.
@@ -28,39 +28,45 @@ bool MonsterTesting::RunTests()
 
 		//size_t largestBeforeAlloc = GetLargestFreeBlock(pHeapManager);
 		size_t largestBeforeAlloc = pHeapManager.GetLargestFreeBlock();
-		void * pPtr = alloc(pHeapManager, largestBeforeAlloc - HeapManager::s_MinumumToLeave);
+		//void * pPtr = alloc(pHeapManager, largestBeforeAlloc - HeapManager::s_MinumumToLeave);
+		//void * pPtr = alloc(pHeapManager, largestBeforeAlloc - sizeof(BlockDescriptor));
+		void * pPtr = pHeapManager.MonsterMalloc(largestBeforeAlloc);
 
 		if (pPtr)
 		{
-			ShowFreeBlocks(pHeapManager);
-			printf("\n");
+			//ShowFreeBlocks(pHeapManager);
+			//printf("\n");
 #ifdef __TRACK_ALLOCATIONS
 			ShowOutstandingAllocations(pHeapManager);
 #endif // __TRACK_ALLOCATIONS
-			printf("\n");
+			//printf("\n");
 
-			size_t largestAfterAlloc = GgetLargestFreeBlock(pHeapManager);
-			free(pHeapManager, pPtr);
+			//size_t largestAfterAlloc = GgetLargestFreeBlock(pHeapManager);
+			size_t largestAfterAlloc = pHeapManager.GetLargestFreeBlock();
+			//free(pHeapManager, pPtr);
+			pHeapManager.MonsterFree(pPtr);
 
-			ShowFreeBlocks(pHeapManager);
+			//ShowFreeBlocks(pHeapManager);
 #ifdef __TRACK_ALLOCATIONS
 			ShowOutstandingAllocations(pHeapManager);
 #endif // __TRACK_ALLOCATIONS
-			printf("\n");
+			//printf("\n");
 
-			Collect(pHeapManager);
+			//Collect(pHeapManager);
+			pHeapManager.GarbageCollect();
 
-			ShowFreeBlocks(pHeapManager);
+			//ShowFreeBlocks(pHeapManager);
 #ifdef __TRACK_ALLOCATIONS
 			ShowOutstandingAllocations(pHeapManager);
 #endif // __TRACK_ALLOCATIONS
-			printf("\n");
+			//printf("\n");
 
-			size_t largestAfterCollect = GetLargestFreeBlock(pHeapManager);
+			size_t largestAfterCollect = pHeapManager.GetLargestFreeBlock();
 		}
 	}
 #endif
 
+	return true;
 	std::vector<void *> AllocatedAddresses;
 
 	long	numAllocs = 0;
