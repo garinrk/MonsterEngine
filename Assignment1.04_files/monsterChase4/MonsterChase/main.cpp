@@ -79,17 +79,6 @@ int main() {
 void AllocatorTesting() {
 
 
-	//MonsterAllocator m;
-	//void* first = m.MonsterMalloc((size_t)1);
-	//void* second = m.MonsterMalloc((size_t)1);
-	//void* third = m.MonsterMalloc((size_t)1);
-	//void* fourth = m.MonsterMalloc((size_t)1);
-	//void* fifth = m.MonsterMalloc((size_t)1);
-	////malloc.MonsterFree(first);
-	//m.MonsterFree(second);
-	////malloc.MonsterFree(third);
-	//m.MonsterFree(fourth);
-	////malloc.MonsterFree(fifth);
 	MonsterTesting mt;
 	mt.RunTests();
 	
