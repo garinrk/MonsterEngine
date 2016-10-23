@@ -25,9 +25,7 @@ class Monster {
 		void SetBoardBounds(int x, int y);
 		void Update();
 		int GetName();
-		Point2D pos;
-		//int xPos;
-		//int yPos;
+		Point2D pos = Point2D(0, 0);
 
 		int age = 1;
 

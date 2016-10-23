@@ -4,9 +4,7 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <assert.h>
-#define TOTALHEAPSIZE 8192
-#define ALIGNMENT 4
-#define NUMBEROFDESCRIPTORS 64
+
 
 MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors, size_t initialAlignment)
 {
@@ -330,44 +328,44 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 void MonsterAllocator::PrintLists()
 {
 	//print free lists
-	DEBUGLOG2("=========PRINT START");
+	DEBUGLOG("=========PRINT START");
 
 	BlockDescriptor * conductor;
 	conductor = freeRoot;
 
 
 	while (conductor != NULL) {
-		DEBUGLOG2("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->sizeOfBlock,conductor->next);
 		conductor = conductor->next;
 	}
 
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
-	DEBUGLOG2("=========PRINT END");
+	DEBUGLOG("=========PRINT END");
 
 }
 
 void MonsterAllocator::PrintAllocatedList() {
 	//print allocated lists
-	DEBUGLOG2("=========PRINT ALLOCATED START");
+	DEBUGLOG("=========PRINT ALLOCATED START");
 
 	BlockDescriptor * conductor;
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -376,13 +374,13 @@ void MonsterAllocator::PrintAllocatedList() {
 void MonsterAllocator::PrintFreeList()
 {
 	//print free lists
-	DEBUGLOG2("=========PRINT FREE START");
+	DEBUGLOG("=========PRINT FREE START");
 
 	BlockDescriptor * conductor;
 	conductor = freeRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -392,13 +390,13 @@ void MonsterAllocator::PrintFreeList()
 void MonsterAllocator::PrintUnallocatedList()
 {
 	//print free lists
-	DEBUGLOG2("=========PRINT UNALLOCATED START");
+	DEBUGLOG("=========PRINT UNALLOCATED START");
 
 	BlockDescriptor * conductor;
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG2("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+		DEBUGLOG("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
 		conductor = conductor->next;
 	}
 

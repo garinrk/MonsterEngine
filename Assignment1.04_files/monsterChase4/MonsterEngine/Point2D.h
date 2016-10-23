@@ -6,33 +6,18 @@
 class Point2D
 {
 public:
-	Point2D();
+	Point2D(double init_x, double init_y);
 	double Magnitude();
 	double DotProduct(Point2D other);
 	void Normalize();
-	double x()
-	{
-		return coord_x;
-	};
-	double y()
-	{
-		return coord_y;
-	}
-	void x(double val) {
-		coord_x = val;
-	}
-	void y(double val) {
-		coord_y = val;
-	}
+	double x();
+	double y();
+	void x(double val);
+	void y(double val);
 
 	Point2D operator+(Point2D rhs);
 	Point2D operator-(Point2D rhs);
 
-	/*X& X::operator=(X rhs)
-	{
-		swap(rhs);
-		return *this;
-	}*/
 
 private:
 	double coord_x;

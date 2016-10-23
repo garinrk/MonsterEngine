@@ -3,7 +3,7 @@
 
 class MonsterTesting {
 public:
-	bool RunTests();
+	bool RunAllocatorTests();
 };
 
 #endif

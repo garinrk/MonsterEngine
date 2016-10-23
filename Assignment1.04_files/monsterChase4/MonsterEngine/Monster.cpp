@@ -10,7 +10,7 @@
 
 
 //constructor
-Monster::Monster() {
+Monster::Monster(){
 	 
 }
 
@@ -27,10 +27,8 @@ void Monster::MoveMonster() {
 		int moveX = rand() % (2);
 		int moveY = rand() % (2);
 
-		Point2D posChange;
-		posChange.x(moveX);
-		posChange.y(moveY);
-		pos = pos + posChange;
+		pos.x(pos.x() + moveX);
+		pos.y(pos.y() + moveY);
 
 	}
 }

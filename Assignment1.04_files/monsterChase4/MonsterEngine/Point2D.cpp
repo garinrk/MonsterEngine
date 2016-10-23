@@ -1,12 +1,12 @@
 #include "Point2D.h"
 
 
-
-Point2D::Point2D()
+Point2D::Point2D(double init_x, double init_y)
 {
-	x(0);
-	y(0);
+	x(init_x);
+	y(init_y);
 }
+
 
 double Point2D::Magnitude() {
 	//magnitude
@@ -25,21 +25,43 @@ void Point2D::Normalize() {
 	coord_y = coord_y / Magnitude(); 
 }
 
+double Point2D::x()
+{
+	return coord_x;
+}
+
+double Point2D::y()
+{
+	return coord_y;
+}
+
+void Point2D::x(double val)
+{
+	coord_x = val;
+}
+
+void Point2D::y(double val)
+{
+	coord_y = val;
+}
+
 Point2D Point2D::operator+(Point2D rhs)
 {
-	Point2D val;
-	val.x(rhs.x() + x());
-	val.y(rhs.y() + y());
+	double newX = rhs.x() + x();
+	double newY = rhs.y() + y();
+	Point2D newPoint = Point2D(newX, newY);
 
-	return val;
+	return newPoint;
 }
 
 Point2D Point2D::operator-(Point2D rhs)
 {
-	Point2D val;
-	val.x(rhs.x() - x());
-	val.y(rhs.y() - y());
+	double newX = rhs.x() - x();
+	double newY = rhs.y() - y();
+	Point2D newPoint = Point2D(newX, newY);
 
-	return val;
+	return newPoint;
 }
+
+
 
