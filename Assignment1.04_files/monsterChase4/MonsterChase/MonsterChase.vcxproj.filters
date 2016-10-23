@@ -21,9 +21,15 @@
     <ClCompile Include="..\MonsterEngine\Monster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MonsterGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MonsterEngine\Monster.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

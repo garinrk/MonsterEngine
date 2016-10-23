@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <vector>
 #define TEST_SINGLE_LARGE_ALLOCATION
-//#define __TRACK_ALLOCATIONS
+#define __TRACK_ALLOCATIONS
 
 bool MonsterTesting::RunTests()
 {
@@ -28,24 +28,21 @@ bool MonsterTesting::RunTests()
 
 		if (pPtr)
 		{
-			//ShowFreeBlocks(pHeapManager);
-			//printf("\n");
 #ifdef __TRACK_ALLOCATIONS
-			ShowOutstandingAllocations(pHeapManager);
+			pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS
 			size_t largestAfterAlloc = pHeapManager.GetLargestFreeBlock();
-			//free(pHeapManager, pPtr);
 			pHeapManager.MonsterFree(pPtr);
 
 			//ShowFreeBlocks(pHeapManager);
 #ifdef __TRACK_ALLOCATIONS
-			ShowOutstandingAllocations(pHeapManager);
+			pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS
 			pHeapManager.GarbageCollect();
 
 			//ShowFreeBlocks(pHeapManager);
 #ifdef __TRACK_ALLOCATIONS
-			ShowOutstandingAllocations(pHeapManager);
+			pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS
 
 			size_t largestAfterCollect = pHeapManager.GetLargestFreeBlock();
@@ -76,9 +73,7 @@ bool MonsterTesting::RunTests()
 		if (pPtr == NULL)
 		{
 			pHeapManager.GarbageCollect();
-			//Collect(pHeapManager);
 
-			//pPtr = alloc(pHeapManager, sizeAlloc, alignment);
 			void * pPtr = pHeapManager.MonsterMalloc(sizeAlloc);
 
 			
@@ -89,7 +84,9 @@ bool MonsterTesting::RunTests()
 			}
 		}
 
+#ifdef __TRACK_ALLOCATIONS
 		pHeapManager.PrintLists();
+#endif // __TRACK_ALLOCATIONS
 
 		AllocatedAddresses.push_back(pPtr);
 		numAllocs++;
@@ -102,7 +99,6 @@ bool MonsterTesting::RunTests()
 			void * pPtr = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 
-			//bool success = free(pHeapManager, pPtr);
 			bool success = pHeapManager.MonsterFree(pPtr);
 			assert(success);
 
@@ -111,7 +107,7 @@ bool MonsterTesting::RunTests()
 
 		if ((rand() % garbageCollectAboutEvery) == 0)
 		{
-			//Collect(pHeapManager);
+
 			pHeapManager.GarbageCollect();
 
 			numCollects++;
@@ -119,14 +115,9 @@ bool MonsterTesting::RunTests()
 
 	} while (1);
 
-	//printf("After exhausting allocations:\n");
-	pHeapManager.PrintAllocatedList();
-	//ShowFreeBlocks(pHeapManager);
-	pHeapManager.PrintUnallocatedList();
 
 #ifdef __TRACK_ALLOCATIONS
-	//ShowOutstandingAllocations(pHeapManager);
-	pHeapManager.PrintAllocatedList();
+	pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS
 
 
@@ -142,34 +133,28 @@ bool MonsterTesting::RunTests()
 			void * pPtr = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 
-			//bool success = Contains(pHeapManager, pPtr); //if in the block in general
 			bool success = pHeapManager.Contains(pPtr);
 			assert(success);
 
-			//success = IsAllocated(pHeapManager, pPtr);
+
 			success = pHeapManager.isAllocated(pPtr);
 			assert(success);
 
-			//success = free(pHeapManager, pPtr);
 			success = pHeapManager.MonsterFree(pPtr);
 			assert(success);
 		}
 
 
 #ifdef __TRACK_ALLOCATIONS
-		//ShowOutstandingAllocations(pHeapManager);
-		pHeapManager.PrintAllocatedList();
-#endif // __TRACK_ALLOCATIONS
-
 		pHeapManager.PrintLists();
+#endif // __TRACK_ALLOCATIONS
 
 	
 		// our heap should be one single block, all the memory it started with
 
 
 #ifdef __TRACK_ALLOCATIONS
-		//ShowOutstandingAllocations(pHeapManager);
-		pHeapManager.PrintAllocatedList();
+		pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS
 
 	// do a large test allocation to see if garbage collection worked

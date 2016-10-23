@@ -21,7 +21,6 @@ MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDes
 
 	DEBUG_LIST_DISPLAY;
 
-
 }
 
 MonsterAllocator::~MonsterAllocator()
@@ -53,6 +52,60 @@ void * MonsterAllocator::MonsterMalloc(size_t amt) {
 	
 
 	return newBD->blockBase;
+}
+
+void MonsterAllocator::InitializeFreeList(int numDescriptors)
+{
+	frontOfBD = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * numDescriptors));
+
+	frontOfBD->prev = NULL;
+	frontOfBD->blockBase = NULL;
+	frontOfBD->sizeOfBlock = 0;
+
+	BlockDescriptor * current;
+	current = frontOfBD;
+
+
+#ifdef _DEBUG
+	current->id = 0;
+#endif
+
+	for (int i = 0; i < numDescriptors - 1; i++) {
+		BlockDescriptor * newBD = current + 1;
+		if (newBD >= (BlockDescriptor*)backOfChunk)
+			break;
+		current->next = newBD;
+		newBD->prev = current;
+		newBD->blockBase = NULL;
+		newBD->sizeOfBlock = 0;
+		newBD->next = NULL;
+
+#ifdef _DEBUG
+		newBD->id = i + 1;
+#endif
+
+		current = newBD;
+	}
+
+	freeRoot = frontOfBD;
+	endOfFree = current;
+
+	totalBytes = (size_t)((char*)frontOfBD - frontOfChunk);
+	//totalBytes = totalBytes * 32;
+
+	//set up initial unallocated block
+	BlockDescriptor * initialUnallocatedBlock;
+	initialUnallocatedBlock = endOfFree; //use the end of free
+	endOfFree = endOfFree->prev;
+	endOfFree->next = NULL; //update end of free
+
+	initialUnallocatedBlock->prev = NULL;
+	initialUnallocatedBlock->blockBase = frontOfChunk;
+	initialUnallocatedBlock->sizeOfBlock = totalBytes;
+	initialUnallocatedBlock->next = NULL;
+
+	AddToUnallocated(initialUnallocatedBlock);
+
 }
 
 void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
@@ -381,59 +434,7 @@ bool MonsterAllocator::MonsterFree(void * addr)
 
 
 
-void MonsterAllocator::InitializeFreeList(int numDescriptors)
-{
-	frontOfBD = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * numDescriptors));
-	
-	frontOfBD->prev = NULL;
-	frontOfBD->blockBase = NULL;
-	frontOfBD->sizeOfBlock = 0;
-	
-	BlockDescriptor * current;
-	current = frontOfBD;
 
-
-#ifdef _DEBUG
-	current->id = 0;
-#endif
-	
-	for (int i = 0; i < numDescriptors -1; i++) {
-		BlockDescriptor * newBD = current+1;
-		if (newBD >= (BlockDescriptor*)backOfChunk)
-			break;
-		current->next = newBD;
-		newBD->prev = current;
-		newBD->blockBase = NULL;
-		newBD->sizeOfBlock = 0;
-		newBD->next = NULL;
-
-#ifdef _DEBUG
-		newBD->id = i + 1;
-#endif
-
-		current = newBD;
-	}
-
-	freeRoot = frontOfBD;
-	endOfFree = current;
-
-	totalBytes = (size_t)((char*)frontOfBD - frontOfChunk);
-	//totalBytes = totalBytes * 32;
-
-	//set up initial unallocated block
-	BlockDescriptor * initialUnallocatedBlock;
-	initialUnallocatedBlock = endOfFree; //use the end of free
-	endOfFree = endOfFree->prev;
-	endOfFree->next = NULL; //update end of free
-
-	initialUnallocatedBlock->prev = NULL;
-	initialUnallocatedBlock->blockBase = frontOfChunk;
-	initialUnallocatedBlock->sizeOfBlock = totalBytes;
-	initialUnallocatedBlock->next = NULL;
-
-	AddToUnallocated(initialUnallocatedBlock);
-
-}
 
 bool MonsterAllocator::Contains(void * addr)
 {
@@ -474,6 +475,7 @@ bool MonsterAllocator::isAllocated(void * addr)
 	}
 	return false;
 }
+
 
 size_t MonsterAllocator::GetLargestFreeBlock()
 {
