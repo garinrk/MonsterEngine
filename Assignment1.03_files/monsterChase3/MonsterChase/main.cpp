@@ -102,6 +102,7 @@ void GetUserName() {
 		printf("%s","\nWhat is your name [Max length of 80]: ");
 		fgets(userNameInput, sizeof(userNameInput), stdin);
 
+		assert(userNameInput != 0 && "You must enter a name");
 		if (userNameInput != 0) {
 			askingForPlayerInfo = false;
 		}
@@ -135,9 +136,10 @@ void GetNumberOfMonsters()
 		size_t result = strlen(numberInput);
 		int userNumber = atoi(numberInput);
 		assert(userNumber <= 100 && "You can only have 100 monsters or less!");
-
-		if (userNumber == 0) {
-			printf("You either supplied 0 or a non numerical integer, please try again\n");
+		assert(userNumber > 0 && "You can't make negative monsters!");
+		assert(userNumber != 0 && "0 is not a valid input");
+		if (userNumber == 0 || userNumber > 100 || strtol(numberInput,NULL,0) == 0 || userNumber < 0) {
+			printf("INVALID, please try again\n");
 			continue;
 		}
 
@@ -217,11 +219,13 @@ void GetPlayerInput() {
 		
 		printf("%s", "\nMove in the dungeon with WASD [q for quit]: ");
 		char input = _getch();
+		input = tolower(input);
+
+		assert(input == 'w' || input == 'a' || input == 's' || input == 'd' || input == 'q' && "Nonvalid input recognized");
 
 		if (input != 'w' && input != 'a' && input != 's' && input != 'd' && input != 'q')
 		{
-			DEBUGLOG("User input invalid: %c\n",input);
-			//printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
+			printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
 			valid = false;
 			continue;
 		}
