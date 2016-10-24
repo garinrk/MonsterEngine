@@ -2,28 +2,26 @@
 #include "MonsterTesting.h"
 #include "MonsterGame.h"
 
+#define _TESTING
+#define _GAMEPLAY
 
-void AllocatorTesting();
 
 int main() {
 
+#ifdef _GAMEPLAY
+
 	Point2D playerPos = Point2D(30, 30);
-	MonsterGame mg = MonsterGame(100,  playerPos);
+	MonsterGame mg = MonsterGame(100, playerPos);
 	mg.Start();
+#endif // _GAMEPLAY
 
-	//AllocatorTesting();
 
+#ifdef _TESTING
+	bool result = MonsterTesting::RunAllocatorTests();
+#endif // _TESTING
+	assert(result);
 	return 0;
 }
 
-void AllocatorTesting() {
-
-
-	MonsterTesting mt;
-	mt.RunAllocatorTests();
-	
-
-
-}
 
 
