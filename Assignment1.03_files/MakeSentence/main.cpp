@@ -10,6 +10,10 @@
 #include <stdlib.h>
 #endif // _DEBUG
 
+#define _ORIGINAL_ATTEMPT
+//#define _NEWATTEMPT
+
+
 #define BUFFER 4096
 #define WORDS 11
 char * MakeSentence(const char * input[]);
@@ -17,6 +21,8 @@ char * Sanitize(char* in);
 char * GetUserInput();
 
 void main(int i_argc, char ** i_argl) {
+
+#ifdef _ORIGINAL_ATTEMPT
 
 	//const char * strings[] = {
 	//	"This",
@@ -27,33 +33,44 @@ void main(int i_argc, char ** i_argl) {
 	//};
 
 
-	//bool gettingInput = true;
-	//while (wordLimit > 0 && gettingInput == true) {
-	//	char* inputBuffer = (char*)malloc(256 * sizeof(char));
-	//	printf("Please enter 10 words (%d left): ", wordLimit);
-	//	fgets(inputBuffer, 256, stdin);
+	int currentWord = 0;
+	int wordLimit = 10;
+	const char * words[WORDS];
 
-	//	if (inputBuffer[0] == '\n')
-	//		continue;
+	printf("MAKE_SENTENCE\nCharacter Limit: 140\nWord Limit: 10\n\n");
 
-	//	inputBuffer = Sanitize(inputBuffer);
+	bool gettingInput = true;
+	while (wordLimit > 0 && gettingInput == true) {
+		char* inputBuffer = (char*)malloc(256 * sizeof(char));
+		printf("Please enter 10 words (%d left): ", wordLimit);
+		fgets(inputBuffer, 256, stdin);
 
-	//	words[currentWord] = inputBuffer;
-	//	currentWord++;
-	//	wordLimit--;
+		if (inputBuffer[0] == '\n')
+			continue;
+
+		inputBuffer = Sanitize(inputBuffer);
+
+		words[currentWord] = inputBuffer;
+		currentWord++;
+		wordLimit--;
 
 
-	//}
+	}
 
-/*
-	char * inputBuffer;
-	printf("How many words would you like to enter?: ");
-	inputBuffer = (char*)malloc(10 * sizeof(char));
-	fgets(inputBuffer, 10, stdin);
-	const size_t amt = atoi(inputBuffer);
-	const char * userWords[amt];
+	words[10] = NULL;
+	char * result = MakeSentence(words);
 
-*/
+	printf("The Sentence is: %s", result);
+
+	free(result);
+	for (int i = 0; i, i < wordLimit; i++) {
+		free((void*)words[i]);
+	}
+
+	_getch();
+#endif
+
+#ifdef _NEWATTEMPT
 	printf("How many words would you like to enter?: ");
 	char * inputBuffer = (char*)malloc(10 * sizeof(char));
 	fgets(inputBuffer, 10, stdin);
@@ -62,10 +79,15 @@ void main(int i_argc, char ** i_argl) {
 	const char * userWords[newAmt];
 
 	_getch();
+#endif // _NEWATTEMPT
 
-#if defined(_DEBUG)
+
+
+#ifdef _CRTDBG_MAP_ALLOC
 	_CrtDumpMemoryLeaks();
 #endif // _DEBUG
+
+
 
 
 }
