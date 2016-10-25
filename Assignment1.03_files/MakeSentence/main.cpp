@@ -10,76 +10,50 @@
 #include <stdlib.h>
 #endif // _DEBUG
 
-#define _ORIGINAL_ATTEMPT
-//#define _NEWATTEMPT
 
 
-#define BUFFER 4096
-#define WORDS 11
-char * MakeSentence(const char * input[]);
+char * MakeSentence(char ** input);
 char * Sanitize(char* in);
-char * GetUserInput();
+
 
 void main(int i_argc, char ** i_argl) {
 
-#ifdef _ORIGINAL_ATTEMPT
 
-	//const char * strings[] = {
-	//	"This",
-	//	"is",
-	//	"a",
-	//	"test",
-	//	NULL
-	//};
-
-
-	int currentWord = 0;
-	int wordLimit = 10;
-	const char * words[WORDS];
-
-	printf("MAKE_SENTENCE\nCharacter Limit: 140\nWord Limit: 10\n\n");
-
-	bool gettingInput = true;
-	while (wordLimit > 0 && gettingInput == true) {
-		char* inputBuffer = (char*)malloc(256 * sizeof(char));
-		printf("Please enter 10 words (%d left): ", wordLimit);
-		fgets(inputBuffer, 256, stdin);
-
-		if (inputBuffer[0] == '\n')
-			continue;
-
-		inputBuffer = Sanitize(inputBuffer);
-
-		words[currentWord] = inputBuffer;
-		currentWord++;
-		wordLimit--;
+	printf("How many words would you like to enter?: ");
+	char * inputBuffer = (char*)malloc(10 * sizeof(char));
+	fgets(inputBuffer, 10, stdin);
+	int amt = atoi(inputBuffer);
+	if (amt <= 0)
+		return;
+	free(inputBuffer);
+	char ** words = (char**)malloc((amt + 1) * sizeof(char*));
 
 
+	for (int i = 0; i < amt; i++) {
+		printf("Please enter a word [ENTER TO END]: ");
+		words[i] = (char*)malloc(256 * sizeof(char));
+		fgets(words[i], sizeof(words[i]), stdin);
+
+		Sanitize(words[i]);
 	}
 
-	words[10] = NULL;
+	words[amt] = NULL;
+
 	char * result = MakeSentence(words);
 
 	printf("The Sentence is: %s", result);
 
 	free(result);
-	for (int i = 0; i, i < wordLimit; i++) {
-		free((void*)words[i]);
+
+	for (int i = 0; i, i < amt; i++) {
+		if (words[i] != NULL) {
+			free(words[i]);
+		}
+			
 	}
 
+	free(words);
 	_getch();
-#endif
-
-#ifdef _NEWATTEMPT
-	printf("How many words would you like to enter?: ");
-	char * inputBuffer = (char*)malloc(10 * sizeof(char));
-	fgets(inputBuffer, 10, stdin);
-	int amt = atoi(inputBuffer);
-	const size_t newAmt = const_cast<int&>(amt);
-	const char * userWords[newAmt];
-
-	_getch();
-#endif // _NEWATTEMPT
 
 
 
@@ -103,33 +77,7 @@ char * Sanitize(char* in) {
 	return in;
 }
 
-char * GetUserInput()
-{
-
-	size_t wordIndex = 0;
-	size_t numberOfWords = 1;
-	char * userWords;
-
-	bool gettingInput = true;
-
-	while (gettingInput) {
-		char * inputBuffer = (char*)malloc(256 * sizeof(char));
-
-		printf("Please enter a word: ");
-		fgets(inputBuffer, 256, stdin);
-
-		if (inputBuffer[0] == '\n')
-			continue;
-		inputBuffer = Sanitize(inputBuffer);
-		userWords[wordIndex] = *inputBuffer;
-		wordIndex++;
-		numberOfWords++;
-	}
-
-
-}
-
-char * MakeSentence(const char * input[]) {
+char * MakeSentence(char ** input) {
 
 	int currentCharIndex = 0;
 	int amountOfWords = 0;
@@ -145,9 +93,6 @@ char * MakeSentence(const char * input[]) {
 		currentCharIndex = 0;
 
 	}
-
-	//int spacesNeeded = amountOfWords-1; //amount of words - 1
-	//int totalNeeded = spacesNeeded + numberOfChars+2; //including period and null terminator
 	size_t totalNeeded = numberOfChars + 2;
 
 	char* ptr = (char*)malloc(totalNeeded);
