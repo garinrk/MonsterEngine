@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #endif // _DEBUG
 
-
+#define MAXWORDCOUNT 100
 
 char * MakeSentence(char ** input);
 char * Sanitize(char* in);
@@ -18,41 +18,75 @@ char * Sanitize(char* in);
 
 void main(int i_argc, char ** i_argl) {
 
-
-	printf("How many words would you like to enter?: ");
-	char * inputBuffer = (char*)malloc(10 * sizeof(char));
-	fgets(inputBuffer, 10, stdin);
-	int amt = atoi(inputBuffer);
-	if (amt <= 0)
-		return;
-	free(inputBuffer);
-	char ** words = (char**)malloc((amt + 1) * sizeof(char*));
-
-
-	for (int i = 0; i < amt; i++) {
-		printf("Please enter a word [ENTER TO END]: ");
-		words[i] = (char*)malloc(256 * sizeof(char));
-		fgets(words[i], sizeof(words[i]), stdin);
-
-		Sanitize(words[i]);
+	int wordsEntered = 0;
+	char ** userWords = (char**)malloc(MAXWORDCOUNT * sizeof(char*));
+	
+	while (wordsEntered < MAXWORDCOUNT) {
+		userWords[wordsEntered] = (char*)malloc(256 * sizeof(char));
+		printf("Please enter a word (100 WORD MAXIMUM)[ENTER TO END]: ");
+		fgets(userWords[wordsEntered], 256, stdin);
+		
+		if (userWords[wordsEntered][0] == '\n') {
+			free(userWords[wordsEntered]);
+			userWords[wordsEntered] = NULL;
+			
+			break;
+		}
+		else {
+			Sanitize(userWords[wordsEntered]);
+		}
+	
+		wordsEntered++;
 	}
 
-	words[amt] = NULL;
+	char * result = MakeSentence(userWords);
 
-	char * result = MakeSentence(words);
-
-	printf("The Sentence is: %s", result);
+	printf("The sentence is : %s" , result);
 
 	free(result);
 
-	for (int i = 0; i, i < amt; i++) {
-		if (words[i] != NULL) {
-			free(words[i]);
+	for (int i = 0; i < wordsEntered+1; i++) {
+		if (userWords[i] != NULL) {
+			free(userWords[i]);
 		}
 			
 	}
 
-	free(words);
+	free(userWords);
+	//printf("How many words would you like to enter?: ");
+	//char * inputBuffer = (char*)malloc(10 * sizeof(char));
+	//fgets(inputBuffer, 10, stdin);
+	//int amt = atoi(inputBuffer);
+	//if (amt <= 0)
+	//	return;
+	//free(inputBuffer);
+	//char ** words = (char**)malloc((amt + 1) * sizeof(char*));
+
+
+	//for (int i = 0; i < amt; i++) {
+	//	printf("Please enter a word [ENTER TO END]: ");
+	//	words[i] = (char*)malloc(256 * sizeof(char));
+	//	fgets(words[i], sizeof(words[i]), stdin);
+
+	//	Sanitize(words[i]);
+	//}
+
+	//words[amt] = NULL;
+
+	//char * result = MakeSentence(words);
+
+	//printf("The Sentence is: %s", result);
+
+	//free(result);
+
+	//for (int i = 0; i, i < amt; i++) {
+	//	if (words[i] != NULL) {
+	//		free(words[i]);
+	//	}
+	//		
+	//}
+
+	//free(words);
 	_getch();
 
 
@@ -84,16 +118,18 @@ char * MakeSentence(char ** input) {
 	int numberOfChars = 0;
 
 	while (input[amountOfWords] != NULL) {
-		while (input[amountOfWords][currentCharIndex] != '\0') {
+		char current = input[amountOfWords][currentCharIndex];
+		while (current != '\0' && current != ' ') {
 			numberOfChars++;
 			currentCharIndex++;
+			current = input[amountOfWords][currentCharIndex];
 
 		}
 		amountOfWords++;
 		currentCharIndex = 0;
 
 	}
-	size_t totalNeeded = numberOfChars + 2;
+	size_t totalNeeded = numberOfChars + 3;
 
 	char* ptr = (char*)malloc(totalNeeded);
 
