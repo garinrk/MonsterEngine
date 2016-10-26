@@ -11,7 +11,7 @@ bool MonsterTesting::RunAllocatorTests()
 {
 
 	const size_t 		sizeHeap = 1024;
-	const unsigned int 	numDescriptors = 8;
+	const unsigned int 	numDescriptors =  8;
 	const size_t		align = 4;
 
 	// Create a heap manager for my test heap.
@@ -62,10 +62,10 @@ bool MonsterTesting::RunAllocatorTests()
 	// until it runs out of memory
 	do
 	{
-		const size_t		maxTestAllocationSize = 512;
+		const size_t maxTestAllocationSize = 512;
 
 
-		size_t			sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
+		size_t	sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
 
 		void * pPtr = pHeapManager.MonsterMalloc(sizeAlloc);
 		pHeapManager.PrintLists();

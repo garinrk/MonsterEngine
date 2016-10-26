@@ -4,16 +4,17 @@
 #include <malloc.h>
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 
 
 MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors, size_t initialAlignment)
 {
 	
-	frontOfChunk = (char*) _aligned_malloc(sizeOfChunk, initialAlignment);
+	frontOfChunk = _aligned_malloc(sizeOfChunk, initialAlignment);
 
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
 
-	backOfChunk = frontOfChunk + sizeOfChunk;
+	backOfChunk = reinterpret_cast<char*>(frontOfChunk) + sizeOfChunk;
 
 	InitializeFreeList(numDescriptors);
 
@@ -54,7 +55,7 @@ void * MonsterAllocator::MonsterMalloc(size_t amt) {
 
 void MonsterAllocator::InitializeFreeList(int numDescriptors)
 {
-	frontOfBD = (BlockDescriptor*)(backOfChunk - (sizeof(BlockDescriptor) * numDescriptors));
+	frontOfBD = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<char*>(backOfChunk) - (sizeof(BlockDescriptor) * numDescriptors));
 
 	frontOfBD->prev = NULL;
 	frontOfBD->blockBase = NULL;
@@ -68,7 +69,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	current->id = 0;
 #endif
 
-	for (int i = 0; i < numDescriptors - 1; i++) {
+	for ( int i = 0; i < numDescriptors - 1; i++) {
 		BlockDescriptor * newBD = current + 1;
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
@@ -88,8 +89,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	freeRoot = frontOfBD;
 	endOfFree = current;
 
-	totalBytes = (size_t)((char*)frontOfBD - frontOfChunk);
-	//totalBytes = totalBytes * 32;
+	totalBytes = frontOfBD - frontOfChunk;
 
 	//set up initial unallocated block
 	BlockDescriptor * initialUnallocatedBlock;
@@ -320,7 +320,7 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	thief->sizeOfBlock = amt;
 
 	victim->sizeOfBlock -= amt;
-	char * modifiedBlockBase = (char*)victim->blockBase + amt;
+	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + amt;
 	victim->blockBase = modifiedBlockBase;
 	return thief;
 }

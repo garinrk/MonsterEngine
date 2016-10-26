@@ -3,12 +3,9 @@ struct BlockDescriptor {
 	BlockDescriptor * prev;
 	void * blockBase;
 	size_t sizeOfBlock;
-
-
 #if _DEBUG
 	int id;
 #endif // DEBUG
-
 		BlockDescriptor * next;
 };
 class MonsterAllocator
@@ -46,8 +43,8 @@ private:
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
 	
-	char * frontOfChunk;
-	char * backOfChunk;
+	void * frontOfChunk;
+	void * backOfChunk;
 
 	BlockDescriptor * freeRoot = 0;
 	BlockDescriptor * endOfFree = 0;
@@ -55,9 +52,9 @@ private:
 	BlockDescriptor * unallocatedRoot = 0;
 	BlockDescriptor * frontOfBD;
 
-	int num_free = 0;
-	int num_alloc = 0;
-	int num_unalloc = 0;
+	size_t num_free = 0;
+	size_t num_alloc = 0;
+	size_t num_unalloc = 0;
 
 
 	

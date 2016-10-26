@@ -3,13 +3,12 @@
 #include "MonsterGame.h"
 
 #define _TESTING
-#define _GAMEPLAY
+//#define _GAMEPLAY
 
 
 int main() {
 
 #ifdef _GAMEPLAY
-
 	Point2D playerPos = Point2D(30, 30);
 	MonsterGame mg = MonsterGame(100, playerPos);
 	mg.Start();
@@ -18,8 +17,8 @@ int main() {
 
 #ifdef _TESTING
 	bool result = MonsterTesting::RunAllocatorTests();
-#endif // _TESTING
 	assert(result);
+#endif // _TESTING
 	return 0;
 }
 
