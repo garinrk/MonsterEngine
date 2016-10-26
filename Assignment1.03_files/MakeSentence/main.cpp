@@ -119,7 +119,7 @@ char * MakeSentence(char ** input) {
 
 	while (input[amountOfWords] != NULL) {
 		char current = input[amountOfWords][currentCharIndex];
-		while (current != '\0' && current != ' ') {
+		while (current != '\0') {
 			numberOfChars++;
 			currentCharIndex++;
 			current = input[amountOfWords][currentCharIndex];
@@ -129,7 +129,7 @@ char * MakeSentence(char ** input) {
 		currentCharIndex = 0;
 
 	}
-	size_t totalNeeded = numberOfChars + 3;
+	size_t totalNeeded = numberOfChars +1;
 
 	char* ptr = (char*)malloc(totalNeeded);
 
