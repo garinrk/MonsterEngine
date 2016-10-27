@@ -8,6 +8,12 @@ struct BlockDescriptor {
 #endif // DEBUG
 		BlockDescriptor * next;
 };
+
+#include <inttypes.h>
+#include <malloc.h>
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
 class MonsterAllocator
 {
 
@@ -42,6 +48,7 @@ private:
 	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
+	size_t GetAlignmentOffset(uintptr_t addr);
 	
 	void * frontOfChunk;
 	void * backOfChunk;
@@ -55,6 +62,7 @@ private:
 	size_t num_free = 0;
 	size_t num_alloc = 0;
 	size_t num_unalloc = 0;
+
 
 
 	

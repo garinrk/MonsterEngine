@@ -1,22 +1,21 @@
 #include "MonsterAllocator.h"
 #include "MonsterDebug.h"
 
-#include <malloc.h>
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
 
 
-MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors, size_t initialAlignment)
+
+#define ALIGNMENT 4
+
+
+MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numDescriptors, size_t i_align)
 {
 	
-	frontOfChunk = _aligned_malloc(sizeOfChunk, initialAlignment);
-
+	frontOfChunk = _aligned_malloc(i_chunkSize, i_align);
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
 
-	backOfChunk = reinterpret_cast<char*>(frontOfChunk) + sizeOfChunk;
+	backOfChunk = reinterpret_cast<char*>(frontOfChunk) + i_chunkSize;
 
-	InitializeFreeList(numDescriptors);
+	InitializeFreeList(i_numDescriptors);
 
 	DEBUG_LIST_DISPLAY;
 
@@ -28,34 +27,36 @@ MonsterAllocator::~MonsterAllocator()
 	_aligned_free(frontOfChunk);
 }
 
-void * MonsterAllocator::MonsterMalloc(size_t amt) {
+void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 
 
 	//no more free block descriptors, attempt to get some by garbage collecting.
 	if (endOfFree == NULL) {
 		GarbageCollect();
 	}
-	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(amt);
+	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(i_amt);
 
 	//if even after garbage collecting we don't have a descriptor.
 	if (sufficientBlock == NULL)
 		return nullptr;
 
-	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,amt);
+	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,i_amt);
 	if (newBD == NULL)
 		return nullptr;
 	AddToAllocated(newBD);
 
-	DEBUGLOG("USER REQUEST %zu BYTES", amt);
+	DEBUGLOG("USER REQUEST %zu BYTES", i_amt);
 	DEBUG_LIST_DISPLAY;
 	
 
 	return newBD->blockBase;
 }
 
-void MonsterAllocator::InitializeFreeList(int numDescriptors)
+void MonsterAllocator::InitializeFreeList(int i_numDescriptors)
 {
-	frontOfBD = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<char*>(backOfChunk) - (sizeof(BlockDescriptor) * numDescriptors));
+	frontOfBD = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<char*>(backOfChunk) - (sizeof(BlockDescriptor) * i_numDescriptors));
+
+	assert(frontOfBD > frontOfChunk && "Pool of block descriptors larger than the entire chunk, too many descriptors");
 
 	frontOfBD->prev = NULL;
 	frontOfBD->blockBase = NULL;
@@ -69,7 +70,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	current->id = 0;
 #endif
 
-	for ( int i = 0; i < numDescriptors - 1; i++) {
+	for ( int i = 0; i < i_numDescriptors - 1; i++) {
 		BlockDescriptor * newBD = current + 1;
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
@@ -316,13 +317,28 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	endOfFree->next = NULL;
 	thief->prev = NULL;
 	thief->next = NULL;
+
+	//check for alignment
+	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->blockBase));
+
 	thief->blockBase = victim->blockBase; //we're going to take the front of the victim space
+	
 	thief->sizeOfBlock = amt;
 
 	victim->sizeOfBlock -= amt;
 	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + amt;
 	victim->blockBase = modifiedBlockBase;
 	return thief;
+}
+
+size_t MonsterAllocator::GetAlignmentOffset(uintptr_t addr)
+{
+	
+	uintptr_t alignCheck = addr % ALIGNMENT;
+	if (alignCheck == 0)
+		return 0;
+	return ALIGNMENT - alignCheck;
+
 }
 
 void MonsterAllocator::PrintLists()
