@@ -40,6 +40,7 @@ private:
 	void AddToAllocated(BlockDescriptor* toInsert);
 	void AddToUnallocated(BlockDescriptor* toInsert);
 	void AddToFree(BlockDescriptor * toAdd);
+	bool GuardBandChecks(BlockDescriptor * i_toCheck);
 	
 
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);

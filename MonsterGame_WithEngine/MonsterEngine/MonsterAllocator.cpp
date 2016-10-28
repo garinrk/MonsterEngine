@@ -243,7 +243,7 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 	conductor = root;
 
 	while (conductor != NULL) {
-		if (conductor->blockBase == addr) //found the block
+		if (conductor->userPtr == addr) //found the block
 		{
 			//head case with something after it
 			if (conductor->prev == NULL && conductor->next != NULL) {
@@ -438,6 +438,9 @@ bool MonsterAllocator::MonsterFree(void * addr)
 {
 	
 	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocatedRoot);
+	bool guardBandIntegrity = GuardBandChecks(toMoveToUnallocated);
+
+	assert(guardBandIntegrity && "GUARDBANDS CORRUPTED");
 
 	assert(toMoveToUnallocated != NULL && "Attempted to free a non valid addr");
 	//if they free things that don't exist in the allocated list
@@ -457,7 +460,21 @@ bool MonsterAllocator::MonsterFree(void * addr)
 	return true;
 }
 
+bool MonsterAllocator::GuardBandChecks(BlockDescriptor * i_toCheck)
+{
+	void * frontGuardBandAddr = i_toCheck->blockBase;
+	int frontValue = *static_cast<int*>(frontGuardBandAddr);
+	if (frontValue != 255)
+		return false;
+	
+	void * backGuardBandAddr = static_cast<char*>(i_toCheck->blockBase) + i_toCheck->sizeOfBlock - GUARDBAND_BYTES;
+	int backValue = *static_cast<int*>(backGuardBandAddr);
+	if (backValue != 255) {
+		return false;
+	}
 
+	return false;
+}
 
 
 
