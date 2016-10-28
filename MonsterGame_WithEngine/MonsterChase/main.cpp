@@ -2,9 +2,9 @@
 #include "MonsterTesting.h"
 #include "MonsterGame.h"
 
-#define _TESTING
+//#define _TESTING
 //#define _GAMEPLAY
-
+#define _TESTING2
 
 int main() {
 
@@ -18,6 +18,18 @@ int main() {
 #ifdef _TESTING
 	bool result = MonsterTesting::RunAllocatorTests();
 	assert(result);
+#endif // _TESTING
+
+#ifdef _TESTING2
+	const size_t 		sizeHeap = 1024;
+	const unsigned int 	numDescriptors = 8;
+	const size_t		align = 4;
+	 
+	// Create a heap manager for my test heap.
+	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors, align);
+	void* addr = pHeapManager.MonsterMalloc(1);
+	*((int*)addr) = 0xBB;
+	pHeapManager.MonsterFree(addr);
 #endif // _TESTING
 	return 0;
 }

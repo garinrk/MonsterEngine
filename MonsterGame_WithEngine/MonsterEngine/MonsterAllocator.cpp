@@ -1,11 +1,9 @@
 #include "MonsterAllocator.h"
 #include "MonsterDebug.h"
 
-
-
-
 #define ALIGNMENT 4
-
+#define GUARDBAND_VAL 0xFF
+#define GUARDBAND_BYTES 1
 
 MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numDescriptors, size_t i_align)
 {
@@ -49,7 +47,7 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 	DEBUG_LIST_DISPLAY;
 	
 
-	return newBD->blockBase;
+	return newBD->userPtr;
 }
 
 void MonsterAllocator::InitializeFreeList(int i_numDescriptors)
@@ -90,7 +88,7 @@ void MonsterAllocator::InitializeFreeList(int i_numDescriptors)
 	freeRoot = frontOfBD;
 	endOfFree = current;
 
-	totalBytes = frontOfBD - frontOfChunk;
+	totalBytes = reinterpret_cast<char*>(frontOfBD) - reinterpret_cast<char*>(frontOfChunk);
 
 	//set up initial unallocated block
 	BlockDescriptor * initialUnallocatedBlock;
@@ -316,17 +314,34 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	}
 	endOfFree->next = NULL;
 	thief->prev = NULL;
-	thief->next = NULL;
+	thief->next = NULL; 
 
-	//check for alignment
+	//check for alignmentcxv
 	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->blockBase));
-
-	thief->blockBase = victim->blockBase; //we're going to take the front of the victim space
 	
-	thief->sizeOfBlock = amt;
+	thief->blockBase = reinterpret_cast<char*>(victim->blockBase) + pad; //we're going to take the front of the victim space
+	
+	//put first guardband
+	*static_cast<unsigned char*>(thief->blockBase) = GUARDBAND_VAL;
 
-	victim->sizeOfBlock -= amt;
-	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + amt;
+	//assign user's pointer
+	thief->userPtr = reinterpret_cast<char*>(thief->blockBase) + GUARDBAND_BYTES;
+
+	//put back guardband
+	void * backguardbandPos = reinterpret_cast<char*>(thief->blockBase) + GUARDBAND_BYTES + amt;
+	*static_cast<unsigned char*>(backguardbandPos) = GUARDBAND_VAL;
+
+
+	////give user correct pointer
+	//thief->userPtr = static_cast<char*>(thief->blockBase) + GUARDBAND_BYTES + pad;
+
+	
+	
+	thief->sizeOfBlock = amt + (GUARDBAND_BYTES * 2) + pad;
+
+	victim->sizeOfBlock -= amt + (GUARDBAND_BYTES * 2) + pad;
+
+	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + amt + (GUARDBAND_BYTES * 2) + pad;
 	victim->blockBase = modifiedBlockBase;
 	return thief;
 }

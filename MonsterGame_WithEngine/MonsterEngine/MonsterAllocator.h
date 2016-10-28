@@ -2,6 +2,7 @@
 struct BlockDescriptor {
 	BlockDescriptor * prev;
 	void * blockBase;
+	void * userPtr;
 	size_t sizeOfBlock;
 #if _DEBUG
 	int id;
