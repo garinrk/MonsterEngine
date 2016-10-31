@@ -4,15 +4,15 @@
 #include <assert.h>
 #include <algorithm>
 #include <vector>
-#define TEST_SINGLE_LARGE_ALLOCATION
-#define __TRACK_ALLOCATIONS
+//#define TEST_SINGLE_LARGE_ALLOCATION
+//#define __TRACK_ALLOCATIONS
 
 bool MonsterTesting::RunAllocatorTests()
 {
 
 	const size_t 		sizeHeap = 1024;
 	const unsigned int 	numDescriptors =  8;
-	const size_t		align = 4;
+	const size_t		align = 3;
 
 	// Create a heap manager for my test heap.
 	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors, align);
@@ -144,7 +144,7 @@ bool MonsterTesting::RunAllocatorTests()
 			assert(success);
 		}
 
-
+		
 #ifdef __TRACK_ALLOCATIONS
 		pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS

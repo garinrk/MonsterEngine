@@ -1,15 +1,16 @@
 #include "MonsterAllocator.h"
 #include "MonsterDebug.h"
 
-#define ALIGNMENT 4
 #define GUARDBAND_VAL 0xFF
-#define GUARDBAND_BYTES 1
+#define GUARDBAND_BYTES 4
+#define ALIGNMENT 4
 
 MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numDescriptors, size_t i_align)
 {
 	
 	frontOfChunk = _aligned_malloc(i_chunkSize, i_align);
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
+
 
 	backOfChunk = reinterpret_cast<char*>(frontOfChunk) + i_chunkSize;
 
@@ -32,6 +33,11 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 	if (endOfFree == NULL) {
 		GarbageCollect();
 	}
+
+#ifdef _DEBUG
+	i_amt = i_amt + GUARDBAND_BYTES * 2;
+#endif // _DEBUG
+
 	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(i_amt);
 
 	//if even after garbage collecting we don't have a descriptor.
@@ -304,7 +310,7 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 	return nullptr;
 }
 
-BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t amt)
+BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t i_wholeAmt)
 {
 
 	//get a bd from the free list
@@ -320,29 +326,39 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->blockBase));
 	
 	thief->blockBase = reinterpret_cast<char*>(victim->blockBase) + pad; //we're going to take the front of the victim space
+
+#ifdef _DEBUG					
+	char * frontguardbandPos = static_cast<char*>(thief->blockBase);
+	for (int i = 0; i < GUARDBAND_BYTES; i++) {
+		*(frontguardbandPos + i) = GUARDBAND_VAL;
+
+	}
+																	 
+	thief->userPtr = reinterpret_cast<char*>(thief->blockBase) + GUARDBAND_BYTES; //assign user's pointer
+
+																				  
+	char * backguardbandPos = reinterpret_cast<char*>(thief->userPtr) + (i_wholeAmt - GUARDBAND_BYTES * 2); //put back guardband
 	
-	//put first guardband
-	*static_cast<unsigned char*>(thief->blockBase) = GUARDBAND_VAL;
+	for (int i = 0; i < GUARDBAND_BYTES; i++) {
+		*(backguardbandPos + i) = GUARDBAND_VAL;
 
-	//assign user's pointer
-	thief->userPtr = reinterpret_cast<char*>(thief->blockBase) + GUARDBAND_BYTES;
+	}
 
-	//put back guardband
-	void * backguardbandPos = reinterpret_cast<char*>(thief->blockBase) + GUARDBAND_BYTES + amt;
-	*static_cast<unsigned char*>(backguardbandPos) = GUARDBAND_VAL;
+	thief->sizeOfBlock = i_wholeAmt + pad;
 
+	victim->sizeOfBlock -= i_wholeAmt + pad;
 
-	////give user correct pointer
-	//thief->userPtr = static_cast<char*>(thief->blockBase) + GUARDBAND_BYTES + pad;
-
-	
-	
-	thief->sizeOfBlock = amt + (GUARDBAND_BYTES * 2) + pad;
-
-	victim->sizeOfBlock -= amt + (GUARDBAND_BYTES * 2) + pad;
-
-	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + amt + (GUARDBAND_BYTES * 2) + pad;
+	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
 	victim->blockBase = modifiedBlockBase;
+	return thief;
+#endif
+
+	thief->userPtr = thief->blockBase;
+	thief->sizeOfBlock = i_wholeAmt + pad;
+	victim->sizeOfBlock -= i_wholeAmt + pad;
+	char * modifiedBlockBase2 = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
+	victim->blockBase = reinterpret_cast<void*>(modifiedBlockBase2);
+
 	return thief;
 }
 
@@ -463,17 +479,17 @@ bool MonsterAllocator::MonsterFree(void * addr)
 bool MonsterAllocator::GuardBandChecks(BlockDescriptor * i_toCheck)
 {
 	void * frontGuardBandAddr = i_toCheck->blockBase;
-	int frontValue = *static_cast<int*>(frontGuardBandAddr);
-	if (frontValue != 255)
+	__int8 frontValue = *static_cast<__int8*>(frontGuardBandAddr);
+	if (frontValue != -1)
 		return false;
 	
 	void * backGuardBandAddr = static_cast<char*>(i_toCheck->blockBase) + i_toCheck->sizeOfBlock - GUARDBAND_BYTES;
-	int backValue = *static_cast<int*>(backGuardBandAddr);
-	if (backValue != 255) {
+	__int8 backValue = *static_cast<__int8*>(backGuardBandAddr);
+	if (backValue != -1) {
 		return false;
 	}
 
-	return false;
+	return true;
 }
 
 
@@ -491,7 +507,7 @@ bool MonsterAllocator::Contains(void * addr)
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		if (conductor->blockBase == addr)
+		if (conductor->userPtr == addr)
 			return true;
 		else
 			conductor = conductor->next;
@@ -500,7 +516,7 @@ bool MonsterAllocator::Contains(void * addr)
 	conductor = unallocatedRoot;
 
 	while (conductor != NULL) {
-		if (conductor->blockBase == addr)
+		if (conductor->userPtr == addr)
 			return true;
 		else
 			conductor = conductor->next;
@@ -514,7 +530,7 @@ bool MonsterAllocator::isAllocated(void * addr)
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		if (conductor->blockBase == addr)
+		if (conductor->userPtr == addr)
 			return true;
 		else
 			conductor = conductor->next;

@@ -61,14 +61,6 @@ private:
 	BlockDescriptor * unallocatedRoot = 0;
 	BlockDescriptor * frontOfBD;
 
-	size_t num_free = 0;
-	size_t num_alloc = 0;
-	size_t num_unalloc = 0;
-
-
-
-	
-
 
 };
 
