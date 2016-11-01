@@ -2,7 +2,7 @@
 #include "MonsterTesting.h"
 #include "MonsterGame.h"
 
-//#define ALLOCATORTESTS
+#define ALLOCATORTESTS
 //#define _GAMEPLAY
 #define _TESTING
 

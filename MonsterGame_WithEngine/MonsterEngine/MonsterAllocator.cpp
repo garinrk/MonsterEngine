@@ -326,10 +326,10 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	//check for alignmentcxv
 	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->blockBase));
 	
-	thief->blockBase = reinterpret_cast<char*>(victim->blockBase) + pad; //we're going to take the front of the victim space
+	thief->blockBase = reinterpret_cast<char*>(victim->blockBase); //we're going to take the front of the victim space
 
 #ifdef _DEBUG					
-	char * frontguardbandPos = static_cast<char*>(thief->blockBase);
+	char * frontguardbandPos = static_cast<char*>(thief->blockBase) + pad;
 	for (int i = 0; i < GUARDBAND_BYTES; i++) {
 		*(frontguardbandPos + i) = GUARDBAND_VAL;
 
@@ -345,17 +345,8 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 
 	}
 
+	pad += GUARDBAND_BYTES;
 #endif
-	//thief->sizeOfBlock = i_wholeAmt + pad;
-
-	//victim->sizeOfBlock -= i_wholeAmt + pad;
-
-	//char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
-	//victim->blockBase = modifiedBlockBase;
-	//return thief;
-
-
-	//thief->userPtr = thief->blockBase;
 	thief->wholeBlockSize = i_wholeAmt + pad;
 	victim->wholeBlockSize -= i_wholeAmt + pad;
 	char * modifiedBlockBase2 = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
@@ -561,8 +552,11 @@ size_t MonsterAllocator::GetLargestFreeBlock()
 		else
 			conductor = conductor->next;
 	}
-
-
+	if (largest == 0)
+		return 0;
+#ifdef _DEBUG
+	largest -= GUARDBAND_BYTES * 2;
+#endif
 	return largest;
 }
 

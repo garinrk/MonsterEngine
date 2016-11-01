@@ -10,9 +10,9 @@
 bool MonsterTesting::RunAllocatorTests()
 {
 
-	const size_t 		sizeHeap = 1024;
+	const size_t 		sizeHeap = 2148;
 	const unsigned int 	numDescriptors =  8;
-	const size_t		align = 3;
+	const size_t		align = 4;
 
 	// Create a heap manager for my test heap.
 	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors, align);
