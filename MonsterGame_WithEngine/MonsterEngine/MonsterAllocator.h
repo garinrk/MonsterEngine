@@ -1,10 +1,9 @@
 #pragma once
+#include <inttypes.h>
 struct BlockDescriptor {
 	BlockDescriptor * prev;
 	void * block_base;
 	void * user_ptr;
-	//TODO: USE UINT8_T FOR POINTERS
-	//TODO: USE UINT8_T for PADDING 
 	size_t whole_block_size;
 	size_t user_size;
 	size_t offset_padding;
@@ -14,7 +13,7 @@ struct BlockDescriptor {
 		BlockDescriptor * next;
 };
 
-#include <inttypes.h>
+
 #include <malloc.h>
 #include <stdio.h>
 #include <assert.h>
@@ -54,7 +53,7 @@ private:
 	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
-	size_t GetAlignmentOffset(uintptr_t addr);
+	size_t GetAlignmentOffset(void * addr);
 	
 	void * front_of_chunk_;
 	void * back_of_chunk_;

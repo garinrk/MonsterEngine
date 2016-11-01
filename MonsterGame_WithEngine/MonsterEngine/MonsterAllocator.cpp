@@ -34,11 +34,7 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 		GarbageCollect();
 	}
 
-#ifdef _DEBUG
-	//i_amt += GUARDBAND_BYTES * 2;
-#endif // _DEBUG
 
-	//i_amt += 3; //max number for offset
 
 	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(i_amt);
 
@@ -332,7 +328,7 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	thief->next = NULL; 
 
 	//check for alignmentcxv
-	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->block_base));
+	size_t pad = GetAlignmentOffset(victim->block_base);
 
 	size_t wholeAmountStolen = amt + pad;
 
@@ -372,10 +368,10 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	return thief;
 }
 
-size_t MonsterAllocator::GetAlignmentOffset(uintptr_t addr)
+size_t MonsterAllocator::GetAlignmentOffset(void * addr)
 {
 	
-	uintptr_t alignCheck = addr % ALIGNMENT;
+	size_t alignCheck = reinterpret_cast<size_t>(addr) % ALIGNMENT;
 	if (alignCheck == 0)
 		return 0;
 	return ALIGNMENT - alignCheck;
