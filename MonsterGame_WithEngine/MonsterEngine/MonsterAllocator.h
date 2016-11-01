@@ -4,7 +4,8 @@ struct BlockDescriptor {
 	void * blockBase;
 	void * userPtr;
 	//TODO: USE UINT8_T FOR POINTERS
-	size_t sizeOfBlock;
+	size_t wholeBlockSize;
+	size_t userSize;
 #if _DEBUG
 	int id;
 #endif // DEBUG

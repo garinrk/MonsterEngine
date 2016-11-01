@@ -27,13 +27,19 @@ int main() {
 	 
 	// Create a heap manager for my test heap.
 	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors, align);
-	void* addr = pHeapManager.MonsterMalloc(1);
-	double val = 0xBBBBBBBBBB;
+	void* addr1 = pHeapManager.MonsterMalloc(1);
+	void* addr2 = pHeapManager.MonsterMalloc(1);
+	void* addr3 = pHeapManager.MonsterMalloc(1);
+	void* addr4 = pHeapManager.MonsterMalloc(1);
 
-	*((double*)addr) = val;
-	void * killGuardbandAddr = static_cast<char*>(addr) - 1;
-	*static_cast<__int8*>(killGuardbandAddr) = 0xB;
-	pHeapManager.MonsterFree(addr);
+	pHeapManager.MonsterFree(addr2);
+	pHeapManager.MonsterFree(addr3);
+	//double val = 0xBBBBBBBBBB;
+
+	//*((double*)addr1) = val;
+	//void * killGuardbandAddr = static_cast<char*>(addr1) - 1;
+	//*static_cast<__int8*>(killGuardbandAddr) = 0xB;
+	//pHeapManager.MonsterFree(addr1);
 #endif // _TESTING
 	return 0;
 }
