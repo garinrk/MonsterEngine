@@ -3,6 +3,7 @@ struct BlockDescriptor {
 	BlockDescriptor * prev;
 	void * blockBase;
 	void * userPtr;
+	//TODO: USE UINT8_T FOR POINTERS
 	size_t sizeOfBlock;
 #if _DEBUG
 	int id;

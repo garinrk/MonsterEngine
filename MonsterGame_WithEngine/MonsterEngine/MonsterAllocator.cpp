@@ -343,17 +343,17 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 		*(backguardbandPos + i) = GUARDBAND_VAL;
 
 	}
-
-	thief->sizeOfBlock = i_wholeAmt + pad;
-
-	victim->sizeOfBlock -= i_wholeAmt + pad;
-
-	char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
-	victim->blockBase = modifiedBlockBase;
-	return thief;
 #endif
+	//thief->sizeOfBlock = i_wholeAmt + pad;
 
-	thief->userPtr = thief->blockBase;
+	//victim->sizeOfBlock -= i_wholeAmt + pad;
+
+	//char * modifiedBlockBase = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
+	//victim->blockBase = modifiedBlockBase;
+	//return thief;
+
+
+	//thief->userPtr = thief->blockBase;
 	thief->sizeOfBlock = i_wholeAmt + pad;
 	victim->sizeOfBlock -= i_wholeAmt + pad;
 	char * modifiedBlockBase2 = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
@@ -389,8 +389,8 @@ void MonsterAllocator::PrintLists()
 	conductor = allocatedRoot;
 
 	while (conductor != NULL) {
-		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
-		conductor = conductor->next;
+DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->sizeOfBlock, conductor->next);
+conductor = conductor->next;
 	}
 
 	conductor = unallocatedRoot;
@@ -452,7 +452,7 @@ void MonsterAllocator::PrintUnallocatedList()
 
 bool MonsterAllocator::MonsterFree(void * addr)
 {
-	
+
 	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocatedRoot);
 	bool guardBandIntegrity = GuardBandChecks(toMoveToUnallocated);
 
@@ -478,15 +478,19 @@ bool MonsterAllocator::MonsterFree(void * addr)
 
 bool MonsterAllocator::GuardBandChecks(BlockDescriptor * i_toCheck)
 {
-	void * frontGuardBandAddr = i_toCheck->blockBase;
-	__int8 frontValue = *static_cast<__int8*>(frontGuardBandAddr);
-	if (frontValue != -1)
-		return false;
+	uint8_t* frontGuardBandAddr = reinterpret_cast<uint8_t*>(i_toCheck->blockBase);
+	for (int i = 0; i < GUARDBAND_BYTES; i++) {
+		if (*(frontGuardBandAddr + i) != GUARDBAND_VAL){
+			return false;
+		}
+	}
+
 	
-	void * backGuardBandAddr = static_cast<char*>(i_toCheck->blockBase) + i_toCheck->sizeOfBlock - GUARDBAND_BYTES;
-	__int8 backValue = *static_cast<__int8*>(backGuardBandAddr);
-	if (backValue != -1) {
-		return false;
+	uint8_t * backGuardBandAddr = static_cast<uint8_t*>(i_toCheck->blockBase) + i_toCheck->sizeOfBlock - GUARDBAND_BYTES;
+	for (int i = 0; i < GUARDBAND_BYTES; i++) {
+		if (*(backGuardBandAddr + i) != GUARDBAND_VAL) {
+			return false;
+		}
 	}
 
 	return true;
