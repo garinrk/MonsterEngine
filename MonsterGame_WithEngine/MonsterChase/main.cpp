@@ -31,11 +31,18 @@ int main() {
 	void* addr2 = pHeapManager.MonsterMalloc(1);
 	void* addr3 = pHeapManager.MonsterMalloc(1);
 	void* addr4 = pHeapManager.MonsterMalloc(1);
+	*((__int8*)addr1) = 0x11;
+	*((__int8*)addr2) = 0x22;
+	*((__int8*)addr3) = 0x33;
+	*((__int8*)addr4) = 0x44;
+
 
 	pHeapManager.MonsterFree(addr2);
 	pHeapManager.MonsterFree(addr3);
+	pHeapManager.MonsterFree(addr1);
+	pHeapManager.MonsterFree(addr4);
+	
 	//double val = 0xBBBBBBBBBB;
-
 	//*((double*)addr1) = val;
 	//void * killGuardbandAddr = static_cast<char*>(addr1) - 1;
 	//*static_cast<__int8*>(killGuardbandAddr) = 0xB;

@@ -1,11 +1,13 @@
 #pragma once
 struct BlockDescriptor {
 	BlockDescriptor * prev;
-	void * blockBase;
-	void * userPtr;
+	void * block_base;
+	void * user_ptr;
 	//TODO: USE UINT8_T FOR POINTERS
-	size_t wholeBlockSize;
-	size_t userSize;
+	//TODO: USE UINT8_T for PADDING 
+	size_t whole_block_size;
+	size_t user_size;
+	size_t offset_padding;
 #if _DEBUG
 	int id;
 #endif // DEBUG
@@ -21,12 +23,12 @@ class MonsterAllocator
 {
 
 public:
-	MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors);
+	MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors);
 	~MonsterAllocator();
 	void * MonsterMalloc(size_t amt);
 	bool MonsterFree(void * addr);
 	void GarbageCollect();
-	size_t totalBytes;
+	size_t total_bytes_;
 
 	void PrintLists();
 	void PrintAllocatedList();
@@ -38,30 +40,30 @@ public:
 	size_t GetLargestFreeBlock();
 
 private:
-	void InitializeFreeList(int numDescriptors);
-	void AddToAllocated(BlockDescriptor* toInsert);
-	void AddToUnallocated(BlockDescriptor* toInsert);
-	void AddToFree(BlockDescriptor * toAdd);
-	bool GuardBandChecks(BlockDescriptor * i_toCheck);
+	void InitializeFreeList(int num_of_descriptors);
+	void AddToAllocated(BlockDescriptor* to_insert);
+	void AddToUnallocated(BlockDescriptor* to_insert);
+	void AddToFree(BlockDescriptor * to_add);
+	bool GuardBandChecks(BlockDescriptor * to_check);
 	
 
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
 
-	BlockDescriptor * UnallocBlockSearch(void * baseAddr, BlockDescriptor * start);
+	BlockDescriptor * UnallocBlockSearch(void * base_addr, BlockDescriptor * start);
 	BlockDescriptor * FindSuitableUnallocBlock(size_t amt);
 	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
 	size_t GetAlignmentOffset(uintptr_t addr);
 	
-	void * frontOfChunk;
-	void * backOfChunk;
+	void * front_of_chunk_;
+	void * back_of_chunk_;
 
-	BlockDescriptor * freeRoot = 0;
-	BlockDescriptor * endOfFree = 0;
-	BlockDescriptor * allocatedRoot = 0;
-	BlockDescriptor * unallocatedRoot = 0;
-	BlockDescriptor * frontOfBD;
+	BlockDescriptor * free_root_ = 0;
+	BlockDescriptor * endf_of_free_ = 0;
+	BlockDescriptor * allocated_root_ = 0;
+	BlockDescriptor * unallocated_root_ = 0;
+	BlockDescriptor * front_of_bd_;
 
 
 };

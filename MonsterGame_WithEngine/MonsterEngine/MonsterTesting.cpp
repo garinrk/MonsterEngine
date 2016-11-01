@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <vector>
-//#define TEST_SINGLE_LARGE_ALLOCATION
+#define TEST_SINGLE_LARGE_ALLOCATION
 //#define __TRACK_ALLOCATIONS
 
 bool MonsterTesting::RunAllocatorTests()

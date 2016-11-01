@@ -5,16 +5,16 @@
 #define GUARDBAND_BYTES 4
 #define ALIGNMENT 4
 
-MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numDescriptors)
+MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors)
 {
 	
-	frontOfChunk = _aligned_malloc(i_chunkSize, ALIGNMENT);
-	assert(frontOfChunk != NULL && "NULL Memory Allocation");
+	front_of_chunk_ = _aligned_malloc(size_of_chunk, ALIGNMENT);
+	assert(front_of_chunk_ != NULL && "NULL Memory Allocation");
 
 
-	backOfChunk = reinterpret_cast<char*>(frontOfChunk) + i_chunkSize;
+	back_of_chunk_ = reinterpret_cast<char*>(front_of_chunk_) + size_of_chunk;
 
-	InitializeFreeList(i_numDescriptors);
+	InitializeFreeList(num_of_descriptors);
 
 	DEBUG_LIST_DISPLAY;
 
@@ -23,20 +23,22 @@ MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numD
 MonsterAllocator::~MonsterAllocator()
 {
 	DEBUG_LIST_DISPLAY;
-	_aligned_free(frontOfChunk);
+	_aligned_free(front_of_chunk_);
 }
 
 void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 
 
 	//no more free block descriptors, attempt to get some by garbage collecting.
-	if (endOfFree == NULL) {
+	if (endf_of_free_ == NULL) {
 		GarbageCollect();
 	}
 
 #ifdef _DEBUG
-	i_amt += GUARDBAND_BYTES * 2;
+	//i_amt += GUARDBAND_BYTES * 2;
 #endif // _DEBUG
+
+	//i_amt += 3; //max number for offset
 
 	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(i_amt);
 
@@ -45,7 +47,7 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 		return nullptr;
 
 	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,i_amt);
-	newBD->userSize = i_amt - (GUARDBAND_BYTES * 2);
+	newBD->user_size = i_amt;
 	if (newBD == NULL)
 		return nullptr;
 	AddToAllocated(newBD);
@@ -54,35 +56,35 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 	DEBUG_LIST_DISPLAY;
 	
 
-	return newBD->userPtr;
+	return newBD->user_ptr;
 }
 
-void MonsterAllocator::InitializeFreeList(int i_numDescriptors)
+void MonsterAllocator::InitializeFreeList(int num_of_descriptors)
 {
-	frontOfBD = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<char*>(backOfChunk) - (sizeof(BlockDescriptor) * i_numDescriptors));
+	front_of_bd_ = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<char*>(back_of_chunk_) - (sizeof(BlockDescriptor) * num_of_descriptors));
 
-	assert(frontOfBD > frontOfChunk && "Pool of block descriptors larger than the entire chunk, too many descriptors");
+	assert(front_of_bd_ > front_of_chunk_ && "Pool of block descriptors larger than the entire chunk, too many descriptors");
 
-	frontOfBD->prev = NULL;
-	frontOfBD->blockBase = NULL;
-	frontOfBD->wholeBlockSize = 0;
+	front_of_bd_->prev = NULL;
+	front_of_bd_->block_base = NULL;
+	front_of_bd_->whole_block_size = 0;
 
 	BlockDescriptor * current;
-	current = frontOfBD;
+	current = front_of_bd_;
 
 
 #ifdef _DEBUG
 	current->id = 0;
 #endif
 
-	for ( int i = 0; i < i_numDescriptors - 1; i++) {
+	for ( int i = 0; i < num_of_descriptors - 1; i++) {
 		BlockDescriptor * newBD = current + 1;
-		if (newBD >= (BlockDescriptor*)backOfChunk)
+		if (newBD >= (BlockDescriptor*)back_of_chunk_)
 			break;
 		current->next = newBD;
 		newBD->prev = current;
-		newBD->blockBase = NULL;
-		newBD->wholeBlockSize = 0;
+		newBD->block_base = NULL;
+		newBD->whole_block_size = 0;
 		newBD->next = NULL;
 
 #ifdef _DEBUG
@@ -92,56 +94,56 @@ void MonsterAllocator::InitializeFreeList(int i_numDescriptors)
 		current = newBD;
 	}
 
-	freeRoot = frontOfBD;
-	endOfFree = current;
+	free_root_ = front_of_bd_;
+	endf_of_free_ = current;
 
-	totalBytes = reinterpret_cast<char*>(frontOfBD) - reinterpret_cast<char*>(frontOfChunk);
+	total_bytes_ = reinterpret_cast<char*>(front_of_bd_) - reinterpret_cast<char*>(front_of_chunk_);
 
 	//set up initial unallocated block
 	BlockDescriptor * initialUnallocatedBlock;
-	initialUnallocatedBlock = endOfFree; //use the end of free
-	endOfFree = endOfFree->prev;
-	endOfFree->next = NULL; //update end of free
+	initialUnallocatedBlock = endf_of_free_; //use the end of free
+	endf_of_free_ = endf_of_free_->prev;
+	endf_of_free_->next = NULL; //update end of free
 
 	initialUnallocatedBlock->prev = NULL;
-	initialUnallocatedBlock->blockBase = frontOfChunk;
-	initialUnallocatedBlock->wholeBlockSize = totalBytes;
+	initialUnallocatedBlock->block_base = front_of_chunk_;
+	initialUnallocatedBlock->whole_block_size = total_bytes_;
 	initialUnallocatedBlock->next = NULL;
 
 	AddToUnallocated(initialUnallocatedBlock);
 
 }
 
-void MonsterAllocator::AddToAllocated(BlockDescriptor * toInsert)
+void MonsterAllocator::AddToAllocated(BlockDescriptor * to_insert)
 {
 	BlockDescriptor* conductor;
-	conductor = allocatedRoot;
+	conductor = allocated_root_;
 
-	if (allocatedRoot == 0) {
-		toInsert->prev = NULL;
-		toInsert->next = NULL;
-		allocatedRoot = toInsert;
+	if (allocated_root_ == 0) {
+		to_insert->prev = NULL;
+		to_insert->next = NULL;
+		allocated_root_ = to_insert;
 		return;
 	}
 	else {
 		while (conductor->next != NULL) {
 			conductor = conductor->next;
 		}
-		conductor->next = toInsert;
-		toInsert->prev = conductor;
+		conductor->next = to_insert;
+		to_insert->prev = conductor;
 	}
 
 }
 
-void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
+void MonsterAllocator::AddToUnallocated(BlockDescriptor * to_insert)
 {
 	BlockDescriptor* conductor;
-	conductor = unallocatedRoot;
+	conductor = unallocated_root_;
 
-	if (unallocatedRoot == 0) {
-		unallocatedRoot = toInsert;
-		unallocatedRoot->prev = NULL;
-		unallocatedRoot->next = NULL;
+	if (unallocated_root_ == 0) {
+		unallocated_root_ = to_insert;
+		unallocated_root_->prev = NULL;
+		unallocated_root_->next = NULL;
 		return;
 	}
 	else {
@@ -149,8 +151,8 @@ void MonsterAllocator::AddToUnallocated(BlockDescriptor * toInsert)
 			conductor = conductor->next;
 		}
 
-		conductor->next = toInsert;
-		toInsert->prev = conductor;
+		conductor->next = to_insert;
+		to_insert->prev = conductor;
 	}
 }
 
@@ -159,18 +161,18 @@ void MonsterAllocator::GarbageCollect()
 	//looks through the list of free memory blocks
 	//combing any that can be combined into a single larger free block.
 	BlockDescriptor * placeHolder;
-	placeHolder = unallocatedRoot;
+	placeHolder = unallocated_root_;
 
 	bool finished = false;
 
-	if (unallocatedRoot == 0)
+	if (unallocated_root_ == 0)
 		return;
 
 	while (!finished) {
 
 		char * addrToSearchFor;
-		addrToSearchFor = static_cast<char*>(placeHolder->blockBase) + placeHolder->wholeBlockSize;
-		BlockDescriptor * foundBlock = UnallocBlockSearch(addrToSearchFor,unallocatedRoot);
+ 		addrToSearchFor = static_cast<char*>(placeHolder->block_base) + placeHolder->whole_block_size;
+		BlockDescriptor * foundBlock = UnallocBlockSearch(addrToSearchFor,unallocated_root_);
 
 		if (foundBlock == NULL) {
 			placeHolder = placeHolder->next;
@@ -188,13 +190,13 @@ void MonsterAllocator::GarbageCollect()
 }
 
 
-BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * baseAddr, BlockDescriptor * start)
+BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * base_addr, BlockDescriptor * start)
 {
 	BlockDescriptor * conductor;
 	conductor = start;
 
 	while (conductor!= NULL) {
-		if (conductor->blockBase == baseAddr)
+		if (conductor->block_base == base_addr)
 			return conductor;
 		else
 			conductor = conductor->next;
@@ -206,10 +208,15 @@ BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * baseAddr, BlockDes
 BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt)
 {
 	BlockDescriptor * conductor;
-	conductor = unallocatedRoot;
+	conductor = unallocated_root_;
+	amt += 3;
+#ifdef _DEBUG
+	amt += GUARDBAND_BYTES * 2; //need to account for padding and guardbands
+#endif // _DEBUG
+
 
 	while (conductor != NULL) {
-		if (conductor->wholeBlockSize >= amt) {
+		if (conductor->whole_block_size >= amt) {
 			return conductor;
 		}
 		conductor = conductor->next;
@@ -221,10 +228,10 @@ BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt)
 void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescriptor * second)
 {
 	DEBUGLOG("Combining blocks %d and %d", first->id, second->id);
-	size_t newSize = first->wholeBlockSize + second->wholeBlockSize;
+	size_t newSize = first->whole_block_size + second->whole_block_size;
 	
-	second->wholeBlockSize = newSize;
-	RemoveFromList(first->userPtr, unallocatedRoot);
+	second->whole_block_size = newSize;
+	RemoveFromList(first->user_ptr, unallocated_root_);
 	AddToFree(first);
 
 	DEBUG_LIST_DISPLAY;
@@ -233,15 +240,16 @@ void MonsterAllocator::ConsolidateBlocks(BlockDescriptor * first, BlockDescripto
 }
 
 
-void MonsterAllocator::AddToFree(BlockDescriptor * toAdd)
+void MonsterAllocator::AddToFree(BlockDescriptor * to_add)
 {
-	toAdd->blockBase = NULL;
-	toAdd->wholeBlockSize = NULL;
-	endOfFree->next = toAdd;
-	toAdd->prev = endOfFree;
+	to_add->block_base = NULL;
+	to_add->whole_block_size = NULL;
+	to_add->user_ptr = NULL;
+	endf_of_free_->next = to_add;
+	to_add->prev = endf_of_free_;
 
-	endOfFree = toAdd;
-	endOfFree->next = NULL;
+	endf_of_free_ = to_add;
+	endf_of_free_->next = NULL;
 }
 
 BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor * root)
@@ -250,18 +258,18 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 	conductor = root;
 
 	while (conductor != NULL) {
-		if (conductor->userPtr == addr) //found the block
+		if (conductor->user_ptr == addr) //found the block
 		{
 			//head case with something after it
 			if (conductor->prev == NULL && conductor->next != NULL) {
-				if (conductor == freeRoot) {
-					freeRoot = conductor->next;
+				if (conductor == free_root_) {
+					free_root_ = conductor->next;
 				}
-				else if (conductor == allocatedRoot) {
-					allocatedRoot = conductor->next;
+				else if (conductor == allocated_root_) {
+					allocated_root_ = conductor->next;
 				}
-				else if (conductor == unallocatedRoot) {
-					unallocatedRoot = conductor->next;
+				else if (conductor == unallocated_root_) {
+					unallocated_root_ = conductor->next;
 				}
 
 				conductor->next->prev = NULL;
@@ -271,14 +279,14 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 			}
 			//root case
 			else if (conductor->prev == NULL && conductor->next == NULL) {
-				if (conductor == freeRoot) {
-					freeRoot = NULL;
+				if (conductor == free_root_) {
+					free_root_ = NULL;
 				}
-				else if (conductor == allocatedRoot) {
-					allocatedRoot = NULL;
+				else if (conductor == allocated_root_) {
+					allocated_root_ = NULL;
 				}
-				else if (conductor == unallocatedRoot) {
-					unallocatedRoot = NULL;
+				else if (conductor == unallocated_root_) {
+					unallocated_root_ = NULL;
 				}
 			}
 			//middle
@@ -293,8 +301,8 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 				conductor->prev->next = NULL;
 				conductor->prev = NULL;
 
-				if (conductor == endOfFree) {
-					endOfFree = NULL;
+				if (conductor == endf_of_free_) {
+					endf_of_free_ = NULL;
 				}
 			}
 
@@ -311,47 +319,56 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor 
 	return nullptr;
 }
 
-BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t i_wholeAmt)
+BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t amt)
 {
-
+	
 	//get a bd from the free list
-	BlockDescriptor * thief = endOfFree;
+	BlockDescriptor * thief = endf_of_free_;
 	if (thief->prev != NULL) {
-		endOfFree = thief->prev;
+		endf_of_free_ = thief->prev;
 	}
-	endOfFree->next = NULL;
+	endf_of_free_->next = NULL;
 	thief->prev = NULL;
 	thief->next = NULL; 
 
 	//check for alignmentcxv
-	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->blockBase));
-	
-	thief->blockBase = reinterpret_cast<char*>(victim->blockBase); //we're going to take the front of the victim space
+	size_t pad = GetAlignmentOffset(reinterpret_cast<uintptr_t>(victim->block_base));
 
+	size_t wholeAmountStolen = amt + pad;
+
+#ifdef _DEBUG
+	wholeAmountStolen = amt + GUARDBAND_BYTES * 2 + pad;
+#endif
+
+	thief->block_base = reinterpret_cast<char*>(victim->block_base); //we're going to take the front of the victim space
+	thief->offset_padding = pad;
+	thief->user_ptr = reinterpret_cast<char*>(thief->block_base) + pad; //assign user's pointer
 #ifdef _DEBUG					
-	char * frontguardbandPos = static_cast<char*>(thief->blockBase) + pad;
+	unsigned char * frontguardbandPos = static_cast<unsigned char*>(thief->block_base) + pad;
 	for (int i = 0; i < GUARDBAND_BYTES; i++) {
 		*(frontguardbandPos + i) = GUARDBAND_VAL;
 
 	}
-																	 
-	thief->userPtr = reinterpret_cast<char*>(thief->blockBase) + GUARDBAND_BYTES; //assign user's pointer
 
-																				  
-	char * backguardbandPos = reinterpret_cast<char*>(thief->userPtr) + (i_wholeAmt - GUARDBAND_BYTES * 2); //put back guardband
-	
+	thief->user_ptr = reinterpret_cast<char*>(thief->block_base) + GUARDBAND_BYTES + pad;
+#endif	
+
+#ifdef _DEBUG
+	unsigned char * backguardbandPos = reinterpret_cast<unsigned char*>(thief->user_ptr) + amt; //put back guardband
+
 	for (int i = 0; i < GUARDBAND_BYTES; i++) {
 		*(backguardbandPos + i) = GUARDBAND_VAL;
 
 	}
 
-	pad += GUARDBAND_BYTES;
-#endif
-	thief->wholeBlockSize = i_wholeAmt + pad;
-	victim->wholeBlockSize -= i_wholeAmt + pad;
-	char * modifiedBlockBase2 = reinterpret_cast<char*>(victim->blockBase) + i_wholeAmt + pad;
-	victim->blockBase = reinterpret_cast<void*>(modifiedBlockBase2);
+#endif // _DEBUG
 
+
+	thief->whole_block_size = wholeAmountStolen;
+	victim->whole_block_size -= wholeAmountStolen;	
+
+	char * modifiedBlockBase2 = reinterpret_cast<char*>(victim->block_base) + wholeAmountStolen;
+	victim->block_base = reinterpret_cast<void*>(modifiedBlockBase2);
 	return thief;
 }
 
@@ -371,25 +388,25 @@ void MonsterAllocator::PrintLists()
 	DEBUGLOG("=========PRINT START");
 
 	BlockDescriptor * conductor;
-	conductor = freeRoot;
+	conductor = free_root_;
 
 
 	while (conductor != NULL) {
-		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev,conductor->blockBase,conductor->wholeBlockSize,conductor->next);
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->block_base, conductor->user_ptr, conductor->whole_block_size, conductor->next);
 		conductor = conductor->next;
 	}
 
-	conductor = allocatedRoot;
+	conductor = allocated_root_;
 
 	while (conductor != NULL) {
-DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->wholeBlockSize, conductor->next);
+DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->block_base, conductor->user_ptr, conductor->whole_block_size, conductor->next);
 conductor = conductor->next;
 	}
 
-	conductor = unallocatedRoot;
+	conductor = unallocated_root_;
 
 	while (conductor != NULL) {
-		DEBUGLOG("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->wholeBlockSize, conductor->next);
+		DEBUGLOG("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->block_base,conductor->user_ptr, conductor->whole_block_size, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -402,10 +419,10 @@ void MonsterAllocator::PrintAllocatedList() {
 	DEBUGLOG("=========PRINT ALLOCATED START");
 
 	BlockDescriptor * conductor;
-	conductor = allocatedRoot;
+	conductor = allocated_root_;
 
 	while (conductor != NULL) {
-		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->wholeBlockSize, conductor->next);
+		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->block_base, conductor->user_ptr, conductor->whole_block_size, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -417,10 +434,10 @@ void MonsterAllocator::PrintFreeList()
 	DEBUGLOG("=========PRINT FREE START");
 
 	BlockDescriptor * conductor;
-	conductor = freeRoot;
+	conductor = free_root_;
 
 	while (conductor != NULL) {
-		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->wholeBlockSize, conductor->next);
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->block_base, conductor->user_ptr, conductor->whole_block_size, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -433,10 +450,10 @@ void MonsterAllocator::PrintUnallocatedList()
 	DEBUGLOG("=========PRINT UNALLOCATED START");
 
 	BlockDescriptor * conductor;
-	conductor = unallocatedRoot;
+	conductor = unallocated_root_;
 
 	while (conductor != NULL) {
-		DEBUGLOG("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tsize:%zd\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->blockBase, conductor->wholeBlockSize, conductor->next);
+		DEBUGLOG("UNALLOCATED NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->id, conductor->prev, conductor->block_base, conductor->user_ptr, conductor->whole_block_size, conductor->next);
 		conductor = conductor->next;
 	}
 
@@ -446,7 +463,7 @@ void MonsterAllocator::PrintUnallocatedList()
 bool MonsterAllocator::MonsterFree(void * addr)
 {
 
-	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocatedRoot);
+	BlockDescriptor * toMoveToUnallocated = RemoveFromList(addr, allocated_root_);
 
 	assert(toMoveToUnallocated != NULL && "Attempted to free a non valid addr");
 
@@ -472,9 +489,9 @@ bool MonsterAllocator::MonsterFree(void * addr)
 	return true;
 }
 
-bool MonsterAllocator::GuardBandChecks(BlockDescriptor * i_toCheck)
+bool MonsterAllocator::GuardBandChecks(BlockDescriptor * to_check)
 {
-	uint8_t* frontGuardBandAddr = reinterpret_cast<uint8_t*>(i_toCheck->blockBase);
+	uint8_t* frontGuardBandAddr = reinterpret_cast<uint8_t*>(to_check->block_base) + to_check->offset_padding;
 	for (int i = 0; i < GUARDBAND_BYTES; i++) {
 		if (*(frontGuardBandAddr + i) != GUARDBAND_VAL){
 			return false;
@@ -482,7 +499,7 @@ bool MonsterAllocator::GuardBandChecks(BlockDescriptor * i_toCheck)
 	}
 
 	
-	uint8_t * backGuardBandAddr = static_cast<uint8_t*>(i_toCheck->userPtr) + i_toCheck->userSize;
+	uint8_t * backGuardBandAddr = static_cast<uint8_t*>(to_check->user_ptr) + to_check->user_size;
 	for (int i = 0; i < GUARDBAND_BYTES; i++) {
 		if (*(backGuardBandAddr + i) != GUARDBAND_VAL) {
 			return false;
@@ -504,19 +521,19 @@ bool MonsterAllocator::Contains(void * addr)
 	//look through allocated first
 
 	BlockDescriptor * conductor;
-	conductor = allocatedRoot;
+	conductor = allocated_root_;
 
 	while (conductor != NULL) {
-		if (conductor->userPtr == addr)
+		if (conductor->user_ptr == addr)
 			return true;
 		else
 			conductor = conductor->next;
 	}
 
-	conductor = unallocatedRoot;
+	conductor = unallocated_root_;
 
 	while (conductor != NULL) {
-		if (conductor->userPtr == addr)
+		if (conductor->user_ptr == addr)
 			return true;
 		else
 			conductor = conductor->next;
@@ -527,10 +544,10 @@ bool MonsterAllocator::Contains(void * addr)
 bool MonsterAllocator::isAllocated(void * addr)
 {
 	BlockDescriptor * conductor;
-	conductor = allocatedRoot;
+	conductor = allocated_root_;
 
 	while (conductor != NULL) {
-		if (conductor->userPtr == addr)
+		if (conductor->user_ptr == addr)
 			return true;
 		else
 			conductor = conductor->next;
@@ -544,11 +561,11 @@ size_t MonsterAllocator::GetLargestFreeBlock()
 	size_t largest = 0;
 
 	BlockDescriptor * conductor;
-	conductor = unallocatedRoot;
+	conductor = unallocated_root_;
 
 	while (conductor != NULL) {
-		if (conductor->wholeBlockSize > largest)
-			largest = conductor->wholeBlockSize;
+		if (conductor->whole_block_size > largest)
+			largest = conductor->whole_block_size;
 		else
 			conductor = conductor->next;
 	}
