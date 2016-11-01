@@ -5,10 +5,10 @@
 #define GUARDBAND_BYTES 4
 #define ALIGNMENT 4
 
-MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numDescriptors, size_t i_align)
+MonsterAllocator::MonsterAllocator(size_t i_chunkSize, const unsigned int i_numDescriptors)
 {
 	
-	frontOfChunk = _aligned_malloc(i_chunkSize, i_align);
+	frontOfChunk = _aligned_malloc(i_chunkSize, ALIGNMENT);
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
 
 

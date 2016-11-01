@@ -21,7 +21,7 @@ class MonsterAllocator
 {
 
 public:
-	MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors, size_t initialAlignment);
+	MonsterAllocator(size_t sizeOfChunk, const unsigned int numDescriptors);
 	~MonsterAllocator();
 	void * MonsterMalloc(size_t amt);
 	bool MonsterFree(void * addr);
