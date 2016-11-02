@@ -48,7 +48,13 @@ int main() {
 	//*static_cast<__int8*>(killGuardbandAddr) = 0xB;
 	//pHeapManager.MonsterFree(addr1);
 #endif // _TESTING
+
+#if defined _DEBUG
+	_CrtDumpMemoryLeaks();
+#endif // _DEBUG
 	return 0;
+
+
 }
 
 
