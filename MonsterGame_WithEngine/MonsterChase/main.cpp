@@ -4,7 +4,10 @@
 
 #define ALLOCATORTESTS
 //#define _GAMEPLAY
-#define _TESTING
+#define MYTESTS
+
+void RunAllocatorTests();
+void RunMyAllocatorTests();
 
 int main() {
 
@@ -16,15 +19,31 @@ int main() {
 
 
 #ifdef ALLOCATORTESTS
-	bool result = MonsterTesting::RunAllocatorTests();
-	assert(result);
+	RunAllocatorTests();
 #endif // _ALLOCATORTESTS
 
-#ifdef _TESTING
+#ifdef MYTESTS
+	RunMyAllocatorTests();
+#endif // _TESTING
+
+#if defined _DEBUG
+	_CrtDumpMemoryLeaks();
+#endif // _DEBUG
+	return 0;
+
+
+}
+
+void RunAllocatorTests() {
+	bool result = MonsterTesting::RunAllocatorTests();
+	assert(result);
+}
+
+void RunMyAllocatorTests() {
 	const size_t 		sizeHeap = 1024;
 	const unsigned int 	numDescriptors = 8;
 	const size_t		align = 4;
-	 
+
 	// Create a heap manager for my test heap.
 	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors);
 	void* addr1 = pHeapManager.MonsterMalloc(1);
@@ -37,25 +56,15 @@ int main() {
 	*((__int8*)addr4) = 0x44;
 
 
+	pHeapManager.MonsterFree(addr1);
 	pHeapManager.MonsterFree(addr2);
 	pHeapManager.MonsterFree(addr3);
-	pHeapManager.MonsterFree(addr1);
 	pHeapManager.MonsterFree(addr4);
-	
 	//double val = 0xBBBBBBBBBB;
 	//*((double*)addr1) = val;
 	//void * killGuardbandAddr = static_cast<char*>(addr1) - 1;
 	//*static_cast<__int8*>(killGuardbandAddr) = 0xB;
 	//pHeapManager.MonsterFree(addr1);
-#endif // _TESTING
-
-#if defined _DEBUG
-	_CrtDumpMemoryLeaks();
-#endif // _DEBUG
-	return 0;
-
-
 }
-
 
 

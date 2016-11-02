@@ -22,7 +22,6 @@ MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_
 
 MonsterAllocator::~MonsterAllocator()
 {
-	DEBUG_LIST_DISPLAY;
 	_aligned_free(front_of_chunk_);
 }
 
