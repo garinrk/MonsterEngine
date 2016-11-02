@@ -137,6 +137,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MonsterAllocator-inl.h" />
     <ClInclude Include="MonsterAllocator.h" />
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine.h" />

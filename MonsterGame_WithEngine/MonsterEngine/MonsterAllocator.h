@@ -18,6 +18,9 @@ struct BlockDescriptor {
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#define GUARDBAND_VAL 0xFF
+#define GUARDBAND_BYTES 4
+#define ALIGNMENT 4
 class MonsterAllocator
 {
 
@@ -29,14 +32,14 @@ public:
 	void GarbageCollect();
 	size_t total_bytes_;
 
-	void PrintLists();
-	void PrintAllocatedList();
-	void PrintFreeList();
-	void PrintUnallocatedList();
-	bool Contains(void * addr);
-	bool isAllocated(void * addr);
+	void PrintLists() const;
+	void PrintAllocatedList() const;
+	void PrintFreeList() const;
+	void PrintUnallocatedList() const;
+	bool Contains(void * addr) const;
+	bool isAllocated(void * addr) const;
 
-	size_t GetLargestFreeBlock();
+	size_t GetLargestFreeBlock() const;
 
 private:
 	void InitializeFreeList(int num_of_descriptors);
@@ -46,14 +49,14 @@ private:
 	bool GuardBandChecks(BlockDescriptor * to_check);
 	
 
-	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor* second);
+	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor * second);
 
-	BlockDescriptor * UnallocBlockSearch(void * base_addr, BlockDescriptor * start);
-	BlockDescriptor * FindSuitableUnallocBlock(size_t amt);
+	BlockDescriptor * UnallocBlockSearch(void * base_addr, BlockDescriptor * start) const;
+	BlockDescriptor * FindSuitableUnallocBlock(size_t amt) const;
 	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
-	size_t GetAlignmentOffset(void * addr);
+	inline size_t GetAlignmentOffset(void * addr);
 	
 	void * front_of_chunk_;
 	void * back_of_chunk_;
@@ -66,6 +69,8 @@ private:
 
 
 };
+
+#include "MonsterAllocator-inl.h"
 
 
 

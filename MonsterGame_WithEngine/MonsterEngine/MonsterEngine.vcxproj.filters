@@ -36,6 +36,9 @@
     <ClInclude Include="MMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterAllocator-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">

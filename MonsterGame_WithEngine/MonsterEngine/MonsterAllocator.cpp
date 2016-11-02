@@ -1,10 +1,6 @@
 #include "MonsterAllocator.h"
 #include "MonsterDebug.h"
 
-#define GUARDBAND_VAL 0xFF
-#define GUARDBAND_BYTES 4
-#define ALIGNMENT 4
-
 MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors)
 {
 	
@@ -185,7 +181,7 @@ void MonsterAllocator::GarbageCollect()
 }
 
 
-BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * base_addr, BlockDescriptor * start)
+BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * base_addr, BlockDescriptor * start) const
 {
 	BlockDescriptor * conductor;
 	conductor = start;
@@ -200,7 +196,7 @@ BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * base_addr, BlockDe
 	return nullptr;
 }
 
-BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt)
+BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt) const
 {
 	BlockDescriptor * conductor;
 	conductor = unallocated_root_;
@@ -367,17 +363,8 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	return thief;
 }
 
-size_t MonsterAllocator::GetAlignmentOffset(void * addr)
-{
-	
-	size_t alignCheck = reinterpret_cast<size_t>(addr) % ALIGNMENT;
-	if (alignCheck == 0)
-		return 0;
-	return ALIGNMENT - alignCheck;
 
-}
-
-void MonsterAllocator::PrintLists()
+void MonsterAllocator::PrintLists() const
 {
 	//print free lists
 	DEBUGLOG("=========PRINT START");
@@ -409,7 +396,7 @@ conductor = conductor->next;
 
 }
 
-void MonsterAllocator::PrintAllocatedList() {
+void MonsterAllocator::PrintAllocatedList()  const {
 	//print allocated lists
 	DEBUGLOG("=========PRINT ALLOCATED START");
 
@@ -423,7 +410,7 @@ void MonsterAllocator::PrintAllocatedList() {
 
 }
 
-void MonsterAllocator::PrintFreeList()
+void MonsterAllocator::PrintFreeList()  const
 {
 	//print free lists
 	DEBUGLOG("=========PRINT FREE START");
@@ -439,7 +426,7 @@ void MonsterAllocator::PrintFreeList()
 }
 
 
-void MonsterAllocator::PrintUnallocatedList()
+void MonsterAllocator::PrintUnallocatedList() const
 {
 	//print free lists
 	DEBUGLOG("=========PRINT UNALLOCATED START");
@@ -510,7 +497,7 @@ bool MonsterAllocator::GuardBandChecks(BlockDescriptor * to_check)
 
 
 
-bool MonsterAllocator::Contains(void * addr)
+bool MonsterAllocator::Contains(void * addr) const
 {
 
 	//look through allocated first
@@ -536,7 +523,7 @@ bool MonsterAllocator::Contains(void * addr)
 	return false;
 }
 
-bool MonsterAllocator::isAllocated(void * addr)
+bool MonsterAllocator::isAllocated(void * addr) const
 {
 	BlockDescriptor * conductor;
 	conductor = allocated_root_;
@@ -551,7 +538,7 @@ bool MonsterAllocator::isAllocated(void * addr)
 }
 
 
-size_t MonsterAllocator::GetLargestFreeBlock()
+size_t MonsterAllocator::GetLargestFreeBlock() const
 {
 	size_t largest = 0;
 
