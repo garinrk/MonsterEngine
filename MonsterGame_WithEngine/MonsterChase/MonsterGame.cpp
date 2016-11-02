@@ -2,7 +2,7 @@
 
 
 
-MonsterGame::MonsterGame(int boardSize, Point2D playerStartPos)
+MonsterGame::MonsterGame(int boardSize, Point2D &playerStartPos)
 {
 	boardSizeX = boardSize;
 	boardSizeY = boardSize;
@@ -22,8 +22,8 @@ void MonsterGame::Start()
 	printf("%s", "=======================================\n");
 	printf("%s", "==============MONSTER CHASE============\n");
 	printf("%s", "=======================================\n");
-	GetUserName();
-	GetNumberOfMonsters();
+	GetAndDisplayUserName();
+	GetAndSetNumberOfMonsters();
 	InitializeMonsters(numberOfMonsters);
 	PlayGame();
 
@@ -47,7 +47,7 @@ void MonsterGame::Start()
 /// <returns>	true if it succeeds, false if it fails. </returns>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool MonsterGame::CheckForNumberValidity(char* input)
+bool MonsterGame::CheckForNumberValidity(char* input) const
 {
 	size_t result = strlen(input);
 	int userNumber = atoi(input);
@@ -62,7 +62,7 @@ bool MonsterGame::CheckForNumberValidity(char* input)
 /// <remarks>	Garin, 9/4/2016. </remarks>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MonsterGame::GetUserName() {
+void MonsterGame::GetAndDisplayUserName() {
 
 	while (askingForPlayerInfo) {
 		printf("%s", "\nWhat is your name [Max length of 80]: ");
@@ -88,7 +88,7 @@ void MonsterGame::GetUserName() {
 /// <remarks>	Garin, 9/4/2016. </remarks>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MonsterGame::GetNumberOfMonsters()
+void MonsterGame::GetAndSetNumberOfMonsters()
 {
 
 	while (askingForNumberOfMonsters) {
@@ -201,7 +201,7 @@ void MonsterGame::GetPlayerInput() {
 
 }
 
-void MonsterGame::DisplayGameState()
+void MonsterGame::DisplayGameState() const
 {
 
 	printf("\n\n=======================================\n");
@@ -227,17 +227,16 @@ void MonsterGame::DisplayGameState()
 /// <param name="n">	The char to process. </param>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MonsterGame::ProcessPlayerInput(char n) {
-	n = tolower(n);
-	if (n == 'w')
+void MonsterGame::ProcessPlayerInput(const char n) {
+	if (n == 'w' || n == 'W')
 		playerPosY++;
-	else if (n == 'a')
+	else if (n == 'a' || n == 'A')
 		playerPosX--;
-	else if (n == 's')
+	else if (n == 's' || n == 'S')
 		playerPosY--;
-	else if (n == 'd')
+	else if (n == 'd' || n == 'D')
 		playerPosX++;
-	else if (n == 'q')
+	else if (n == 'q' || n == 'Q')
 		quitGameFlag = true;
 
 }
@@ -252,11 +251,11 @@ void MonsterGame::ProcessPlayerInput(char n) {
 /// <param name="n">	The int to process. </param>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MonsterGame::InitializeMonsters(int n)
+void MonsterGame::InitializeMonsters(const int numberOfMonsters)
 {
-	masterMonsterList = new Monster[n];
+	masterMonsterList = new Monster[numberOfMonsters];
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < numberOfMonsters; i++) {
 		Monster tempMon;
 		tempMon.SetName(i + 1);
 		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
@@ -278,7 +277,7 @@ void MonsterGame::InitializeMonsters(int n)
 /// <param name="monsterPos">	The monster position. </param>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MonsterGame::KillMonster(int monsterPos)
+void MonsterGame::KillMonster(const int monsterPos)
 {
 	printf("\n\n=======================================\n");
 	printf("===========A MONSTER HAS DIED==========\n");

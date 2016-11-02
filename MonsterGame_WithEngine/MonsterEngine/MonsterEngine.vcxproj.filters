@@ -39,6 +39,9 @@
     <ClInclude Include="MonsterAllocator-inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Point2D-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">

@@ -21,6 +21,7 @@ struct BlockDescriptor {
 #define GUARDBAND_VAL 0xFF
 #define GUARDBAND_BYTES 4
 #define ALIGNMENT 4
+
 class MonsterAllocator
 {
 
@@ -36,13 +37,13 @@ public:
 	void PrintAllocatedList() const;
 	void PrintFreeList() const;
 	void PrintUnallocatedList() const;
-	bool Contains(void * addr) const;
-	bool isAllocated(void * addr) const;
+	bool Contains(const void * addr) const;
+	bool isAllocated(const void * addr) const;
 
 	size_t GetLargestFreeBlock() const;
 
 private:
-	void InitializeFreeList(int num_of_descriptors);
+	void InitializeFreeList(const int num_of_descriptors);
 	void AddToAllocated(BlockDescriptor* to_insert);
 	void AddToUnallocated(BlockDescriptor* to_insert);
 	void AddToFree(BlockDescriptor * to_add);
@@ -51,12 +52,12 @@ private:
 
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor * second);
 
-	BlockDescriptor * UnallocBlockSearch(void * base_addr, BlockDescriptor * start) const;
+	BlockDescriptor * UnallocBlockSearch(const void * base_addr, BlockDescriptor * start) const;
 	BlockDescriptor * FindSuitableUnallocBlock(size_t amt) const;
-	BlockDescriptor * RemoveFromList(void * addr, BlockDescriptor * root);
+	BlockDescriptor * RemoveFromList(const void * addr, BlockDescriptor * root);
 	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
 
-	inline size_t GetAlignmentOffset(void * addr);
+	inline size_t GetAlignmentOffset(const void * addr);
 	
 	void * front_of_chunk_;
 	void * back_of_chunk_;

@@ -50,7 +50,7 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 	return newBD->user_ptr;
 }
 
-void MonsterAllocator::InitializeFreeList(int num_of_descriptors)
+void MonsterAllocator::InitializeFreeList(const int num_of_descriptors)
 {
 	front_of_bd_ = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<char*>(back_of_chunk_) - (sizeof(BlockDescriptor) * num_of_descriptors));
 
@@ -181,7 +181,7 @@ void MonsterAllocator::GarbageCollect()
 }
 
 
-BlockDescriptor * MonsterAllocator::UnallocBlockSearch(void * base_addr, BlockDescriptor * start) const
+BlockDescriptor * MonsterAllocator::UnallocBlockSearch(const void * base_addr, BlockDescriptor * start) const
 {
 	BlockDescriptor * conductor;
 	conductor = start;
@@ -243,7 +243,7 @@ void MonsterAllocator::AddToFree(BlockDescriptor * to_add)
 	endf_of_free_->next = NULL;
 }
 
-BlockDescriptor * MonsterAllocator::RemoveFromList(void * addr, BlockDescriptor * root)
+BlockDescriptor * MonsterAllocator::RemoveFromList(const void * addr, BlockDescriptor * root)
 {
 	BlockDescriptor * conductor;
 	conductor = root;
@@ -497,7 +497,7 @@ bool MonsterAllocator::GuardBandChecks(BlockDescriptor * to_check)
 
 
 
-bool MonsterAllocator::Contains(void * addr) const
+bool MonsterAllocator::Contains(const void * addr) const
 {
 
 	//look through allocated first
@@ -523,7 +523,7 @@ bool MonsterAllocator::Contains(void * addr) const
 	return false;
 }
 
-bool MonsterAllocator::isAllocated(void * addr) const
+bool MonsterAllocator::isAllocated(const void * addr) const
 {
 	BlockDescriptor * conductor;
 	conductor = allocated_root_;

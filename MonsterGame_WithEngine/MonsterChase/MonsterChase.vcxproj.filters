@@ -32,5 +32,8 @@
     <ClInclude Include="MonsterGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterGame-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

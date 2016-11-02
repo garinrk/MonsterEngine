@@ -164,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MonsterEngine\Monster.h" />
+    <ClInclude Include="MonsterGame-inl.h" />
     <ClInclude Include="MonsterGame.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

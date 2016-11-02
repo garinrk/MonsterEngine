@@ -14,22 +14,22 @@
 class MonsterGame
 {
 public:
-	MonsterGame(int boardSize, Point2D playerStartPos);
+	MonsterGame(int boardSize, Point2D &playerStartPos);
 	~MonsterGame();
 	void Start();
 
 
 private:
 
-	bool CheckForNumberValidity(char* input);
-	void InitializeMonsters(int numberOfMonsters);
-	void GetUserName();
-	void GetNumberOfMonsters();
+	bool CheckForNumberValidity(char* input) const;
+	void InitializeMonsters(const int numberOfMonsters);
+	void GetAndDisplayUserName();
+	void GetAndSetNumberOfMonsters();
 	void PlayGame();
 	void GetPlayerInput();
-	void DisplayGameState();
-	void ProcessPlayerInput(char n);
-	void KillMonster(int monsterPos);
+	void DisplayGameState() const;
+	void ProcessPlayerInput(const char n);
+	void KillMonster(const int monsterPos);
 	void AddMonster();
 
 
@@ -57,5 +57,5 @@ private:
 	Monster *masterMonsterList;
 
 };
-
+#include "MonsterGame-inl.h"
 #endif

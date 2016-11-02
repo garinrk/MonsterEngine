@@ -7,22 +7,23 @@ class Point2D
 {
 public:
 	Point2D(double init_x, double init_y);
-	double Magnitude();
-	double DotProduct(Point2D other);
+	inline double Magnitude() const;
+	inline double DotProduct(const Point2D& other) const;
 	void Normalize();
-	double x();
-	double y();
-	void x(double val);
-	void y(double val);
+	inline double x() const;
+	inline double y() const;
+	inline void x(const double val);
+	inline void y(const double val);
 
-	Point2D operator+(Point2D rhs);
-	Point2D operator-(Point2D rhs);
+	inline Point2D operator+(const Point2D& rhs) const;
+	inline Point2D operator-(const Point2D& rhs) const;
 
 
 private:
-	double coord_x;
-	double coord_y;
+	double coord_x_;
+	double coord_y_;
 };
-
+#include "Point2D-inl.h"
 #endif
+
 

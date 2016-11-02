@@ -2,13 +2,14 @@
 #include "MonsterTesting.h"
 #include "MonsterGame.h"
 
-#define ALLOCATORTESTS
+#define ALLOCATOR_TESTS
+#define CONST_TESTS
 //#define _GAMEPLAY
 #define MYTESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
-
+void RunConstTests();
 int main() {
 
 #ifdef _GAMEPLAY
@@ -17,20 +18,37 @@ int main() {
 	mg.Start();
 #endif // _GAMEPLAY
 
+#ifdef CONST_TESTS
+	RunConstTests();
+#endif
 
-#ifdef ALLOCATORTESTS
+
+#ifdef ALLOCATOR_TESTS
 	RunAllocatorTests();
-#endif // _ALLOCATORTESTS
-
-#ifdef MYTESTS
 	RunMyAllocatorTests();
-#endif // _TESTING
+#endif // _ALLOCATORTESTS
 
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();
 #endif // _DEBUG
 	return 0;
 
+}
+
+void RunConstTests() {
+	const Point2D A(3.0, 3.0);
+	const Point2D B(2.0, 2.0);
+	double result = A.DotProduct(B);
+
+	double mag = A.Magnitude();
+	double x_coord = A.x();
+	double y_coord = A.y();
+
+	Point2D C = A + B;
+	//A = A + 3; //not possible because A is const and the compiler hates you.
+	//A = A - 3;
+	
+	Point2D D = A - B;
 
 }
 
