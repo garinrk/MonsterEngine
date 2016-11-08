@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "MonsterTransform.h"
 class MonsterObject
 {
 
@@ -12,6 +13,6 @@ public:
 	//name var
 private:
 	std::string name_;
-	
+	MonsterTransform transform_;
 };
 
