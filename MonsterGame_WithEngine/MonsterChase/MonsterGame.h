@@ -1,7 +1,7 @@
 #ifndef MONSTERGAME_H
 #define MONSTERGAME_H
 
-#include "Point2D.h"
+#include "MonsterPoint2D.h"
 #include "Monster.h"
 #include "MonsterAllocator.h"
 #include "MonsterDebug.h"
@@ -14,7 +14,7 @@
 class MonsterGame
 {
 public:
-	MonsterGame(int boardSize, Point2D &playerStartPos);
+	MonsterGame(int boardSize, MonsterPoint2D &playerStartPos);
 	~MonsterGame();
 	void Start();
 

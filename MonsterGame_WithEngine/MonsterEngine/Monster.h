@@ -10,7 +10,7 @@
 
 #include <random>
 #include <time.h>
-#include "Point2D.h"
+#include "MonsterPoint2D.h"
 
 
 
@@ -25,7 +25,7 @@ class Monster {
 		void SetBoardBounds(int x, int y);
 		void Update();
 		int GetName();
-		Point2D pos = Point2D(0, 0);
+		MonsterPoint2D pos = MonsterPoint2D(0, 0);
 
 		int age = 1;
 

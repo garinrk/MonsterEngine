@@ -2,7 +2,7 @@
 
 
 
-MonsterGame::MonsterGame(int boardSize, Point2D &playerStartPos)
+MonsterGame::MonsterGame(int boardSize, MonsterPoint2D &playerStartPos)
 {
 	boardSizeX = boardSize;
 	boardSizeY = boardSize;

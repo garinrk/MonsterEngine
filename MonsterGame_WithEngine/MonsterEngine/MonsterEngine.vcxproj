@@ -142,17 +142,21 @@
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine.h" />
     <ClInclude Include="MMath.h" />
+    <ClInclude Include="MonsterObject.h" />
     <ClInclude Include="MonsterTesting.h" />
-    <ClInclude Include="Point2D-inl.h" />
-    <ClInclude Include="Point2D.h" />
+    <ClInclude Include="MonsterPoint2D-inl.h" />
+    <ClInclude Include="MonsterPoint2D.h" />
+    <ClInclude Include="MonsterTransform.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterAllocator.cpp" />
     <ClCompile Include="MonsterDebug.cpp" />
     <ClCompile Include="MonsterEngine.cpp" />
     <ClCompile Include="MMath.cpp" />
+    <ClCompile Include="MonsterObject.cpp" />
     <ClCompile Include="MonsterTesting.cpp" />
-    <ClCompile Include="Point2D.cpp" />
+    <ClCompile Include="MonsterPoint2D.cpp" />
+    <ClCompile Include="MonsterTransform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
