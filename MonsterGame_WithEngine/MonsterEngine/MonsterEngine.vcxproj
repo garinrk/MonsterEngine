@@ -137,16 +137,21 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="IGameObjectController.h" />
     <ClInclude Include="MonsterAllocator-inl.h" />
     <ClInclude Include="MonsterAllocator.h" />
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine.h" />
     <ClInclude Include="MMath.h" />
+    <ClInclude Include="MonsterObject-inl.h" />
     <ClInclude Include="MonsterObject.h" />
     <ClInclude Include="MonsterTesting.h" />
     <ClInclude Include="MonsterPoint2D-inl.h" />
     <ClInclude Include="MonsterPoint2D.h" />
+    <ClInclude Include="MonsterTransform-inl.h" />
     <ClInclude Include="MonsterTransform.h" />
+    <ClInclude Include="PlayerController-inl.h" />
+    <ClInclude Include="PlayerController.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterAllocator.cpp" />
@@ -157,6 +162,7 @@
     <ClCompile Include="MonsterTesting.cpp" />
     <ClCompile Include="MonsterPoint2D.cpp" />
     <ClCompile Include="MonsterTransform.cpp" />
+    <ClCompile Include="PlayerController.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef MONSTERPOINT2D_INL_H
+#define MONSTERPOINT2D_INL_H
+
 inline double MonsterPoint2D::x() const {
 	return coord_x_;
 }
@@ -32,3 +34,5 @@ inline MonsterPoint2D MonsterPoint2D::operator+(const MonsterPoint2D& rhs) const
 inline MonsterPoint2D MonsterPoint2D::operator-(const MonsterPoint2D& rhs) const {
 	return MonsterPoint2D(rhs.x() - x(), rhs.y() - y());
 }
+
+#endif

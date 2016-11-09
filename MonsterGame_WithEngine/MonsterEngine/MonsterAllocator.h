@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MONSTERALLOCATOR_H
+#define MONSTERALLOCATOR_H
 #include <inttypes.h>
 struct BlockDescriptor {
 	BlockDescriptor * prev;
@@ -70,9 +71,8 @@ private:
 
 
 };
-
 #include "MonsterAllocator-inl.h"
-
+#endif
 
 
 

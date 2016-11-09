@@ -1,16 +1,25 @@
 #include "MonsterAllocator.h"
 #include "MonsterTesting.h"
 #include "MonsterGame.h"
+#include "MonsterObject.h"
 
 //#define ALLOCATOR_TESTS
 //#define CONST_TESTS
-//#define _GAMEPLAY
+#define _GAMEPLAY
 //#define MYTESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
 void RunConstTests();
 int main() {
+
+	//MonsterObject mo("Hello");
+	//MonsterTransform mt = mo.GetTransform();
+	//MonsterPoint2D mt_pos = mt.GetPosition();
+	//mt_pos.x(2);
+	//mo.ObjectTranslate(MonsterPoint2D(3.0, 4.0));
+	//DEBUGLOG("pos of copied transform is %f\n", mt_pos.x());
+	//DEBUGLOG("pos of original transform is %f,%f", mo.GetTransform().GetPosition().x(), mo.GetTransform().GetPosition().y());
 
 #ifdef _GAMEPLAY
 	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
