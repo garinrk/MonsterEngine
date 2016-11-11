@@ -16,7 +16,7 @@ public:
 };
 
 #ifdef _DEBUG
-#define DEBUGLOG(fmt,...) MonsterDebug::DebugPrint(fmt,__VA_ARGS__)
+#define DEBUGLOG(fmt,...) /*MonsterDebug::DebugPrint(fmt,__VA_ARGS__)*/ void(0)
 #define DEBUG_LIST_DISPLAY MonsterAllocator::PrintLists()
 #else
 #define DEBUGLOG(fmt,...) void(0)

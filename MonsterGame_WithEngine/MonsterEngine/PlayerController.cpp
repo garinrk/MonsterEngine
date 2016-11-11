@@ -49,6 +49,8 @@ MonsterPoint2D PlayerController::ParseControllerInput(char in)
 		y_move--;
 	else if (in == 'D')
 		x_move++;
+	else if (in == 'Q')
+		SetGameOverState(true);
 
 	return MonsterPoint2D(x_move, y_move);
 }

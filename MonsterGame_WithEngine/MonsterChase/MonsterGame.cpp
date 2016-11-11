@@ -28,11 +28,11 @@ void MonsterGame::Start()
 	InitializeMonsters(numberOfMonsters);
 	PlayGame();
 
-	if (quitGameFlag) {
-		printf("%s", "=======================================\n");
-		printf("%s", "==============EXITING GAME=============\n");
-		printf("%s", "=======================================\n");
-	}
+
+	printf("%s", "=======================================\n");
+	printf("%s", "==============EXITING GAME=============\n");
+	printf("%s", "=======================================\n");
+	
 }
 
 
@@ -133,7 +133,8 @@ void MonsterGame::PlayGame()
 		DisplayGameState();
 
 		main_player->Update();
-		if (quitGameFlag)
+		bool game_over = reinterpret_cast<PlayerController*>(main_player->GetController())->GetGameOverState();
+		if (game_over)
 			return;
 
 

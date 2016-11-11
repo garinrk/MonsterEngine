@@ -13,7 +13,8 @@ public:
 	void UpdatePlayerPosition();
 	void TranslatePosition(MonsterPoint2D& translation);
 	char GetControllerInput(); //only accounts for keyboard control currently
-
+	inline bool GetGameOverState() const;
+	inline void SetGameOverState(bool new_value);
 
 	MonsterPoint2D ParseControllerInput(char in);
 	
@@ -21,6 +22,7 @@ public:
 	~PlayerController();
 private :
 	MonsterObject * monster_object_;
+	bool game_over_flag_ = false;
 };
 
 #include "PlayerController-inl.h"

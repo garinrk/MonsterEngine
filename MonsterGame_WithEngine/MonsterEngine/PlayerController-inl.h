@@ -12,5 +12,12 @@ inline MonsterObject * PlayerController::GetMonsterObject() const
 	return monster_object_;
 }
 
+inline bool PlayerController::GetGameOverState() const {
+	return game_over_flag_;
+}
+inline void PlayerController::SetGameOverState(bool new_value) {
+	game_over_flag_ = new_value;
+}
+
 
 #endif // !PLAYERCONTROLLER_INL_H

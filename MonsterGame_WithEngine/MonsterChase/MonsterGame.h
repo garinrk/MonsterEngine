@@ -36,7 +36,7 @@ private:
 	bool askingForPlayerInfo = true;
 	bool askingForNumberOfMonsters = true;
 	bool inMainGameplayLoop = true;
-	bool quitGameFlag = false;
+	
 	bool killOrSpawnFlag = false;
 
 	bool validCheck;
