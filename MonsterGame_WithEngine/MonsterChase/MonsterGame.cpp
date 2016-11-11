@@ -169,38 +169,6 @@ void MonsterGame::PlayGame()
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary>	Gets player input for the game. Acceptable input: WASD and Q </summary>
-///
-/// <remarks>	Garin, 9/4/2016. </remarks>
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//void MonsterGame::GetPlayerInput() {
-//
-//	bool processingPlayerInput = true;
-//	bool valid = true;
-//
-//	while (processingPlayerInput) {
-//
-//		printf("%s", "\nMove in the dungeon with WASD [q for quit]: ");
-//		char input = _getch();
-//
-//		if (input != 'w' && input != 'a' && input != 's' && input != 'd' && input != 'q')
-//		{
-//			DEBUGLOG("User input invalid: %c\n", input);
-//			//printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
-//			valid = false;
-//			continue;
-//		}
-//
-//		else {
-//			//ProcessPlayerInput(input);
-//			processingPlayerInput = false;
-//		}
-//	}
-//
-//
-//}
 
 void MonsterGame::DisplayGameState() const
 {
@@ -212,7 +180,7 @@ void MonsterGame::DisplayGameState() const
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
-		printf("Monster %d is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].pos.x(), masterMonsterList[i].pos.y(), masterMonsterList[i].age);
+		printf("Monster %s is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName().c_str(), masterMonsterList[i].GetPosition().x(), masterMonsterList[i].GetPosition().y(), masterMonsterList[i].GetAge());
 	}
 
 	printf("You are at (%.1f, %.1f)\n\n", main_player->GetPosition().x(),main_player->GetPosition().y());
@@ -234,10 +202,8 @@ void MonsterGame::InitializeMonsters(const int numberOfMonsters)
 	masterMonsterList = new Monster[numberOfMonsters];
 
 	for (int i = 0; i < numberOfMonsters; i++) {
-		Monster tempMon;
-		tempMon.SetName(i + 1);
-		tempMon.SetBoardBounds(boardSizeX, boardSizeY);
-		tempMon.SetRandomPos();
+		std::string monster_name = std::to_string(i + 1);
+		Monster tempMon(std::to_string(i + 1),boardSizeX,boardSizeY);
 		masterMonsterList[i] = tempMon;
 		DEBUGLOG("%s\nLine: %d \n%s: %d\n", __FILE__, __LINE__, "Creating Monster: ", i + 1);
 
@@ -263,7 +229,7 @@ void MonsterGame::KillMonster(const int monsterPos)
 	numberOfMonsters--;
 	for (int i = monsterPos; i < numberOfMonsters - 1; i++) {
 		masterMonsterList[i] = masterMonsterList[i + 1];
-		masterMonsterList[i].SetName(i + 1);
+		masterMonsterList[i].SetName(std::to_string(i + 1));
 	}
 }
 
@@ -282,10 +248,7 @@ void MonsterGame::AddMonster() {
 	printf("=======================================\n\n");
 
 	//create new array
-	Monster newMon;
-	newMon.SetName(numberOfMonsters);
-	newMon.SetBoardBounds(boardSizeX, boardSizeY);
-	newMon.SetRandomPos();
+	Monster newMon(std::to_string(numberOfMonsters),boardSizeX,boardSizeY);
 
 	Monster *newArray = new Monster[numberOfMonsters];
 

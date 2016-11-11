@@ -6,34 +6,29 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include "Monster.h"
-
+#include "MonsterController.h"
 
 
 //constructor
-Monster::Monster(){
-	 
+Monster::Monster(std::string new_name, int x_range_bound, int y_range_bound) :
+name_(new_name),
+bound_x_(x_range_bound),
+bound_y_(y_range_bound)
+{
+	monster_controller_ = new MonsterController();
+	SetRandomPos();
+
 }
 
-void Monster::SetName(int n) {
-	name = n;
+Monster::Monster() 
+{
+
 }
 
-
-void Monster::MoveMonster() {
-	
-	int moveOrNot = rand() % 2;
-
-	if (moveOrNot == 1) {
-		int moveX = rand() % (2);
-		int moveY = rand() % (2);
-
-		pos.x(pos.x() + moveX);
-		pos.y(pos.y() + moveY);
-
-	}
-}
 
 bool Monster::CheckForDeath() {
+
+	
 	int killOrNot = rand() % 2;
 
 	if (killOrNot == 1) {
@@ -44,26 +39,15 @@ bool Monster::CheckForDeath() {
 }
 
 void Monster::Update() {
-	MoveMonster();
+	monster_controller_->UpdateMonsterObject();
 	MakeOlder();
 }
 
-void Monster::MakeOlder() {
-	age++;
-}
 
 void Monster::SetRandomPos() {
-	double x = rand() % (boundX + 1);
-	double y = rand() % (boundY+ 1);
-	pos.x(x);
-	pos.y(y);
+
+	MonsterTransform mt(rand() % (bound_x_ + 1), rand() % (bound_y_ + 1));
+	monster_controller_->GetMonsterObject()->SetTransform(mt);
 }
 
-void Monster::SetBoardBounds(int x, int y) {
-	boundX = x;
-	boundY = y;
-}
 
-int Monster::GetName() {
-	return name;
-}

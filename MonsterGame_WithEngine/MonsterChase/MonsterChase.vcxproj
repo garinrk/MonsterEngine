@@ -158,14 +158,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\MonsterEngine\Monster.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MonsterController.cpp" />
     <ClCompile Include="MonsterGame.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\MonsterEngine\Monster.h" />
+    <ClInclude Include="Monster-inl.h" />
+    <ClInclude Include="Monster.h" />
     <ClInclude Include="MonsterController-inl.h" />
     <ClInclude Include="MonsterController.h" />
     <ClInclude Include="MonsterGame-inl.h" />

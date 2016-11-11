@@ -11,31 +11,31 @@
 #include <random>
 #include <time.h>
 #include "MonsterPoint2D.h"
-
-
+#include "IGameObjectController.h"
 
 class Monster {
 
 	public:
+		Monster(std::string new_name, int x_range_bound, int y_range_bound);
 		Monster();
-		void MoveMonster();
 		bool CheckForDeath();
-		void SetName(int n);
 		void SetRandomPos();
-		void SetBoardBounds(int x, int y);
 		void Update();
-		int GetName();
-		MonsterPoint2D pos = MonsterPoint2D(0, 0);
+		inline void SetName(std::string new_name);
+		inline MonsterPoint2D GetPosition() const;
+		inline std::string GetName() const;
+		inline int GetAge();
 
-		int age = 1;
 
 	private:
-		void MakeOlder(); 
-		int boundX;
-		int boundY;
-		int name;
-		int maxAge = 30;
+		inline void MakeOlder(); 
+		int bound_x_;
+		int bound_y_;
+
+		int age_ = 1;
+		std::string name_;
+		IGameObjectController * monster_controller_;
 };
 
-
+#include "Monster-inl.h"
 #endif

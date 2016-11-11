@@ -63,6 +63,9 @@
     <ClInclude Include="PlayerController-inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterEngine-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">

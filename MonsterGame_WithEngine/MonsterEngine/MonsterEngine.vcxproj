@@ -141,6 +141,7 @@
     <ClInclude Include="MonsterAllocator-inl.h" />
     <ClInclude Include="MonsterAllocator.h" />
     <ClInclude Include="MonsterDebug.h" />
+    <ClInclude Include="MonsterEngine-inl.h" />
     <ClInclude Include="MonsterEngine.h" />
     <ClInclude Include="MMath.h" />
     <ClInclude Include="MonsterObject-inl.h" />

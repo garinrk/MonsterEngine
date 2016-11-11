@@ -7,22 +7,6 @@ inline void MonsterController::SetMonsterObject(MonsterObject * new_object)
 	monster_object_ = new_object;
 }
 
-inline void MonsterController::UpdateMonsterObject()
-{
-}
-
-inline void MonsterController::UpdateMonsterPosition()
-{
-}
-
-inline void MonsterController::TranslateMonsterPosition()
-{
-}
-
-inline char MonsterController::GetMonsterInput()
-{
-	return 0;
-}
 
 inline MonsterObject * MonsterController::GetMonsterObject() const
 {
