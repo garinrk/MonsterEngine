@@ -180,7 +180,12 @@ void MonsterGame::DisplayGameState() const
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
-		printf("Monster %s is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName().c_str(), masterMonsterList[i].GetPosition().x(), masterMonsterList[i].GetPosition().y(), masterMonsterList[i].GetAge());
+		if (masterMonsterList[i].is_zombie_) {
+			printf("Zombie Monster %s is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName().c_str(), masterMonsterList[i].GetPosition().x(), masterMonsterList[i].GetPosition().y(), masterMonsterList[i].GetAge());
+		}
+		else {
+			printf("Monster %s is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName().c_str(), masterMonsterList[i].GetPosition().x(), masterMonsterList[i].GetPosition().y(), masterMonsterList[i].GetAge());
+		}
 	}
 
 	printf("You are at (%.1f, %.1f)\n\n", main_player->GetPosition().x(),main_player->GetPosition().y());
@@ -204,7 +209,12 @@ void MonsterGame::InitializeMonsters(const int numberOfMonsters)
 	for (int i = 0; i < numberOfMonsters; i++) {
 		std::string monster_name = std::to_string(i + 1);
 		Monster tempMon(std::to_string(i + 1),boardSizeX,boardSizeY);
+		if (i % 5 == 0) {
+			tempMon.Zombify(main_player);
+		}
 		masterMonsterList[i] = tempMon;
+
+
 		DEBUGLOG("%s\nLine: %d \n%s: %d\n", __FILE__, __LINE__, "Creating Monster: ", i + 1);
 
 	}

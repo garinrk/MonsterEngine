@@ -21,3 +21,7 @@ inline void Monster::SetName(std::string new_name) {
 inline int Monster::GetAge() {
 	return age_;
 }
+
+inline void Monster::SetController(IGameObjectController * new_controller) {
+	monster_controller_ = new_controller;
+}

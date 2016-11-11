@@ -34,7 +34,9 @@ void ZombieController::UpdateZombiePosition()
 }
 void ZombieController::TranslateZombiePosition(MonsterPoint2D& delta)
 {
-
+	MonsterTransform mt = monster_object_->GetTransform();
+	mt.Translate(delta.x(), delta.y());
+	monster_object_->SetTransform(mt);
 }
 
 double ZombieController::GetDeltaInXDirection(double my_x, double other_x) {

@@ -12,7 +12,7 @@
 #include <time.h>
 #include "MonsterPoint2D.h"
 #include "IGameObjectController.h"
-
+#include "Player.h"
 class Monster {
 
 	public:
@@ -25,7 +25,9 @@ class Monster {
 		inline MonsterPoint2D GetPosition() const;
 		inline std::string GetName() const;
 		inline int GetAge();
-
+		inline void SetController(IGameObjectController * new_controller);
+		void Zombify(Player * target_player);
+		bool is_zombie_ = false;
 
 	private:
 		inline void MakeOlder(); 

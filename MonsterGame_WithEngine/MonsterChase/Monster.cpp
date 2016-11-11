@@ -7,6 +7,7 @@
 
 #include "Monster.h"
 #include "MonsterController.h"
+#include "ZombieController.h"
 
 
 //constructor
@@ -48,6 +49,15 @@ void Monster::SetRandomPos() {
 
 	MonsterTransform mt(rand() % (bound_x_ + 1), rand() % (bound_y_ + 1));
 	monster_controller_->GetMonsterObject()->SetTransform(mt);
+}
+
+
+void Monster::Zombify(Player * target_player) {
+	ZombieController * new_zombie_controller = new ZombieController(target_player);
+	MonsterObject* mo = monster_controller_->GetMonsterObject();
+	new_zombie_controller->SetMonsterObject(mo);
+	SetController(new_zombie_controller);
+	is_zombie_ = true;
 }
 
 
