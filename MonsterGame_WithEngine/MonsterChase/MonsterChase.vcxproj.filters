@@ -27,6 +27,9 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MonsterController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\MonsterEngine\Monster.h">
@@ -42,6 +45,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player-inl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterController-inl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
