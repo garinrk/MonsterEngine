@@ -7,13 +7,12 @@ class MonsterObject
 {
 
 public:
-	MonsterObject(std::string new_object_name);
+	MonsterObject();
 	~MonsterObject();
 	inline void SetTransform(const MonsterTransform &new_transform);
 	inline const MonsterTransform& GetTransform() const;
 	inline void ObjectTranslate(const MonsterPoint2D &delta_change);
 private:
-	std::string name_;
 	MonsterTransform transform_;
 	
 };

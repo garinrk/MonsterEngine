@@ -1,0 +1,23 @@
+#ifndef PLAYER_H
+#define PLAYER_H
+
+#include "IGameObjectController.h"
+class Player
+{
+public:
+	Player(std::string player_name);
+	~Player();
+	void SetPosition(MonsterPoint2D& pos);
+	MonsterPoint2D GetPosition() const;
+	void Update();
+	inline std::string GetName() const;
+	inline void SetName(std::string new_name);
+private:
+	IGameObjectController * player_controller_;
+	std::string name_;
+	
+};
+
+#include "Player-inl.h"
+#endif // !PLAYER_H
+

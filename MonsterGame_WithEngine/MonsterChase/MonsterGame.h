@@ -6,6 +6,7 @@
 #include "MonsterAllocator.h"
 #include "MonsterDebug.h"
 #include "MonsterEngine.h"
+#include "Player.h"
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
@@ -26,9 +27,8 @@ private:
 	void GetAndDisplayUserName();
 	void GetAndSetNumberOfMonsters();
 	void PlayGame();
-	void GetPlayerInput();
+
 	void DisplayGameState() const;
-	void ProcessPlayerInput(const char n);
 	void KillMonster(const int monsterPos);
 	void AddMonster();
 
@@ -46,8 +46,7 @@ private:
 	int boardSizeX = 100;
 	int boardSizeY = 100;
 
-	double playerPosX;
-	double playerPosY;
+	Player  *main_player;
 	int timeStep = 1;
 
 	int killMonstersEvery = 3;

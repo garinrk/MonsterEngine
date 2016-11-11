@@ -7,8 +7,9 @@ MonsterGame::MonsterGame(int boardSize, MonsterPoint2D &playerStartPos)
 	boardSizeX = boardSize;
 	boardSizeY = boardSize;
 
-	playerPosX = playerStartPos.x();
-	playerPosY = playerStartPos.y();
+
+	main_player = new Player("PlayerOne");
+	main_player->SetPosition(playerStartPos);
 
 }
 
@@ -75,7 +76,7 @@ void MonsterGame::GetAndDisplayUserName() {
 			printf("%s", "Invalid");
 	}
 
-
+	main_player->SetName(userNameInput);
 	printf("%s%s\n", "Accepted!\n\tWelcome ", userNameInput);
 
 	DEBUGLOG("%s\nLine: %d \n%s: %s", __FILE__, __LINE__, "Username: ", userNameInput);
@@ -131,7 +132,7 @@ void MonsterGame::PlayGame()
 
 		DisplayGameState();
 
-		GetPlayerInput();
+		main_player->Update();
 		if (quitGameFlag)
 			return;
 
@@ -174,32 +175,32 @@ void MonsterGame::PlayGame()
 /// <remarks>	Garin, 9/4/2016. </remarks>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void MonsterGame::GetPlayerInput() {
-
-	bool processingPlayerInput = true;
-	bool valid = true;
-
-	while (processingPlayerInput) {
-
-		printf("%s", "\nMove in the dungeon with WASD [q for quit]: ");
-		char input = _getch();
-
-		if (input != 'w' && input != 'a' && input != 's' && input != 'd' && input != 'q')
-		{
-			DEBUGLOG("User input invalid: %c\n", input);
-			//printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
-			valid = false;
-			continue;
-		}
-
-		else {
-			ProcessPlayerInput(input);
-			processingPlayerInput = false;
-		}
-	}
-
-
-}
+//void MonsterGame::GetPlayerInput() {
+//
+//	bool processingPlayerInput = true;
+//	bool valid = true;
+//
+//	while (processingPlayerInput) {
+//
+//		printf("%s", "\nMove in the dungeon with WASD [q for quit]: ");
+//		char input = _getch();
+//
+//		if (input != 'w' && input != 'a' && input != 's' && input != 'd' && input != 'q')
+//		{
+//			DEBUGLOG("User input invalid: %c\n", input);
+//			//printf("%s", "\nINVALID INPUT [wasd or q for quit]\n");
+//			valid = false;
+//			continue;
+//		}
+//
+//		else {
+//			//ProcessPlayerInput(input);
+//			processingPlayerInput = false;
+//		}
+//	}
+//
+//
+//}
 
 void MonsterGame::DisplayGameState() const
 {
@@ -211,35 +212,12 @@ void MonsterGame::DisplayGameState() const
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 
-		//Monster temp = masterMonsterList[i];
 		printf("Monster %d is at %.1f, %.1f and is %d day(s) old\n", masterMonsterList[i].GetName(), masterMonsterList[i].pos.x(), masterMonsterList[i].pos.y(), masterMonsterList[i].age);
 	}
 
-	printf("You are at (%.1f, %.1f)\n\n", playerPosX, playerPosY);
+	printf("You are at (%.1f, %.1f)\n\n", main_player->GetPosition().x(),main_player->GetPosition().y());
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary>	Process the player input described by n. WASD moves the player
-/// 			in the appropriate direction on the gameboard </summary>
-///
-/// <remarks>	Garin, 9/4/2016. </remarks>
-///
-/// <param name="n">	The char to process. </param>
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void MonsterGame::ProcessPlayerInput(const char n) {
-	if (n == 'w' || n == 'W')
-		playerPosY++;
-	else if (n == 'a' || n == 'A')
-		playerPosX--;
-	else if (n == 's' || n == 'S')
-		playerPosY--;
-	else if (n == 'd' || n == 'D')
-		playerPosX++;
-	else if (n == 'q' || n == 'Q')
-		quitGameFlag = true;
-
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

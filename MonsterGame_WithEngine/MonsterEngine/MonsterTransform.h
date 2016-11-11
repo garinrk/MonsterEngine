@@ -8,6 +8,7 @@ public:
 	MonsterTransform(double new_x, double new_y);
 	~MonsterTransform();
 	inline const MonsterPoint2D& GetPosition() const;
+	void SetPosition(const MonsterPoint2D& new_pos);
 	void Translate(const double delta_x, const double delta_y);
 private:
 	MonsterPoint2D position_;
