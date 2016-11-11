@@ -214,10 +214,7 @@ void MonsterGame::InitializeMonsters(const int numberOfMonsters)
 			tempMon.Zombify(main_player);
 		}
 		masterMonsterList[i] = tempMon;
-
-
 		DEBUGLOG("%s\nLine: %d \n%s: %d\n", __FILE__, __LINE__, "Creating Monster: ", i + 1);
-
 	}
 }
 

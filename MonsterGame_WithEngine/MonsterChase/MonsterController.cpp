@@ -10,7 +10,9 @@ MonsterController::MonsterController()
 
 MonsterController::~MonsterController()
 {
-	
+	if (monster_object_)
+		delete monster_object_;
+	monster_object_ = NULL;
 }
 
 void MonsterController::UpdateMonsterObject() {

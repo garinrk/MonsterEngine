@@ -7,9 +7,15 @@ Player::Player(std::string player_name):
 	player_controller_ = new PlayerController();
 }
 
+Player::Player() {
+	player_controller_ = new PlayerController();
+}
 
 Player::~Player()
 {
+	if (player_controller_)
+		delete player_controller_;
+	player_controller_ = NULL;
 }
 
 void Player::SetPosition(MonsterPoint2D & pos)

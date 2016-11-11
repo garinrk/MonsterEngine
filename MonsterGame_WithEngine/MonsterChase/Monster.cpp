@@ -23,9 +23,16 @@ bound_y_(y_range_bound)
 
 Monster::Monster() 
 {
-
+	monster_controller_ = new MonsterController();
+	SetRandomPos();
 }
 
+Monster::~Monster()
+{
+	if (monster_controller_)
+		delete monster_controller_;
+	monster_controller_ = NULL;
+}
 
 bool Monster::CheckForDeath() {
 

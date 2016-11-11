@@ -8,9 +8,16 @@ ZombieController::ZombieController(Player * target_player) :
 	monster_object_ = new MonsterObject();
 }
 
+ZombieController::ZombieController() {
+	monster_object_ = new MonsterObject();
+}
+
 
 ZombieController::~ZombieController()
 {
+	if (monster_object_)
+		delete monster_object_;
+	monster_object_ = NULL;
 }
 
 void ZombieController::UpdateMonsterObject() 

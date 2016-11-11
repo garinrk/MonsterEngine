@@ -70,5 +70,7 @@ PlayerController::PlayerController()
 
 PlayerController::~PlayerController()
 {
-
+	if (monster_object_)
+		delete monster_object_;
+	monster_object_ = NULL;
 }

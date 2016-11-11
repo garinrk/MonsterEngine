@@ -6,6 +6,7 @@
 class Player
 {
 public:
+	Player();
 	Player(std::string player_name);
 	~Player();
 	void SetPosition(MonsterPoint2D& pos);

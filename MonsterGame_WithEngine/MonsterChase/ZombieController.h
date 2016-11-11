@@ -12,6 +12,7 @@ public:
 	void UpdateZombiePosition();
 	void TranslateZombiePosition(MonsterPoint2D& delta);
 	
+	ZombieController();
 	ZombieController(Player * target_player);
 	~ZombieController();
 
