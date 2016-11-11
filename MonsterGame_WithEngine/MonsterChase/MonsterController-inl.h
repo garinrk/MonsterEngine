@@ -1,4 +1,3 @@
-#include "MonsterController.h"
 #ifndef MONSTERCONTROLLER_INL_H
 #define MONSTERCONTROLLER_INL_H
 
