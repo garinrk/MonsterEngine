@@ -5,7 +5,7 @@
 
 //#define ALLOCATOR_TESTS
 //#define CONST_TESTS
-#define _GAMEPLAY
+//#define _GAMEPLAY
 //#define MYTESTS
 
 void RunAllocatorTests();
