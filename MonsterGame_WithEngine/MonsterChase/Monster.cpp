@@ -31,7 +31,7 @@ Monster::~Monster()
 {
 	if (monster_controller_)
 		delete monster_controller_;
-	monster_controller_ = NULL;
+	//monster_controller_ = NULL;
 }
 
 Monster::Monster(const Monster& other)
