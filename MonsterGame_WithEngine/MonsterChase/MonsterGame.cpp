@@ -209,11 +209,11 @@ void MonsterGame::InitializeMonsters(const int numberOfMonsters)
 
 	for (int i = 0; i < numberOfMonsters; i++) {
 		std::string monster_name = std::to_string(i + 1);
-		Monster tempMon(std::to_string(i + 1),boardSizeX,boardSizeY);
+		Monster *tempMon  = new Monster(std::to_string(i + 1),boardSizeX,boardSizeY);
 		if (i % 5 == 0) {
-			tempMon.Zombify(main_player);
+			tempMon->Zombify(main_player);
 		}
-		masterMonsterList[i] = tempMon;
+		masterMonsterList[i] = *tempMon;
 		DEBUGLOG("%s\nLine: %d \n%s: %d\n", __FILE__, __LINE__, "Creating Monster: ", i + 1);
 	}
 }
@@ -256,7 +256,7 @@ void MonsterGame::AddMonster() {
 	printf("=======================================\n\n");
 
 	//create new array
-	Monster newMon(std::to_string(numberOfMonsters),boardSizeX,boardSizeY);
+	Monster *newMon = new Monster(std::to_string(numberOfMonsters),boardSizeX,boardSizeY);
 
 	Monster *newArray = new Monster[numberOfMonsters];
 
@@ -266,9 +266,15 @@ void MonsterGame::AddMonster() {
 			newArray[i] = masterMonsterList[i];
 		}
 		if (i == numberOfMonsters - 1)
-			newArray[i] = newMon;
+			newArray[i] = *newMon;
 
 	}
+/*
+	Monster *tempMon = new Monster(std::to_string(i + 1), boardSizeX, boardSizeY);
+	if (i % 5 == 0) {
+		tempMon->Zombify(main_player);
+	}
+	masterMonsterList[i] = *tempMon;*/
 
 	masterMonsterList = newArray;
 }

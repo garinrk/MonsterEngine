@@ -9,6 +9,8 @@ public:
 	Player();
 	Player(std::string player_name);
 	~Player();
+	Player(const Player& other);
+
 	void SetPosition(MonsterPoint2D& pos);
 	MonsterPoint2D GetPosition() const;
 	void Update();

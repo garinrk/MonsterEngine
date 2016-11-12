@@ -34,6 +34,17 @@ Monster::~Monster()
 	monster_controller_ = NULL;
 }
 
+Monster::Monster(const Monster& other)
+{
+	age_ = other.age_;
+	bound_x_ = other.bound_x_;
+	bound_y_ = other.bound_y_;
+	name_ = other.name_;
+
+	monster_controller_ = other.monster_controller_;
+
+}
+
 bool Monster::CheckForDeath() {
 
 	

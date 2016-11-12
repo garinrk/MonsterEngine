@@ -19,6 +19,7 @@ class Monster {
 		Monster(std::string new_name, int x_range_bound, int y_range_bound);
 		Monster();
 		~Monster();
+		Monster(const Monster& other);
 		bool CheckForDeath();
 		void SetRandomPos();
 		void Update();

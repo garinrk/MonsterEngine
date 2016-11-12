@@ -18,6 +18,12 @@ Player::~Player()
 	player_controller_ = NULL;
 }
 
+Player::Player(const Player & other)
+{
+	player_controller_ = other.player_controller_;
+	name_ = other.name_;
+}
+
 void Player::SetPosition(MonsterPoint2D & pos)
 {
 	MonsterTransform mt = player_controller_->GetMonsterObject()->GetTransform();
