@@ -1,21 +1,46 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
+
+#include "Monster.h"
 #include "MonsterPoint2D.h"
+#include "Player.h"
 
+#include <conio.h>
+#include <iostream>
 class Game
 {
 public:
-	Game(int board_size, MonsterPoint2D &player_start_pos);
+	Game(int board_size, MonsterPoint2D &player_start_pos, int kill_freq);
 	~Game();
-	void StartGame();
+	void Start();
 
 private:
-	int board_size_;
-	MonsterPoint2D player_start_;
+
+	void InitializeMonsters();
+	void GetAndSetUserName();
+	void GetAndSetNumberOfMonsters();
+
+	//validity check(s)
+	bool CheckForNumberValidity(const char * input) const;
+	void PlayGame();
+
+	//data display
+	void DisplayGameState() const;
+
+	Player * main_player_;
+	int time_step_;
+
+	int kill_monster_counter_;
+
+
+	int number_of_monsters_;
+	int board_bounds_;
+
+	Monster* master_monster_list_;
+	char user_name_buffer_[4096];
+	char input_buffer_[4096];
 };
 
 #include "Game-inl.h"
 
-#endif // !GAME_H
 

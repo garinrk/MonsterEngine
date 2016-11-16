@@ -1,16 +1,18 @@
 #include "MonsterAllocator.h"
 #include "MonsterTesting.h"
+#include "Game.h"
 #include "MonsterGame.h"
 #include "MonsterObject.h"
 
 //#define ALLOCATOR_TESTS
 //#define CONST_TESTS
-//#define _GAMEPLAY
+#define _GAMEPLAY
 //#define MYTESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
 void RunConstTests();
+void RunGame();
 int main() {
 
 	//MonsterObject mo("Hello");
@@ -22,9 +24,7 @@ int main() {
 	//DEBUGLOG("pos of original transform is %f,%f", mo.GetTransform().GetPosition().x(), mo.GetTransform().GetPosition().y());
 
 #ifdef _GAMEPLAY
-	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
-	MonsterGame mg = MonsterGame(100, playerPos);
-	mg.Start();
+	RunGame();
 #endif // _GAMEPLAY
 
 #ifdef CONST_TESTS
@@ -42,6 +42,18 @@ int main() {
 #endif // _DEBUG
 	return 0;
 
+}
+
+void RunGame() {
+	//new
+	//MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
+	//Game mg = Game(100, playerPos, 3);
+	//mg.Start();
+
+	//old
+	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
+	MonsterGame mg = MonsterGame(100, playerPos);
+	mg.Start();
 }
 
 void RunConstTests() {
