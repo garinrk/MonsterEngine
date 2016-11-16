@@ -16,18 +16,25 @@ int MonsterEngine::RandomTrueOrFalse()
 
 void * operator new(size_t n)
 {
+	MonsterAllocator* inst = MonsterAllocator::getInstance();
+	void *ptr = inst->MonsterMalloc(n);
+
+	return ptr;
+
+}
+void operator delete(void * p)
+{
+	MonsterAllocator* inst = MonsterAllocator::getInstance();
+	
+	assert(inst->MonsterFree(p));
+
+}
+void * operator new[](size_t n)
+{
 	void * ptr = NULL;
 	return ptr;
 }
-void operator delete(void * p) throw()
-{
-}
-void * operator new[](size_t n) 
-{
-	void * ptr = NULL;
-	return ptr;
-}
-void operator delete[](void * p) throw()
+void operator delete[](void * p)
 {
 	
 }

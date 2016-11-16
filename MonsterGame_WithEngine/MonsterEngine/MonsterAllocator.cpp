@@ -1,5 +1,8 @@
 #include "MonsterAllocator.h"
-#include "MonsterDebug.h"
+
+#include <new>
+MonsterAllocator* MonsterAllocator::single = NULL;
+void* MonsterAllocator::singleton_addr = NULL;
 
 MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors)
 {
@@ -13,13 +16,15 @@ MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_
 	InitializeFreeList(num_of_descriptors);
 
 	DEBUG_LIST_DISPLAY;
-
 }
 
 MonsterAllocator::~MonsterAllocator()
 {
 	_aligned_free(front_of_chunk_);
+	_aligned_free(singleton_addr);
 }
+
+
 
 void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 
@@ -558,4 +563,24 @@ size_t MonsterAllocator::GetLargestFreeBlock() const
 #endif
 	return largest;
 }
+
+MonsterAllocator * MonsterAllocator::getInstance()
+{
+	
+	if(!single){
+		MonsterAllocator::singleton_addr = _aligned_malloc(sizeof(MonsterAllocator), 4);
+
+		single = new (singleton_addr) MonsterAllocator(4096, 32);
+		return single;
+	}
+	else
+		return single;
+}
+
+//MonsterAllocator * MonsterAllocator::pub_instance()
+//{
+//	if (!priv_instance)
+//		priv_instance = new MonsterAllocator(4096, 32);
+//	return priv_instance;
+//}
 

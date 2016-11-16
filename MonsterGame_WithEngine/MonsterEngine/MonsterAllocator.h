@@ -15,10 +15,12 @@ struct BlockDescriptor {
 };
 
 
+#include <assert.h>
 #include <malloc.h>
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
+
+#include "MonsterDebug.h"
 #define GUARDBAND_VAL 0xFF
 #define GUARDBAND_BYTES 4
 #define ALIGNMENT 4
@@ -42,7 +44,9 @@ public:
 	bool isAllocated(const void * addr) const;
 
 	size_t GetLargestFreeBlock() const;
+	static MonsterAllocator* getInstance();
 
+	//static MonsterAllocator* pub_instance();
 private:
 	void InitializeFreeList(const int num_of_descriptors);
 	void AddToAllocated(BlockDescriptor* to_insert);
@@ -69,8 +73,19 @@ private:
 	BlockDescriptor * unallocated_root_ = 0;
 	BlockDescriptor * front_of_bd_;
 
+	//static MonsterAllocator* priv_instance;
+
+	
+	static MonsterAllocator* single;
+
+	static void * singleton_addr;
+
+	
+
 
 };
+
+
 #include "MonsterAllocator-inl.h"
 #endif
 
