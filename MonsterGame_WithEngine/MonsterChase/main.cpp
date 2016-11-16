@@ -18,7 +18,7 @@ int main() {
 	
 #ifdef _GAMEPLAY
 	RunGame();
-	MonsterAllocator::DestroyInstance();
+
 #endif // _GAMEPLAY
 
 #ifdef CONST_TESTS
@@ -50,6 +50,8 @@ void RunGame() {
 	//mg.Start();
 
 	Player *me = new Player("Hello");
+
+	MonsterAllocator::DestroyInstance();
 	
 }
 

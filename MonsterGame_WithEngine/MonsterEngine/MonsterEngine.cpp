@@ -19,7 +19,9 @@ void * operator new(size_t n)
 	return	MonsterAllocator::getInstance()->MonsterMalloc(n);
 }
 void * operator new(size_t n, uint8_t align) {
+	void * ptr = NULL;
 
+	return ptr;
 }
 void operator delete(void * p)
 {
