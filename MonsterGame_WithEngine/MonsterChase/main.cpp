@@ -6,7 +6,7 @@
 #include "Player.h"
 //#define ALLOCATOR_TESTS
 //#define CONST_TESTS
-//#define _GAMEPLAY
+#define _GAMEPLAY
 //#define MYTESTS
 
 void RunAllocatorTests();
@@ -14,10 +14,11 @@ void RunMyAllocatorTests();
 void RunConstTests();
 void RunGame();
 int main() {
-	Player *me = new Player("Hello");
+	
 	
 #ifdef _GAMEPLAY
 	RunGame();
+	MonsterAllocator::DestroyInstance();
 #endif // _GAMEPLAY
 
 #ifdef CONST_TESTS
@@ -44,9 +45,12 @@ void RunGame() {
 	//mg.Start();
 
 	//old
-	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
-	MonsterGame mg = MonsterGame(100, playerPos);
-	mg.Start();
+	//MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
+	//MonsterGame mg = MonsterGame(100, playerPos);
+	//mg.Start();
+
+	Player *me = new Player("Hello");
+	
 }
 
 void RunConstTests() {

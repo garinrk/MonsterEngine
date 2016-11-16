@@ -44,7 +44,9 @@ public:
 	bool isAllocated(const void * addr) const;
 
 	size_t GetLargestFreeBlock() const;
+	static void CreateInstance(size_t total_size_of_heap);
 	static MonsterAllocator* getInstance();
+	static void DestroyInstance();
 
 	//static MonsterAllocator* pub_instance();
 private:

@@ -21,7 +21,7 @@ MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_
 MonsterAllocator::~MonsterAllocator()
 {
 	_aligned_free(front_of_chunk_);
-	_aligned_free(singleton_addr);
+	//_aligned_free(singleton_addr);
 }
 
 
@@ -564,9 +564,15 @@ size_t MonsterAllocator::GetLargestFreeBlock() const
 	return largest;
 }
 
+void MonsterAllocator::CreateInstance(size_t total_size_of_heap) {
+	MonsterAllocator::singleton_addr = _aligned_malloc(sizeof(MonsterAllocator), 4);
+
+	single = new (singleton_addr) MonsterAllocator(total_size_of_heap, 4);
+}
+
 MonsterAllocator * MonsterAllocator::getInstance()
 {
-	
+	return single;
 	if(!single){
 		MonsterAllocator::singleton_addr = _aligned_malloc(sizeof(MonsterAllocator), 4);
 
@@ -577,10 +583,11 @@ MonsterAllocator * MonsterAllocator::getInstance()
 		return single;
 }
 
-//MonsterAllocator * MonsterAllocator::pub_instance()
-//{
-//	if (!priv_instance)
-//		priv_instance = new MonsterAllocator(4096, 32);
-//	return priv_instance;
-//}
+//create destroy and a gate
 
+void MonsterAllocator::DestroyInstance() {
+	single->~MonsterAllocator();
+
+	_aligned_free(single);
+	single = NULL;
+}
