@@ -14,4 +14,21 @@ int MonsterEngine::RandomTrueOrFalse()
 	return rand() % 2;
 }
 
+void * operator new(size_t n)
+{
+	void * ptr = NULL;
+	return ptr;
+}
+void operator delete(void * p) throw()
+{
+}
+void * operator new[](size_t n) 
+{
+	void * ptr = NULL;
+	return ptr;
+}
+void operator delete[](void * p) throw()
+{
+	
+}
 

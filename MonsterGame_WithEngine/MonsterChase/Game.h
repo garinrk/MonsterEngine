@@ -30,11 +30,12 @@ private:
 	Player * main_player_;
 	int time_step_;
 
-	int kill_monster_counter_;
+	
 
-
-	int number_of_monsters_;
 	int board_bounds_;
+	int kill_monster_counter_;
+	int number_of_monsters_;
+	
 
 	Monster* master_monster_list_;
 	char user_name_buffer_[4096];

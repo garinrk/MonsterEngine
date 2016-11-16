@@ -12,8 +12,10 @@ Game::Game(int board_size, MonsterPoint2D &player_start_pos, int kill_freq) :
 
 Game::~Game()
 {
-	//delete master_monster_list_;
-	//delete main_player_;
+	if (master_monster_list_)
+		delete[] master_monster_list_;
+	if (main_player_)
+		delete main_player_;
 }
 
 void Game::Start() {
@@ -29,11 +31,21 @@ void Game::Start() {
 	printf("%s", "==============EXITING GAME=============\n");
 	printf("%s", "=======================================\n");
 	
-	_getch();
+	//_getch();
 }
 
 void Game::InitializeMonsters() {
 
+	master_monster_list_ = new Monster[number_of_monsters_];
+
+	for (int i = 0; i < number_of_monsters_; i++) {
+		Monster* new_monster = new Monster(std::to_string(i + 1), board_bounds_, board_bounds_);
+		if (i % 3 == 0) {
+			new_monster->Zombify(main_player_);
+		}
+		master_monster_list_[i] = *new_monster;
+	}
+	
 }
 
 void Game::GetAndSetUserName() {
@@ -55,6 +67,22 @@ void Game::GetAndSetUserName() {
 }
 
 void Game::GetAndSetNumberOfMonsters() {
+	int user_number;
+
+	while (true) {
+		printf("\nHow many monsters would you like to create? [100 Max]: ");
+
+		std::cin.getline(input_buffer_, sizeof(input_buffer_));
+
+		user_number = atoi(input_buffer_);
+
+		if (user_number <= 0 || user_number > 100)
+			printf("Invalid input, try again");
+		else
+			break;
+	}
+
+	number_of_monsters_ = user_number;
 
 }
 
