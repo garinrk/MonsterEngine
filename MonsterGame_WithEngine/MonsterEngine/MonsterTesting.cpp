@@ -170,3 +170,8 @@ bool MonsterTesting::RunAllocatorTests()
 
 	return true;
 }
+
+bool MonsterTesting::OriginalTests() {
+
+	return true;
+}

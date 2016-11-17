@@ -4,15 +4,17 @@
 #include "MonsterGame.h"
 #include "MonsterObject.h"
 #include "Player.h"
-//#define ALLOCATOR_TESTS
+#define ALLOCATOR_TESTS
 //#define CONST_TESTS
-#define _GAMEPLAY
-//#define MYTESTS
+//#define _GAMEPLAY
+#define NEW_TESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
 void RunConstTests();
 void RunGame();
+
+void RunNewTests();
 int main() {
 	
 	
@@ -31,6 +33,11 @@ int main() {
 	RunMyAllocatorTests();
 #endif // _ALLOCATORTESTS
 
+#ifdef NEW_TESTS
+	RunNewTests();
+#endif // NEW_TESTS
+
+
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();
 #endif // _DEBUG
@@ -48,10 +55,10 @@ void RunGame() {
 	//MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
 	//MonsterGame mg = MonsterGame(100, playerPos);
 	//mg.Start();
-
+/*
 	Player *me = new Player("Hello");
 
-	MonsterAllocator::DestroyInstance();
+	MonsterAllocator::DestroyInstance();*/
 	
 }
 
@@ -98,11 +105,12 @@ void RunMyAllocatorTests() {
 	pHeapManager.MonsterFree(addr2);
 	pHeapManager.MonsterFree(addr3);
 	pHeapManager.MonsterFree(addr4);
-	//double val = 0xBBBBBBBBBB;
-	//*((double*)addr1) = val;
-	//void * killGuardbandAddr = static_cast<char*>(addr1) - 1;
-	//*static_cast<__int8*>(killGuardbandAddr) = 0xB;
-	//pHeapManager.MonsterFree(addr1);
 }
 
+void RunNewTests(){
+
+	Player *p1 = new Player("PlayerOne");
+	delete p1;
+	MonsterAllocator::DestroyInstance();
+}
 
