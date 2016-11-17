@@ -12,9 +12,9 @@ bool MonsterTesting::RunAllocatorTests()
 
 	const size_t 		sizeHeap = 2148;
 	const unsigned int 	numDescriptors =  8;
-
+	const uint8_t		initial_alignment = 4;
 	// Create a heap manager for my test heap.
-	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors);
+	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors,initial_alignment);
 
 #ifdef TEST_SINGLE_LARGE_ALLOCATION
 	// This is a test I wrote to check to see if using the whole block if it was almost consumed by 

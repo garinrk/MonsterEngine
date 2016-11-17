@@ -4,10 +4,10 @@
 MonsterAllocator* MonsterAllocator::single = NULL;
 void* MonsterAllocator::singleton_addr = NULL;
 
-MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors)
+MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors, uint8_t initial_alignment)
 {
-	
-	front_of_chunk_ = _aligned_malloc(size_of_chunk, ALIGNMENT);
+	//TODO: Make sure initial alignment is a power of 2
+	front_of_chunk_ = _aligned_malloc(size_of_chunk, initial_alignment);
 	assert(front_of_chunk_ != NULL && "NULL Memory Allocation");
 
 
@@ -36,13 +36,13 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 
 
 
-	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(i_amt);
+	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(i_amt,4);
 
 	//if even after garbage collecting we don't have a descriptor.
 	if (sufficientBlock == NULL)
 		return nullptr;
 
-	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,i_amt);
+	BlockDescriptor * newBD = StealFromBlock(sufficientBlock,i_amt,4);
 	newBD->user_size = i_amt;
 	if (newBD == NULL)
 		return nullptr;
@@ -51,6 +51,34 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 	DEBUGLOG("USER REQUEST %zu BYTES", i_amt);
 	DEBUG_LIST_DISPLAY;
 	
+
+	return newBD->user_ptr;
+}
+
+void * MonsterAllocator::MonsterMalloc(size_t amt, uint8_t align)
+{
+	//no more free block descriptors, attempt to get some by garbage collecting.
+	if (endf_of_free_ == NULL) {
+		GarbageCollect();
+	}
+
+
+
+	BlockDescriptor * sufficientBlock = FindSuitableUnallocBlock(amt,align);
+
+	//if even after garbage collecting we don't have a descriptor.
+	if (sufficientBlock == NULL)
+		return nullptr;
+
+	BlockDescriptor * newBD = StealFromBlock(sufficientBlock, amt,align);
+	newBD->user_size = amt;
+	if (newBD == NULL)
+		return nullptr;
+	AddToAllocated(newBD);
+
+	DEBUGLOG("USER REQUEST %zu BYTES", amt);
+	DEBUG_LIST_DISPLAY;
+
 
 	return newBD->user_ptr;
 }
@@ -201,11 +229,11 @@ BlockDescriptor * MonsterAllocator::UnallocBlockSearch(const void * base_addr, B
 	return nullptr;
 }
 
-BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt) const
+BlockDescriptor * MonsterAllocator::FindSuitableUnallocBlock(size_t amt, uint8_t align) const
 {
 	BlockDescriptor * conductor;
 	conductor = unallocated_root_;
-	amt += 3;
+	amt += align;
 #ifdef _DEBUG
 	amt += GUARDBAND_BYTES * 2; //need to account for padding and guardbands
 #endif // _DEBUG
@@ -315,7 +343,7 @@ BlockDescriptor * MonsterAllocator::RemoveFromList(const void * addr, BlockDescr
 	return nullptr;
 }
 
-BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t amt)
+BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, size_t amt,uint8_t align)
 {
 	
 	//get a bd from the free list
@@ -328,7 +356,7 @@ BlockDescriptor * MonsterAllocator::StealFromBlock(BlockDescriptor * victim, siz
 	thief->next = NULL; 
 
 	//check for alignmentcxv
-	size_t pad = GetAlignmentOffset(victim->block_base);
+	size_t pad = GetAlignmentOffset(victim->block_base,align);
 
 	size_t wholeAmountStolen = amt + pad;
 
@@ -564,19 +592,15 @@ size_t MonsterAllocator::GetLargestFreeBlock() const
 	return largest;
 }
 
-void MonsterAllocator::CreateInstance(size_t total_size_of_heap) {
+void MonsterAllocator::CreateInstance(size_t total_size_of_heap, const unsigned int num_of_descriptors, uint8_t align) {
 	MonsterAllocator::singleton_addr = _aligned_malloc(sizeof(MonsterAllocator), 4);
-
-	single = new (singleton_addr) MonsterAllocator(total_size_of_heap, 4);
+	single = new (singleton_addr) MonsterAllocator(total_size_of_heap, num_of_descriptors,align);
 }
 
 MonsterAllocator * MonsterAllocator::getInstance()
 {
-	return single;
 	if(!single){
-		MonsterAllocator::singleton_addr = _aligned_malloc(sizeof(MonsterAllocator), 4);
-
-		single = new (singleton_addr) MonsterAllocator(4096, 32);
+		CreateInstance(TOTAL_SIZE,NUM_DESCRIPTORS,ALIGNMENT);
 		return single;
 	}
 	else

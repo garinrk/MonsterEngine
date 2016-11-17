@@ -1,5 +1,4 @@
-#ifndef MONSTERALLOCATOR_H
-#define MONSTERALLOCATOR_H
+#pragma once     
 #include <inttypes.h>
 struct BlockDescriptor {
 	BlockDescriptor * prev;
@@ -24,14 +23,17 @@ struct BlockDescriptor {
 #define GUARDBAND_VAL 0xFF
 #define GUARDBAND_BYTES 4
 #define ALIGNMENT 4
+#define TOTAL_SIZE 4096
+#define NUM_DESCRIPTORS 32
 
 class MonsterAllocator
 {
 
 public:
-	MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors);
+	MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors, uint8_t initial_alignment);
 	~MonsterAllocator();
 	void * MonsterMalloc(size_t amt);
+	void * MonsterMalloc(size_t amt, uint8_t align);
 	bool MonsterFree(void * addr);
 	void GarbageCollect();
 	size_t total_bytes_;
@@ -44,7 +46,7 @@ public:
 	bool isAllocated(const void * addr) const;
 
 	size_t GetLargestFreeBlock() const;
-	static void CreateInstance(size_t total_size_of_heap);
+	static void CreateInstance(size_t total_size_of_heap, const unsigned int num_of_descriptors, uint8_t align);
 	static MonsterAllocator* getInstance();
 	static void DestroyInstance();
 
@@ -60,11 +62,11 @@ private:
 	void ConsolidateBlocks(BlockDescriptor* first, BlockDescriptor * second);
 
 	BlockDescriptor * UnallocBlockSearch(const void * base_addr, BlockDescriptor * start) const;
-	BlockDescriptor * FindSuitableUnallocBlock(size_t amt) const;
+	BlockDescriptor * FindSuitableUnallocBlock(size_t amt, uint8_t align) const;
 	BlockDescriptor * RemoveFromList(const void * addr, BlockDescriptor * root);
-	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt);
+	BlockDescriptor * StealFromBlock(BlockDescriptor * victim, size_t amt, uint8_t align);
 
-	inline size_t GetAlignmentOffset(const void * addr);
+	inline size_t GetAlignmentOffset(const void * addr,uint8_t align);
 	
 	void * front_of_chunk_;
 	void * back_of_chunk_;
@@ -82,15 +84,12 @@ private:
 
 	static void * singleton_addr;
 
+
 	
 
 
 };
-
-
 #include "MonsterAllocator-inl.h"
-#endif
-
 
 
 

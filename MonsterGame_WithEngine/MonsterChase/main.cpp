@@ -83,7 +83,7 @@ void RunMyAllocatorTests() {
 	const size_t		align = 4;
 
 	// Create a heap manager for my test heap.
-	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors);
+	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors,align);
 	void* addr1 = pHeapManager.MonsterMalloc(1);
 	void* addr2 = pHeapManager.MonsterMalloc(1);
 	void* addr3 = pHeapManager.MonsterMalloc(1);
