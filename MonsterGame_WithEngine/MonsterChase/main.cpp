@@ -7,7 +7,7 @@
 #define ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define _GAMEPLAY
-//#define NEW_TESTS
+#define NEW_TESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
@@ -82,9 +82,9 @@ void RunConstTests() {
 void RunAllocatorTests() {
 	bool result = MonsterTesting::RunAllocatorTests();
 	assert(result);
-
+/*
 	bool result2 = MonsterTesting::OriginalTests();
-	assert(result2);
+	assert(result2);*/
 }
 
 void RunMyAllocatorTests() {
@@ -112,8 +112,15 @@ void RunMyAllocatorTests() {
 
 void RunNewTests(){
 
+	//overridden new uses my allocator
 	Player *p1 = new Player("PlayerOne");
 	delete p1;
+
+	//support for supplementary debug information
+	Player *p2 = new(__FILE__) Player("PlayerTwo");
+	delete p2;
+
+	//destroy the singleton.
 	MonsterAllocator::DestroyInstance();
 }
 
