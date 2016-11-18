@@ -7,7 +7,7 @@
 #define ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define _GAMEPLAY
-#define NEW_TESTS
+//#define NEW_TESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
@@ -82,6 +82,9 @@ void RunConstTests() {
 void RunAllocatorTests() {
 	bool result = MonsterTesting::RunAllocatorTests();
 	assert(result);
+
+	bool result2 = MonsterTesting::OriginalTests();
+	assert(result2);
 }
 
 void RunMyAllocatorTests() {
