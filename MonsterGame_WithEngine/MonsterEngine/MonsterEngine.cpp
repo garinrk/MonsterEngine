@@ -18,11 +18,12 @@ void * operator new(size_t n)
 {
 	return	MonsterAllocator::getInstance()->MonsterMalloc(n);
 }
-void * operator new(size_t n, uint8_t align) {
+void * operator new(size_t n, const char * msg) {
 	void * ptr = NULL;
-
+	DEBUGLOG(msg);
 	return ptr;
 }
+
 void operator delete(void * p)
 {
 	MonsterAllocator* inst = MonsterAllocator::getInstance();
@@ -41,5 +42,14 @@ void operator delete[](void * p)
 	bool val = inst->MonsterFree(p);
 
 	assert(val);
+}
+
+void operator delete[](void * p, const char * msg) {
+	MonsterAllocator* inst = MonsterAllocator::getInstance();
+	bool val = inst->MonsterFree(p);
+
+	assert(val);
+	DEBUGLOG(msg);
+
 }
 
