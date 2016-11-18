@@ -49,6 +49,7 @@ public:
 	static void CreateInstance(size_t total_size_of_heap, const unsigned int num_of_descriptors, uint8_t align);
 	static MonsterAllocator* getInstance();
 	static void DestroyInstance();
+	static bool IsPowerOfTwo(uint8_t input);
 
 	//static MonsterAllocator* pub_instance();
 private:
@@ -80,9 +81,9 @@ private:
 	//static MonsterAllocator* priv_instance;
 
 	
-	static MonsterAllocator* single;
+	static MonsterAllocator* single_;
 
-	static void * singleton_addr;
+	static void * singleton_addr_;
 
 
 	

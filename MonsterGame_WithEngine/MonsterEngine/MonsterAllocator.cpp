@@ -1,8 +1,8 @@
 #include "MonsterAllocator.h"
 
 #include <new>
-MonsterAllocator* MonsterAllocator::single = NULL;
-void* MonsterAllocator::singleton_addr = NULL;
+MonsterAllocator* MonsterAllocator::single_ = NULL;
+void* MonsterAllocator::singleton_addr_ = NULL;
 
 MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors, uint8_t initial_alignment)
 {
@@ -57,6 +57,12 @@ void * MonsterAllocator::MonsterMalloc(size_t i_amt) {
 
 void * MonsterAllocator::MonsterMalloc(size_t amt, uint8_t align)
 {
+
+	
+	assert(IsPowerOfTwo(align));
+	if (!IsPowerOfTwo(align)) {
+		return nullptr;
+	}
 	//no more free block descriptors, attempt to get some by garbage collecting.
 	if (endf_of_free_ == NULL) {
 		GarbageCollect();
@@ -524,6 +530,16 @@ bool MonsterAllocator::GuardBandChecks(BlockDescriptor * to_check)
 	return true;
 }
 
+bool MonsterAllocator::IsPowerOfTwo(uint8_t input)
+{
+	uint8_t val = (input != 0) && !(input & (input - 1));
+
+	if (val == 1)
+		return true;
+	else
+		return false;
+}
+
 
 
 
@@ -593,25 +609,25 @@ size_t MonsterAllocator::GetLargestFreeBlock() const
 }
 
 void MonsterAllocator::CreateInstance(size_t total_size_of_heap, const unsigned int num_of_descriptors, uint8_t align) {
-	MonsterAllocator::singleton_addr = _aligned_malloc(sizeof(MonsterAllocator), 4);
-	single = new (singleton_addr) MonsterAllocator(total_size_of_heap, num_of_descriptors,align);
+	MonsterAllocator::singleton_addr_ = _aligned_malloc(sizeof(MonsterAllocator), 4);
+	single_ = new (singleton_addr_) MonsterAllocator(total_size_of_heap, num_of_descriptors,align);
 }
 
 MonsterAllocator * MonsterAllocator::getInstance()
 {
-	if(!single){
+	if(!single_){
 		CreateInstance(TOTAL_SIZE,NUM_DESCRIPTORS,ALIGNMENT);
-		return single;
+		return single_;
 	}
 	else
-		return single;
+		return single_;
 }
 
 //create destroy and a gate
 
 void MonsterAllocator::DestroyInstance() {
-	single->~MonsterAllocator();
+	single_->~MonsterAllocator();
 
-	_aligned_free(single);
-	single = NULL;
+	_aligned_free(single_);
+	single_ = NULL;
 }
