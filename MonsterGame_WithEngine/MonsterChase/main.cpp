@@ -6,22 +6,27 @@
 #include "Player.h"
 #define ALLOCATOR_TESTS
 //#define CONST_TESTS
-//#define _GAMEPLAY
+//#define OLD_GAMEPLAY
+//#define NEW_GAMEPLAY
 #define NEW_TESTS
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
 void RunConstTests();
 void RunGame();
+void RunNewGame();
 
 void RunNewTests();
 int main() {
 	
 	
-#ifdef _GAMEPLAY
+#ifdef OLD_GAMEPLAY
 	RunGame();
-
 #endif // _GAMEPLAY
+
+#ifdef NEW_GAMEPLAY
+
+#endif
 
 #ifdef CONST_TESTS
 	RunConstTests();
@@ -45,20 +50,18 @@ int main() {
 
 }
 
+void RunNewGame() {
+	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
+	Game mg = Game(100, playerPos, 3);
+	mg.Start();
+}
+
 void RunGame() {
-	//new
-	//MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
-	//Game mg = Game(100, playerPos, 3);
-	//mg.Start();
 
-	//old
-	//MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
-	//MonsterGame mg = MonsterGame(100, playerPos);
-	//mg.Start();
-/*
-	Player *me = new Player("Hello");
+	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
+	MonsterGame mg = MonsterGame(100, playerPos);
+	mg.Start();
 
-	MonsterAllocator::DestroyInstance();*/
 	
 }
 
@@ -117,9 +120,8 @@ void RunNewTests(){
 	delete p1;
 
 	//support for supplementary debug information
-	Player *p2 = new(__FILE__) Player("PlayerTwo");
+	Player *p2 = new("Debug Information\n") Player("PlayerTwo");
 	delete p2;
-
 	//destroy the singleton.
 	MonsterAllocator::DestroyInstance();
 }
