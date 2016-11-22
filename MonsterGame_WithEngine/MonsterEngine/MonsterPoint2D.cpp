@@ -1,7 +1,7 @@
 #include "MonsterPoint2D.h"
 
 
-MonsterPoint2D::MonsterPoint2D(double init_x, double init_y) :
+MonsterPoint2D::MonsterPoint2D(float init_x, float init_y) :
 	coord_x_(init_x),
 	coord_y_(init_y)
 {

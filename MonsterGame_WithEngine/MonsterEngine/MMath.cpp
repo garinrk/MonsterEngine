@@ -16,3 +16,14 @@ int MMath::GetRandomIntInBounds(int min, int max)
 	srand((unsigned int)time(NULL));
 	return min + rand() % (max - min + 1);
 }
+
+bool MMath::IsNAN(float val) {
+	
+
+	//we do this to keep overly smart compilers
+	//from optimizing this whole function away
+
+	volatile float v = val;
+
+	return v != v;
+}

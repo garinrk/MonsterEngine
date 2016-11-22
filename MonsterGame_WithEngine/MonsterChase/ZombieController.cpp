@@ -29,11 +29,11 @@ void ZombieController::UpdateZombiePosition()
 	MonsterPoint2D player_position = player_to_follow_->GetPosition();
 	MonsterPoint2D my_position = monster_object_->GetTransform().GetPosition();
 	
-	double player_x = player_position.x();
-	double player_y = player_position.y();
+	float player_x = player_position.x();
+	float player_y = player_position.y();
 	
-	double x_delta = GetDeltaInXDirection(my_position.x(),player_x);
-	double y_delta = GetDeltaInYDirection(my_position.y(),player_y);
+	float x_delta = GetDeltaInXDirection(my_position.x(),player_x);
+	float y_delta = GetDeltaInYDirection(my_position.y(),player_y);
 
 	MonsterPoint2D delta(x_delta, y_delta);
 
@@ -46,19 +46,19 @@ void ZombieController::TranslateZombiePosition(MonsterPoint2D& delta)
 	monster_object_->SetTransform(mt);
 }
 
-double ZombieController::GetDeltaInXDirection(double my_x, double other_x) {
+float ZombieController::GetDeltaInXDirection(float my_x, float other_x) {
 	if (my_x > other_x)
-		return -1;
+		return -1.0f;
 	else if (my_x < other_x)
-		return 1;
+		return 1.0f;
 	else
-		return 0;
+		return 0.0f;
 }
-double ZombieController::GetDeltaInYDirection(double my_y, double other_y) {
+float ZombieController::GetDeltaInYDirection(float my_y, float other_y) {
 	if (my_y > other_y)
-		return -1;
+		return -1.0f;
 	else if (my_y < other_y)
-		return 1;
+		return 1.0f;
 	else
-		return 0;
+		return 0.0f;
 }

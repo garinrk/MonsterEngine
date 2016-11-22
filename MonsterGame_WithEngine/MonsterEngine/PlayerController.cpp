@@ -38,8 +38,8 @@ char PlayerController::GetControllerInput()
 
 MonsterPoint2D PlayerController::ParseControllerInput(char in)
 {
-	double x_move = 0;
-	double y_move = 0;
+	float x_move = 0.0f;
+	float y_move = 0.0f;
 
 	if (in == 'W')
 		y_move++;

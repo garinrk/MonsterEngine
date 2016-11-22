@@ -19,8 +19,8 @@ public:
 private:
 	MonsterObject * monster_object_;
 	Player * player_to_follow_;
-	double GetDeltaInXDirection(double my_x, double other_x);
-	double GetDeltaInYDirection(double my_y, double other_y);
+	float GetDeltaInXDirection(float my_x, float other_x);
+	float GetDeltaInYDirection(float my_y, float other_y);
 };
 #include "ZombieController-inl.h"
 #endif
