@@ -65,7 +65,10 @@ void Monster::Update() {
 
 void Monster::SetRandomPos() {
 
-	MonsterTransform mt(rand() % (bound_x_ + 1), rand() % (bound_y_ + 1));
+	/*MonsterTransform mt(rand() % static_cast<int>((bound_x_ + 1)), rand() % static_cast<int((bound_y_ + 1)));*/
+	float x = static_cast<float>(rand() % static_cast<int>(bound_x_ + 1));
+	float y = static_cast<float>(rand() % static_cast<int>(bound_y_ + 1));
+	MonsterTransform mt(x, y);
 	monster_controller_->GetMonsterObject()->SetTransform(mt);
 }
 
