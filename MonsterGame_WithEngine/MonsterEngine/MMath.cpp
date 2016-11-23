@@ -28,10 +28,11 @@ bool MMath::IsNAN(float val) {
 
 inline bool MMath::IsZero(float val)
 {
-	return false;
+	return AreEqual_Eps(val, 0.0f, .000000001f);
 }
 
 inline bool MMath::AreEqual_Eps(float i_lhs, float i_rhs, float i_maxDiff)
 {
-	return false;
+	return fabsf(i_lhs - i_rhs) < i_maxDiff;
+
 }

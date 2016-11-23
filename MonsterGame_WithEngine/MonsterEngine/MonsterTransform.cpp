@@ -5,6 +5,8 @@
 MonsterTransform::MonsterTransform(float new_x, float new_y) :
 	position_(new_x, new_y)
 {
+	assert(!MMath::IsNAN(new_x));
+	assert(!MMath::IsNAN(new_y));
 }
 
 
