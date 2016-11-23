@@ -4,18 +4,20 @@
 #include "MonsterGame.h"
 #include "MonsterObject.h"
 #include "Player.h"
-#define ALLOCATOR_TESTS
+#include "MMath.h"
+//#define ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
 //#define NEW_GAMEPLAY
-#define NEW_TESTS
+//#define NEW_TESTS
+#define NAN_TEST
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
 void RunConstTests();
 void RunGame();
 void RunNewGame();
-
+void NANTests();
 void RunNewTests();
 int main() {
 	
@@ -124,5 +126,9 @@ void RunNewTests(){
 	delete p2;
 	//destroy the singleton.
 	MonsterAllocator::DestroyInstance();
+}
+
+void NANTests() {
+	//bool test = MMath::IsNAN(ljkfsdlk);
 }
 

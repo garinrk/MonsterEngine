@@ -18,12 +18,20 @@ int MMath::GetRandomIntInBounds(int min, int max)
 }
 
 bool MMath::IsNAN(float val) {
-	
 
 	//we do this to keep overly smart compilers
 	//from optimizing this whole function away
-
 	volatile float v = val;
 
 	return v != v;
+}
+
+inline bool MMath::IsZero(float val)
+{
+	return false;
+}
+
+inline bool MMath::AreEqual_Eps(float i_lhs, float i_rhs, float i_maxDiff)
+{
+	return false;
 }
