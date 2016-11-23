@@ -13,87 +13,126 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\MEngine">
+      <UniqueIdentifier>{f61792c5-9f11-4397-8b78-0c96753d4f23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Interfaces">
+      <UniqueIdentifier>{63962e4c-b1f5-4944-ab4c-53d3990fd264}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameObjects">
+      <UniqueIdentifier>{ed666c0b-0347-4e37-af3f-06921b0dfb43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Debug_Testing">
+      <UniqueIdentifier>{560618f3-50b4-4005-8210-0294537a3be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Math">
+      <UniqueIdentifier>{d7b738e4-c932-488d-86b8-5e5e0d972ef0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Allocator">
+      <UniqueIdentifier>{51abe3f9-8ebe-41ec-869e-96c7c7406032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controllers">
+      <UniqueIdentifier>{6843fe22-9d83-405b-be39-98e17eed6da4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MEngine">
+      <UniqueIdentifier>{71f7a46a-5d7c-4069-a5a2-ee5a4f69d738}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Math">
+      <UniqueIdentifier>{d0a3e9dd-c688-43cc-a4a2-5727473b601a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjects">
+      <UniqueIdentifier>{c2df6ef3-3a1c-4217-b8cc-07e4594829e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Debug_Testing">
+      <UniqueIdentifier>{c8edfd2a-54f2-4ff2-af09-e9b18a40e020}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Allocator">
+      <UniqueIdentifier>{42b3e706-d8ec-4a7c-b7d3-7962b886247e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers">
+      <UniqueIdentifier>{18282e65-9846-455e-8a80-11a977aaa42e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MonsterEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterDebug.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterAllocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterTesting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MMath.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterAllocator-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterPoint2D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterPoint2D-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterTransform.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Debug_Testing</Filter>
     </ClInclude>
     <ClInclude Include="IGameObjectController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerController.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="MMath.h">
+      <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterObject-inl.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="MonsterAllocator.h">
+      <Filter>Header Files\Allocator</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterTransform-inl.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="MonsterAllocator-inl.h">
+      <Filter>Header Files\Allocator</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerController-inl.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="MonsterEngine.h">
+      <Filter>Header Files\MEngine</Filter>
     </ClInclude>
     <ClInclude Include="MonsterEngine-inl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\MEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterObject.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterObject-inl.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterPoint2D.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterPoint2D-inl.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterTransform.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterTransform-inl.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterTesting.h">
+      <Filter>Header Files\Debug_Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController-inl.h">
+      <Filter>Header Files\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerController.h">
+      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterDebug.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterAllocator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterTesting.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\MEngine</Filter>
     </ClCompile>
     <ClCompile Include="MMath.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterAllocator.cpp">
+      <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterDebug.cpp">
+      <Filter>Source Files\Debug_Testing</Filter>
     </ClCompile>
     <ClCompile Include="MonsterObject.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="MonsterPoint2D.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterTesting.cpp">
+      <Filter>Source Files\Debug_Testing</Filter>
     </ClCompile>
     <ClCompile Include="MonsterTransform.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Controllers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

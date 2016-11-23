@@ -13,66 +13,84 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Controllers">
+      <UniqueIdentifier>{c5082298-d0f3-42c9-b2f0-870de6e503d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameObjects">
+      <UniqueIdentifier>{52faeeb0-5702-42df-aed2-38d3f89731e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Controllers">
+      <UniqueIdentifier>{36ae6432-2ce4-4fb7-aec2-99eeed0dd311}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameObjects">
+      <UniqueIdentifier>{b9e351a7-960c-40ef-9dae-7594d37679b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GameLoop">
+      <UniqueIdentifier>{5e960fcf-0559-4e3f-ab34-020e31ddb34c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameLoop">
+      <UniqueIdentifier>{d968b490-fd06-4ebb-b8f2-c523ab8470eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\GameLoop</Filter>
+    </ClCompile>
     <ClCompile Include="MonsterGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterController.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Monster.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GameLoop</Filter>
     </ClCompile>
     <ClCompile Include="ZombieController.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="MonsterController.cpp">
+      <Filter>Source Files\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>Source Files\GameObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\GameObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MonsterGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterGame-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="MonsterController-inl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Monster.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Monster-inl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="ZombieController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="ZombieController-inl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controllers</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Header Files\GameObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="Player-inl.h">
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameLoop</Filter>
     </ClInclude>
     <ClInclude Include="Game-inl.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GameLoop</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGame.h">
+      <Filter>Header Files\GameLoop</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterGame-inl.h">
+      <Filter>Header Files\GameLoop</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster-inl.h">
+      <Filter>Header Files\GameObjects</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
