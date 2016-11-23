@@ -14,7 +14,7 @@ MonsterAllocator::MonsterAllocator(size_t sizeOfChunk, const unsigned int numDes
 
 	assert(frontOfChunk != NULL && "NULL Memory Allocation");
 
-	backOfChunk = reinterpret_cast<char*>(frontOfChunk) + sizeOfChunk;
+	backOfChunk = reinterpret_cast<uintptr_t*>(frontOfChunk) + sizeOfChunk;
 
 	InitializeFreeList(numDescriptors);
 
@@ -69,7 +69,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	current->id = 0;
 #endif
 
-	for ( int i = 0; i < numDescriptors - 1; i++) {
+	for ( size_t i = 0; i < numDescriptors - 1; i++) {
 		BlockDescriptor * newBD = current + 1;
 		if (newBD >= (BlockDescriptor*)backOfChunk)
 			break;
@@ -89,7 +89,7 @@ void MonsterAllocator::InitializeFreeList(int numDescriptors)
 	freeRoot = frontOfBD;
 	endOfFree = current;
 
-	totalBytes = frontOfBD - frontOfChunk;
+	totalBytes = frontOfBD - reinterpret_cast<BlockDescriptor*>(frontOfChunk);
 
 	//set up initial unallocated block
 	BlockDescriptor * initialUnallocatedBlock;
