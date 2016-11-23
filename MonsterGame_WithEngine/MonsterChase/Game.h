@@ -2,11 +2,13 @@
 
 
 #include "Monster.h"
+#include "MonsterEngine.h"
 #include "MonsterPoint2D.h"
 #include "Player.h"
 
 #include <conio.h>
 #include <iostream>
+#include <vector>
 class Game
 {
 public:
@@ -16,6 +18,7 @@ public:
 
 private:
 
+	void AddMonster();
 	void InitializeMonsters();
 	void GetAndSetUserName();
 	void GetAndSetNumberOfMonsters();
@@ -25,19 +28,21 @@ private:
 	void PlayGame();
 
 	//data display
-	void DisplayGameState() const;
+	void DisplayGameState();
 
 	Player * main_player_;
-	int time_step_;
 
+	void  KillMonster();
 	
 
 	int board_bounds_;
 	int kill_monster_counter_;
+	int kill_monsters_every_;
 	int number_of_monsters_;
+	int time_step_ = 1;
 	
 
-	Monster* master_monster_list_;
+	std::vector<Monster*> master_monster_list;
 	char user_name_buffer_[4096];
 	char input_buffer_[4096];
 };

@@ -3,8 +3,8 @@
 
 class MonsterTesting {
 public:
-	static bool RunAllocatorTests();
-	static bool OriginalTests();
+	static bool ModifiedAllocatorTests();
+	static bool OriginalAllocatorTests();
 };
 
 #endif

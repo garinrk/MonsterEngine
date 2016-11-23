@@ -1,8 +1,10 @@
-#ifndef ZOMBIECONTROLLER_H
-#define ZOMBIECONTROLLER_H
+#pragma once
 
 #include "IGameObjectController.h"
-#include "Player.h"
+
+class Player;
+class MonsterObject;
+
 class ZombieController : public IGameObjectController
 {
 public:
@@ -23,4 +25,3 @@ private:
 	float GetDeltaInYDirection(float my_y, float other_y);
 };
 #include "ZombieController-inl.h"
-#endif

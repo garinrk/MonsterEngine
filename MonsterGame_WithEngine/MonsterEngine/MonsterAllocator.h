@@ -23,8 +23,8 @@ struct BlockDescriptor {
 #define GUARDBAND_VAL 0xFF
 #define GUARDBAND_BYTES 4
 #define ALIGNMENT 4
-#define TOTAL_SIZE 4096
-#define NUM_DESCRIPTORS 32
+#define TOTAL_SIZE 1024*1024
+#define NUM_DESCRIPTORS 256
 
 class MonsterAllocator
 {

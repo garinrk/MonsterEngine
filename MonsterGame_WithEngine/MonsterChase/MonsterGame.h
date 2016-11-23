@@ -2,15 +2,10 @@
 #define MONSTERGAME_H
 
 #include "MonsterPoint2D.h"
-#include "Monster.h"
-#include "MonsterAllocator.h"
-#include "MonsterDebug.h"
-#include "MonsterEngine.h"
-#include "Player.h"
-#include <assert.h>
-#include <string.h>
-#include <ctype.h>
-#include <conio.h>
+class Player;
+class Monster;
+
+#define BUFFER_SIZE 4096
 
 class MonsterGame
 {
@@ -21,6 +16,7 @@ public:
 
 
 private:
+
 
 	bool CheckForNumberValidity(char* input) const;
 	void InitializeMonsters(const int numberOfMonsters);
@@ -40,8 +36,8 @@ private:
 	bool killOrSpawnFlag = false;
 
 	bool validCheck;
-	char userNameInput[4096];
-	char numberInput[4096];
+	char userNameInput[BUFFER_SIZE];
+	char numberInput[BUFFER_SIZE];
 
 	int boardSizeX = 100;
 	int boardSizeY = 100;

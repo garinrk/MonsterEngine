@@ -27,7 +27,7 @@ int main() {
 #endif // _GAMEPLAY
 
 #ifdef NEW_GAMEPLAY
-
+	RunNewGame();
 #endif
 
 #ifdef CONST_TESTS
@@ -36,7 +36,7 @@ int main() {
 
 
 #ifdef ALLOCATOR_TESTS
-	RunAllocatorTests();
+	ModifiedAllocatorTests();
 	RunMyAllocatorTests();
 #endif // _ALLOCATORTESTS
 
@@ -44,6 +44,9 @@ int main() {
 	RunNewTests();
 #endif // NEW_TESTS
 
+#ifdef NAN_TEST
+	NANTests();
+#endif
 
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();
@@ -85,7 +88,7 @@ void RunConstTests() {
 }
 
 void RunAllocatorTests() {
-	bool result = MonsterTesting::RunAllocatorTests();
+	bool result = MonsterTesting::ModifiedAllocatorTests();
 	assert(result);
 /*
 	bool result2 = MonsterTesting::OriginalTests();
@@ -129,6 +132,18 @@ void RunNewTests(){
 }
 
 void NANTests() {
-	//bool test = MMath::IsNAN(ljkfsdlk);
+
+	//true
+	bool test = MMath::IsNAN(nanf("")); 
+
+	assert(test);
+
+
+	//false
+	bool test2 = MMath::IsNAN(5.0f);
+
+	assert(!test2);
+
+
 }
 

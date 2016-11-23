@@ -1,5 +1,5 @@
 #include "MonsterController.h"
-
+#include "MonsterObject.h"
 
 
 MonsterController::MonsterController()

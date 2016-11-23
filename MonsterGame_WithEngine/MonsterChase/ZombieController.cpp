@@ -1,6 +1,6 @@
 #include "ZombieController.h"
-
-
+#include "MonsterObject.h"
+#include "Player.h"
 
 ZombieController::ZombieController(Player * target_player) :
 	player_to_follow_(target_player)

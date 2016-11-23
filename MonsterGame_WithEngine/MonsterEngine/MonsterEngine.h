@@ -14,7 +14,6 @@ namespace MonsterEngine {
 
 
 };
-
 void * operator new(size_t n);
 
 void * operator new(size_t n, const char * msg);

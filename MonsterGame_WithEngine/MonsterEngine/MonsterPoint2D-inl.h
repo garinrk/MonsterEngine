@@ -10,13 +10,13 @@ inline float MonsterPoint2D::y() const {
 }
 
 inline void MonsterPoint2D::x(const float val) {
-	assert(MMath::IsNAN(val));
+	assert(!MMath::IsNAN(val));
 	coord_x_ = val;
 }
 
 inline void MonsterPoint2D::y(const float val)
 {
-	assert(MMath::IsNAN(val));
+	assert(!MMath::IsNAN(val));
 	coord_y_ = val;
 }
 

@@ -5,13 +5,19 @@
 // Garin Richards
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
+#include <random>
+#include <time.h>
+
+#include "IGameObjectController.h"
 #include "Monster.h"
 #include "MonsterController.h"
+#include "Player.h"
 #include "ZombieController.h"
 
 
+
 //constructor
-Monster::Monster(std::string new_name, int x_range_bound, int y_range_bound) :
+Monster::Monster(std::string& new_name, int x_range_bound, int y_range_bound) :
 name_(new_name),
 bound_x_(x_range_bound),
 bound_y_(y_range_bound)
@@ -21,7 +27,10 @@ bound_y_(y_range_bound)
 
 }
 
-Monster::Monster() 
+Monster::Monster() :
+	name_("temp"),
+	bound_x_(100),
+	bound_y_(100)
 {
 	monster_controller_ = new MonsterController();
 	SetRandomPos();

@@ -1,7 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "IGameObjectController.h"
+//#include "IGameObjectController.h"
+class IGameObjectController;
 #include "PlayerController.h"
 class Player
 {

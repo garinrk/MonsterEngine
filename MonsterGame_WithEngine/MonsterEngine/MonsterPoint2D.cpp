@@ -5,8 +5,8 @@ MonsterPoint2D::MonsterPoint2D(float init_x, float init_y) :
 	coord_x_(init_x),
 	coord_y_(init_y)
 {
-	assert(MMath::IsNAN(coord_x_));
-	assert(MMath::IsNAN(coord_y_));
+	assert(!MMath::IsNAN(coord_x_));
+	assert(!MMath::IsNAN(coord_y_));
 }
 
 

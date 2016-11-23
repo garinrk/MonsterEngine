@@ -7,7 +7,7 @@
 #define TEST_SINGLE_LARGE_ALLOCATION
 //#define __TRACK_ALLOCATIONS
 
-bool MonsterTesting::RunAllocatorTests()
+bool MonsterTesting::ModifiedAllocatorTests()
 {
 
 	const size_t 		sizeHeap = 2148;
@@ -172,7 +172,7 @@ bool MonsterTesting::RunAllocatorTests()
 }
 
 
-bool MonsterTesting::OriginalTests()
+bool MonsterTesting::OriginalAllocatorTests()
 {
 
 	const size_t 		sizeHeap = 1024 * 1024;

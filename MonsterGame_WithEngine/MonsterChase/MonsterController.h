@@ -1,8 +1,10 @@
-#ifndef MONSTERCONTROLLER_H
-#define MONSTERCONTROLLER_H
+#pragma once
 
 #include "IGameObjectController.h"
 #include "MonsterEngine.h"
+
+class MonsterObject;
+
 class MonsterController : public IGameObjectController
 {
 public:
@@ -20,5 +22,4 @@ private:
 };
 
 #include "MonsterController-inl.h"
-#endif // !MONSTERCONTROLLER_H
 

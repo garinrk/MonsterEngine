@@ -8,15 +8,17 @@
 #ifndef MONSTER_H
 #define MONSTER_H
 
-#include <random>
-#include <time.h>
 #include "MonsterPoint2D.h"
 #include "IGameObjectController.h"
-#include "Player.h"
+//#include "Player.h"
+
+class IGameObjectController;
+class Player;
+
 class Monster {
 
 	public:
-		Monster(std::string new_name, int x_range_bound, int y_range_bound);
+		Monster(std::string& new_name, int x_range_bound, int y_range_bound);
 		Monster();
 		~Monster();
 		Monster(const Monster& other);

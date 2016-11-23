@@ -1,7 +1,12 @@
 #include "MonsterGame.h"
-
-
-
+#include "Player.h"
+#include "Monster.h"
+#include "MonsterEngine.h"
+#include "MonsterDebug.h"
+#include <assert.h>
+#include <string.h>
+#include <ctype.h>
+#include <conio.h>
 MonsterGame::MonsterGame(int boardSize, MonsterPoint2D &playerStartPos)
 {
 	boardSizeX = boardSize;
@@ -208,7 +213,6 @@ void MonsterGame::InitializeMonsters(const int numberOfMonsters)
 	masterMonsterList = new Monster[numberOfMonsters];
 
 	for (int i = 0; i < numberOfMonsters; i++) {
-		std::string monster_name = std::to_string(i + 1);
 		Monster *tempMon  = new Monster(std::to_string(i + 1),boardSizeX,boardSizeY);
 		if (i % 5 == 0) {
 			tempMon->Zombify(main_player);
