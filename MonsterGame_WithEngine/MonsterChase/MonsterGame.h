@@ -6,6 +6,7 @@ class Player;
 class Monster;
 
 #define BUFFER_SIZE 4096
+#define KILL_MONSTER_TICK 3
 
 class MonsterGame
 {
@@ -45,7 +46,7 @@ private:
 	Player  *main_player;
 	int timeStep = 1;
 
-	int killMonstersEvery = 3;
+	int killMonstersEvery = KILL_MONSTER_TICK;
 	int killMonsterCounter = killMonstersEvery;
 	int numberOfMonsters;
 

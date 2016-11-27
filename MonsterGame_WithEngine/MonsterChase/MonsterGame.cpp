@@ -273,6 +273,8 @@ void MonsterGame::AddMonster() {
 			newArray[i] = *newMon;
 
 	}
+
+	delete[] masterMonsterList;
 /*
 	Monster *tempMon = new Monster(std::to_string(i + 1), boardSizeX, boardSizeY);
 	if (i % 5 == 0) {
