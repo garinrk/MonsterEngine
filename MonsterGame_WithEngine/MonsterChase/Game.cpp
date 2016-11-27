@@ -165,7 +165,14 @@ void Game::DisplayGameState(){
 	printf("\n\n=======================================\n");
 	printf("==============Day Number %d=============\n", time_step_);
 	printf("=======================================\n");
+
+#ifdef _WIN64
 	printf("\n\n%s%I64u%s\n", "There are ", master_monster_list.size(), " monster(s) in the dungeon");
+#else
+	printf("\n\n%s%d%s\n", "There are ", master_monster_list.size(), " monster(s) in the dungeon");
+#endif // _WIN64
+
+	
 
 	//for (std::vector<Monster*>::iterator iter = master_monster_list.begin(); iter != master_monster_list.end(); ++iter) {
 	//	(*iter)->Update();
