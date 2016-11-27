@@ -134,16 +134,24 @@ void RunNewTests(){
 void NANTests() {
 
 	//true
-	bool test = MMath::IsNAN(nanf("")); 
+	//bool test = MMEngine::IsNAN(nanf("")); 
+	bool test = MMEngine::MMath::IsNAN(nanf(""));
 
 	assert(test);
 
 
 	//false
-	bool test2 = MMath::IsNAN(5.0f);
+	bool test2 = MMEngine::MMath::IsNAN(5.0f);
+	//bool test2 = MMEngine::IsNAN(5.0f);
 
 	assert(!test2);
 
+	
+	bool test3 = MMEngine::MMath::AreEqual(4.0f, 4.0f);
+	assert(test3);
+
+	bool test4 = MMEngine::MMath::AreEqual(4.0f, 4.000001f);
+	assert(!test4);
 
 }
 

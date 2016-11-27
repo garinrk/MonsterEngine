@@ -11,13 +11,13 @@
 /// <returns>	The random int in bounds. </returns>
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int MMath::GetRandomIntInBounds(int min, int max)
+int MMEngine::MMath::GetRandomIntInBounds(int min, int max)
 {
 	srand((unsigned int)time(NULL));
 	return min + rand() % (max - min + 1);
 }
 
-bool MMath::IsNAN(float val) {
+bool MMEngine::MMath::IsNAN(float val) {
 
 	//we do this to keep overly smart compilers
 	//from optimizing this whole function away
@@ -26,12 +26,17 @@ bool MMath::IsNAN(float val) {
 	return v != v;
 }
 
-inline bool MMath::IsZero(float val)
+bool MMEngine::MMath::IsZero(float val)
 {
 	return AreEqual_Eps(val, 0.0f, .000000001f);
 }
 
-inline bool MMath::AreEqual_Eps(float i_lhs, float i_rhs, float i_maxDiff)
+bool MMEngine::MMath::AreEqual(float i_lhs, float i_rhs)
+{
+	return AreEqual_Eps(i_lhs, i_rhs, .000000001f);
+}
+
+bool MMEngine::MMath::AreEqual_Eps(float i_lhs, float i_rhs, float i_maxDiff)
 {
 	return fabsf(i_lhs - i_rhs) < i_maxDiff;
 

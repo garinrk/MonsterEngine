@@ -156,7 +156,7 @@ void MonsterGame::PlayGame()
 		killMonsterCounter--;
 		if (killMonsterCounter == 0) {
 			killMonsterCounter = killMonstersEvery;
-			int monsterToKill = MMath::GetRandomIntInBounds(0, numberOfMonsters - 1);
+			int monsterToKill = MMEngine::MMath::GetRandomIntInBounds(0, numberOfMonsters - 1);
 			KillMonster(monsterToKill);
 
 		}
