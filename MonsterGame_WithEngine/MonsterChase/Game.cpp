@@ -97,6 +97,12 @@ bool Game::CheckForNumberValidity(const char * input) const {
 
 	size_t string_length = strlen(input);
 	int user_number = atoi(input);
+	
+#ifdef _DEBUG
+	bool test = (string_length == 0 || user_number > 100 || user_number <= 0);
+	assert(!test);
+#endif // _DEBUG
+
 	if (string_length == 0 || user_number > 100 || user_number <= 0)
 		return false;
 	return true;
