@@ -4,44 +4,42 @@
 #include <stdio.h>
 #include <string>
 
-
-std::string ReverseString(std::string i_phrase);
-//Remove side-by-side duplicate characters in a string:
-//("AAA BBB" becomes "A B") in place.
+void ReverseCharArray(char*  i_phrase);
 
 int main(int i_argc, char ** i_argl) {
+	
+	char input2[6] = { 'g','a', 'r','i','n', '\0' };
 
-	std::string input = "Richards";
+	std::cout << "Reversing " << input2 << std::endl;
+	ReverseCharArray(input2);
 
-	std::string r = ReverseString(input);
-
-	std::cout << "Result: " << r << std::endl;
+	std::cout << "Result: " << input2 << std::endl;
 
 	return 0;
 }
 
+void ReverseCharArray(char * i_phrase) {
 
-std::string ReverseString(std::string o_phrase) {
+	//get to the end
 
-	std::cout << "Reversing: " << o_phrase << std::endl;
-	char temp;
-	size_t front = 0;
-	size_t back = o_phrase.length() - 1;
+	size_t backIndex = 0;
+	size_t frontIndex = 0;
 
-	while(true){
-		temp = o_phrase[front];
+	while (i_phrase[backIndex + 1] != '\0')
+		backIndex++;
 
-		o_phrase[front] = o_phrase[back];
-
-		o_phrase[back] = temp;
-
-		front++;
-		back--;
+	char front, back;
+	while (true) {
+		front = i_phrase[frontIndex];
+		back = i_phrase[backIndex];
 
 		if (front == back)
 			break;
-	}
 
-	return o_phrase;
-	
+		i_phrase[frontIndex] = back;
+		i_phrase[backIndex] = front;
+
+		frontIndex++;
+		backIndex--;
+	}
 }
