@@ -21,14 +21,15 @@ void NANTests();
 void RunNewTests();
 int main() {
 	
-	MonsterAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
 	
 #ifdef OLD_GAMEPLAY
 	RunGame();
 #endif // _GAMEPLAY
 
 #ifdef NEW_GAMEPLAY
+	MonsterAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
 	RunNewGame();
+	MonsterAllocator::DestroyInstance();
 #endif
 
 #ifdef CONST_TESTS
@@ -49,7 +50,7 @@ int main() {
 	NANTests();
 #endif
 
-	MonsterAllocator::DestroyInstance();
+	
 
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();
