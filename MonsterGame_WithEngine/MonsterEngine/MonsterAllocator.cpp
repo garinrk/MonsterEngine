@@ -624,7 +624,6 @@ MonsterAllocator * MonsterAllocator::getInstance()
 }
 
 //create destroy and a gate
-
 void MonsterAllocator::DestroyInstance() {
 	single_->~MonsterAllocator();
 

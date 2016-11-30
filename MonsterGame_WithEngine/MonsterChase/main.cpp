@@ -5,12 +5,12 @@
 #include "MonsterObject.h"
 #include "Player.h"
 #include "MMath.h"
-//#define ALLOCATOR_TESTS
+#define ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
 //#define NEW_GAMEPLAY
 //#define NEW_TESTS
-#define NAN_TEST
+//#define NAN_TEST
 
 void RunAllocatorTests();
 void RunMyAllocatorTests();
@@ -21,6 +21,7 @@ void NANTests();
 void RunNewTests();
 int main() {
 	
+	MonsterAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
 	
 #ifdef OLD_GAMEPLAY
 	RunGame();
@@ -36,7 +37,7 @@ int main() {
 
 
 #ifdef ALLOCATOR_TESTS
-	ModifiedAllocatorTests();
+	RunAllocatorTests();
 	RunMyAllocatorTests();
 #endif // _ALLOCATORTESTS
 
@@ -47,6 +48,8 @@ int main() {
 #ifdef NAN_TEST
 	NANTests();
 #endif
+
+	MonsterAllocator::DestroyInstance();
 
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();
@@ -59,6 +62,7 @@ void RunNewGame() {
 	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
 	Game mg = Game(100, playerPos, 3);
 	mg.Start();
+
 }
 
 void RunGame() {

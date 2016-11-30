@@ -9,6 +9,8 @@
 #include <conio.h>
 #include <iostream>
 #include <vector>
+
+#define BUFFER_SIZE_ 4096
 class Game
 {
 public:
@@ -43,8 +45,8 @@ private:
 	
 
 	std::vector<Monster*> master_monster_list;
-	char user_name_buffer_[4096];
-	char input_buffer_[4096];
+	char user_name_buffer_[BUFFER_SIZE_];
+	char input_buffer_[BUFFER_SIZE_];
 };
 
 #include "Game-inl.h"

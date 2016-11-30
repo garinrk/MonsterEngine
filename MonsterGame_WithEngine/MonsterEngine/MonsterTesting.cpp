@@ -10,7 +10,7 @@
 bool MonsterTesting::ModifiedAllocatorTests()
 {
 
-	const size_t 		sizeHeap = 2148;
+	const size_t 		sizeHeap = 1024;
 	const unsigned int 	numDescriptors =  8;
 	const uint8_t		initial_alignment = 4;
 	// Create a heap manager for my test heap.
@@ -67,7 +67,7 @@ bool MonsterTesting::ModifiedAllocatorTests()
 		size_t	sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
 
 		void * pPtr = pHeapManager.MonsterMalloc(sizeAlloc);
-		pHeapManager.PrintLists();
+		//pHeapManager.PrintLists();
 
 		if (pPtr == NULL)
 		{

@@ -13,10 +13,21 @@ Game::Game(int board_size, MonsterPoint2D &player_start_pos, int kill_freq) :
 
 Game::~Game()
 {
-	if (master_monster_list.size() > 0)
-		master_monster_list.clear();
+
+	//std::vector<Monster*>().swap(master_monster_list);
+	const size_t listSize = master_monster_list.size();
+
+	for (size_t i = 0; i < listSize; i++) {
+		delete master_monster_list[i];
+	}
+
+	master_monster_list.clear();
+	
 	if (main_player_)
 		delete main_player_;
+	main_player_ = NULL;
+
+
 }
 
 void Game::Start() {
@@ -81,6 +92,8 @@ void Game::GetAndSetNumberOfMonsters() {
 
 		std::cin.getline(input_buffer_, sizeof(input_buffer_));
 
+		//can use cin to just go directly into integer value 
+		//can skip the entire atoi step. 
 		user_number = atoi(input_buffer_);
 
 		if (user_number <= 0 || user_number > 100)
@@ -119,6 +132,7 @@ void Game::PlayGame() {
 
 		main_player_->Update();
 
+		//TODO: Rethink where q listening happens
 		if ((reinterpret_cast<PlayerController*>(main_player_->GetController())->GetGameOverState()))
 			return;
 
@@ -209,5 +223,6 @@ void Game::KillMonster()
 	printf("===========A MONSTER HAS DIED==========\n");
 	printf("=======================================\n\n");
 
+	delete master_monster_list.back();
 	master_monster_list.pop_back();
 }
