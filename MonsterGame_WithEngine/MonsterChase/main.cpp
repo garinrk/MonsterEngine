@@ -1,11 +1,13 @@
 #include "MonsterAllocator.h"
+#include "GAllocator.h"
 #include "MonsterTesting.h"
 #include "Game.h"
 #include "MonsterGame.h"
 #include "MonsterObject.h"
 #include "Player.h"
 #include "MMath.h"
-#define ALLOCATOR_TESTS
+//#define ALLOCATOR_TESTS
+#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
 //#define NEW_GAMEPLAY
@@ -19,6 +21,8 @@ void RunGame();
 void RunNewGame();
 void NANTests();
 void RunNewTests();
+
+void RunGAllocTests();
 int main() {
 	
 	
@@ -49,6 +53,11 @@ int main() {
 #ifdef NAN_TEST
 	NANTests();
 #endif
+
+#ifdef NEW_ALLOCATOR_TESTS
+	RunGAllocTests();
+#endif // NEW_ALLOCATOR_TESTS
+
 
 	
 
@@ -158,5 +167,16 @@ void NANTests() {
 	bool test4 = MMEngine::MMath::AreEqual(4.0f, 4.000001f);
 	assert(!test4);
 
+}
+
+
+void RunGAllocTests() {
+	const size_t 		sizeHeap = 1024*1024;
+	const unsigned int 	numDescriptors = 8;
+	const size_t		align = 4;
+
+	GAllocator my_allocator = GAllocator(sizeHeap, numDescriptors, align);
+
+	int x = 0;
 }
 

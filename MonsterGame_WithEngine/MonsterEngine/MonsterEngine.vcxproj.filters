@@ -105,6 +105,9 @@
     <ClInclude Include="PlayerController.h">
       <Filter>Header Files\Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="GAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">
@@ -133,6 +136,9 @@
     </ClCompile>
     <ClCompile Include="PlayerController.cpp">
       <Filter>Source Files\Controllers</Filter>
+    </ClCompile>
+    <ClCompile Include="GAllocator.cpp">
+      <Filter>Source Files\Allocator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
