@@ -12,7 +12,47 @@ GAllocator::GAllocator(const size_t total_allocator_size, const unsigned int num
 	
 }
 
+void * GAllocator::GAlloc(const size_t amt)
+{
+	return GAlloc(amt, 4);
+}
 
+void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
+
+	//check to see if we need to garbage collect some nodes
+	if (tail_of_free_ == NULL) {
+		GGCollect();
+	}
+
+}
+
+void GAllocator::GGCollect() {
+
+	//looking through the list of unallocated blocks, combining any
+	//that are right next to one another, into a single larger
+	//free block
+
+	_Descriptor * conductor = unallocated_root_;
+
+	bool finished = false;
+
+	//there are no unallocated blocks to look through
+	if (unallocated_root_ == 0)
+		return;
+
+	while (conductor != NULL) {
+		uintptr_t * addr_to_search_for = static_cast<uintptr_t*>(conductor->base) + conductor->master_size;
+		_Descriptor * found_block = SearchForBlock(addr_to_search_for, unallocated_root_);
+
+		if (found_block == NULL) {
+			conductor = conductor->next;
+		}
+		else {
+			CombineBlocks(found_block, conductor);
+		}
+	}
+
+}
 
 GAllocator::~GAllocator()
 {
@@ -114,6 +154,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	PRINT_LIST(unallocated_root_);
 
 }
+
 
 void GAllocator::AddToUnallocatedList(_Descriptor * node_to_insert)
 {

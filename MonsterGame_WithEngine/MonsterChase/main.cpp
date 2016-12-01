@@ -177,6 +177,14 @@ void RunGAllocTests() {
 
 	GAllocator my_allocator = GAllocator(sizeHeap, numDescriptors, align);
 
+	void * first = my_allocator.GAlloc(12);
+	void * second = my_allocator.GAlloc(12);
+
+	my_allocator.GFree(first);
+	my_allocator.GFree(second);
+
+	my_allocator.GGCollect();
+
 	int x = 0;
 }
 

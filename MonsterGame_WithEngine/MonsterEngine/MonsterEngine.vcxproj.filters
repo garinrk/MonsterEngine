@@ -106,7 +106,7 @@
       <Filter>Header Files\Controllers</Filter>
     </ClInclude>
     <ClInclude Include="GAllocator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Allocator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
