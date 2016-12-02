@@ -13,10 +13,8 @@ struct _Descriptor {
 	_Descriptor * next;
 };
 
-#include <assert.h>
-#include <inttypes.h>
-#include <malloc.h>
 
+#include <inttypes.h>
 #include "MonsterDebug.h"
 
 #define BAND_VAL 0xFF

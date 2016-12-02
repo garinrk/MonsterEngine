@@ -1,6 +1,9 @@
 #include "GAllocator.h"
 
 #include <new>
+#include <assert.h>
+#include <inttypes.h>
+#include <malloc.h>
 
 GAllocator::GAllocator(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
 {
@@ -18,12 +21,13 @@ void * GAllocator::GAlloc(const size_t amt)
 }
 
 void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
-
+	void * return_to_user = NULL;
 	//check to see if we need to garbage collect some nodes
 	if (tail_of_free_ == NULL) {
 		GGCollect();
 	}
 
+	return return_to_user;
 }
 
 void GAllocator::GGCollect() {
@@ -116,7 +120,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 		new_descriptor->user_size = 0;
 
 #ifdef _DEBUG
-		new_descriptor->debug_id = i + 1;
+		new_descriptor->debug_id = static_cast<int>(i) + 1;
 #endif // _DEBUG
 
 
@@ -127,7 +131,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	free_root_ = front_of_pool_;
 	tail_of_free_ = conductor;
 
-	total_bytes_left = front_of_pool_ - front_of_chunk_;
+	total_bytes_left = front_of_pool_ - static_cast<_Descriptor*>(front_of_chunk_);
 
 	//initial unallocated block
 
@@ -155,6 +159,10 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 
 }
 
+void GAllocator::AddToAllocatedList(const _Descriptor * node_to_insert)
+{
+}
+
 
 void GAllocator::AddToUnallocatedList(_Descriptor * node_to_insert)
 {
@@ -174,4 +182,18 @@ void GAllocator::AddToUnallocatedList(_Descriptor * node_to_insert)
 		node_to_insert->prev = conductor;
 
 	}
+}
+
+void GAllocator::AddToFreeList(const _Descriptor * node_to_insert)
+{
+}
+
+bool GAllocator::CheckGuardBands(_Descriptor * node_to_check)
+{
+	return false;
+}
+
+bool GAllocator::CombineBlocks(_Descriptor * first, _Descriptor * second)
+{
+	return false;
 }
