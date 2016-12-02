@@ -56,11 +56,12 @@ private:
 	bool CombineBlocks(_Descriptor* first, _Descriptor* second);
 
 	_Descriptor * SearchForBlock(const void * addr_to_search_for, const _Descriptor* root_node) const;
-	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignemnt) const;
+	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const;
 	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, const _Descriptor* root_node);
-	
+	_Descriptor * StealFromBlock(const _Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
 	size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
 
+	bool IsPowerOfTwo(uint8_t input);
 #pragma region AllocatorMemberVars
 	_Descriptor * free_root_ = 0;
 	_Descriptor * tail_of_free_ = 0;

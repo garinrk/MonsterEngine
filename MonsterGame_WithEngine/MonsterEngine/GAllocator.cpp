@@ -22,10 +22,27 @@ void * GAllocator::GAlloc(const size_t amt)
 
 void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	void * return_to_user = NULL;
+
+	assert(IsPowerOfTwo(alignment));
+
+	if (!IsPowerOfTwo(alignment))
+		return nullptr;
+
 	//check to see if we need to garbage collect some nodes
 	if (tail_of_free_ == NULL) {
 		GGCollect();
 	}
+
+	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt, alignment);
+
+	assert(sufficiently_sized_block != NULL && "Ran out of descriptors after garbage collecting");
+
+	//even after garbage collecting we don't have a descriptor
+	if (sufficiently_sized_block == NULL)
+		return nullptr;
+
+	_Descriptor * new_descriptor;
+
 
 	return return_to_user;
 }
@@ -196,4 +213,63 @@ bool GAllocator::CheckGuardBands(_Descriptor * node_to_check)
 bool GAllocator::CombineBlocks(_Descriptor * first, _Descriptor * second)
 {
 	return false;
+}
+
+_Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const
+{
+	_Descriptor * conductor = unallocated_root_;
+
+	size_t toLookFor = amt;/*+ alignment;*/
+
+#ifdef _DEBUG
+	toLookFor += BAND_SIZE * 2;
+#endif
+
+	while (conductor != NULL)
+	{
+		if (conductor->master_size >= toLookFor) {
+			return conductor;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
+	return NULL;
+}
+
+_Descriptor * GAllocator::StealFromBlock(const _Descriptor * victim, const size_t amt_to_take, const uint8_t alignment)
+{
+
+	//grab a descriptor from the free list
+	_Descriptor * thief = tail_of_free_;
+	if (thief->prev != NULL) {
+		tail_of_free_ = thief->prev;
+	}
+
+	tail_of_free_->next = NULL;
+	thief->prev = NULL;
+	thief->next = NULL;
+
+	size_t entire_amt_to_take = amt_to_take;
+
+#ifdef _DEBUG
+	entire_amt_to_take += BAND_SIZE * 2;
+#endif
+
+	//take the front of the victim's space
+	thief->base = victim->base;
+	thief->user_ptr = thief->base;
+
+	return nullptr;
+}
+
+bool GAllocator::IsPowerOfTwo(uint8_t input)
+{
+	uint8_t val = (input != 0) && !(input & (input - 1));
+
+	if (val == 1)
+		return true;
+	else
+		return false;
 }
