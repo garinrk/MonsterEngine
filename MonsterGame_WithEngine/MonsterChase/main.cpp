@@ -7,10 +7,10 @@
 #include "Player.h"
 #include "MMath.h"
 //#define ALLOCATOR_TESTS
-#define NEW_ALLOCATOR_TESTS
+//#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
-//#define NEW_GAMEPLAY
+#define NEW_GAMEPLAY
 //#define NEW_TESTS
 //#define NAN_TEST
 

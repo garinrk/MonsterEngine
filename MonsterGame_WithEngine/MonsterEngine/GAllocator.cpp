@@ -42,9 +42,17 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 		return nullptr;
 
 	_Descriptor * new_descriptor;
+	new_descriptor->user_size;
+
+
 
 
 	return return_to_user;
+}
+
+bool GAllocator::GFree(const void * addr_to_free)
+{
+	return false;
 }
 
 void GAllocator::GGCollect() {
@@ -73,6 +81,15 @@ void GAllocator::GGCollect() {
 		}
 	}
 
+}
+
+GAllocator * GAllocator::GetInstance()
+{
+	return nullptr;
+}
+
+void GAllocator::DestroyInstance()
+{
 }
 
 GAllocator::~GAllocator()
@@ -215,6 +232,11 @@ bool GAllocator::CombineBlocks(_Descriptor * first, _Descriptor * second)
 	return false;
 }
 
+_Descriptor * GAllocator::SearchForBlock(const void * addr_to_search_for, const _Descriptor * root_node) const
+{
+	return nullptr;
+}
+
 _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const
 {
 	_Descriptor * conductor = unallocated_root_;
@@ -238,6 +260,11 @@ _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t
 	return NULL;
 }
 
+_Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, const _Descriptor * root_node)
+{
+	return nullptr;
+}
+
 _Descriptor * GAllocator::StealFromBlock(const _Descriptor * victim, const size_t amt_to_take, const uint8_t alignment)
 {
 
@@ -259,9 +286,14 @@ _Descriptor * GAllocator::StealFromBlock(const _Descriptor * victim, const size_
 
 	//take the front of the victim's space
 	thief->base = victim->base;
-	thief->user_ptr = thief->base;
+	thief->user_ptr = thief->base;;
 
 	return nullptr;
+}
+
+size_t GAllocator::GetAlignmentOffset(const void * addr, uint8_t alignment)
+{
+	return size_t();
 }
 
 bool GAllocator::IsPowerOfTwo(uint8_t input)
@@ -272,4 +304,8 @@ bool GAllocator::IsPowerOfTwo(uint8_t input)
 		return true;
 	else
 		return false;
+}
+
+void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
+{
 }
