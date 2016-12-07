@@ -47,18 +47,21 @@ public:
 private:
 
 	void InitializeFreeList(const unsigned int num_of_descriptors);
-	void AddToAllocatedList(const _Descriptor* node_to_insert);
+	void AddToAllocatedList(_Descriptor* node_to_insert);
 	void AddToUnallocatedList( _Descriptor* node_to_insert);
-	void AddToFreeList(const _Descriptor* node_to_insert);
+	void AddToFreeList(_Descriptor* node_to_insert);
 
 	bool CheckGuardBands(_Descriptor* node_to_check);
 
-	bool CombineBlocks(_Descriptor* first, _Descriptor* second);
+	void CombineBlocks(_Descriptor* first, _Descriptor* second);
 
-	_Descriptor * SearchForBlock(const void * addr_to_search_for, const _Descriptor* root_node) const;
+	void NullRootReference(_Descriptor* node_to_null);
+	void MoveRootReferencesForward(_Descriptor* node_to_move_forward);
+
+	_Descriptor * SearchForBlock(const void * addr_to_search_for, _Descriptor* root_node) const;
 	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const;
-	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, const _Descriptor* root_node);
-	_Descriptor * StealFromBlock(const _Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
+	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, _Descriptor* root_node);
+	_Descriptor * StealFromBlock(_Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
 	size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
 
 	bool IsPowerOfTwo(uint8_t input);
@@ -70,7 +73,7 @@ private:
 	_Descriptor * front_of_pool_ = 0;
 
 	void * front_of_chunk_;
-	void * back_of_chunk;
+	void * back_of_chunk_;
 #pragma endregion AllocatorMemberVars
 
 #pragma region Singleton

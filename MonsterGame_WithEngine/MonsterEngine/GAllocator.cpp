@@ -10,7 +10,9 @@ GAllocator::GAllocator(const size_t total_allocator_size, const unsigned int num
 	front_of_chunk_ = _aligned_malloc(total_allocator_size, alignment);
 	assert(front_of_chunk_ != NULL && "Null Memory Allocation in Allocator Creation");
 
-	back_of_chunk = reinterpret_cast<char*>(front_of_chunk_) + total_allocator_size;
+	total_bytes_left = total_allocator_size;
+
+	back_of_chunk_ = reinterpret_cast<uint8_t*>(front_of_chunk_) + total_allocator_size;
 	InitializeFreeList(num_of_descriptors);
 	
 }
@@ -21,8 +23,6 @@ void * GAllocator::GAlloc(const size_t amt)
 }
 
 void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
-	void * return_to_user = NULL;
-
 	assert(IsPowerOfTwo(alignment));
 
 	if (!IsPowerOfTwo(alignment))
@@ -41,18 +41,57 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	if (sufficiently_sized_block == NULL)
 		return nullptr;
 
-	_Descriptor * new_descriptor;
-	new_descriptor->user_size;
+	_Descriptor * new_descriptor = StealFromBlock(sufficiently_sized_block,amt,alignment);
+
+	assert(new_descriptor != NULL);
+	//TODO: if null, should reverse what happened in steal from block
+	//if (new_descriptor == NULL)
+	//	return nullptr;
+
+	new_descriptor->user_size = amt;
+	AddToAllocatedList(new_descriptor);
+
+	DEBUGLOG("User requested %zu BYTES", amt);
+
+#ifdef _DEBUG
+	DEBUGLOG("Allocated:");
+	PrintList(allocated_root_);
+	DEBUGLOG("Unallocated:");
+	PrintList(unallocated_root_);
+	DEBUGLOG("Free:");
+	PrintList(free_root_);
+#endif
 
 
 
-
-	return return_to_user;
+	return new_descriptor->user_ptr;
 }
 
 bool GAllocator::GFree(const void * addr_to_free)
 {
-	return false;
+	_Descriptor * to_move_to_unallocated = RemoveBlockFromList(addr_to_free, allocated_root_);
+	assert(to_move_to_unallocated != NULL && "attempted to free a non valid address");
+
+	if (to_move_to_unallocated == NULL) {
+		return false;
+	}
+
+	bool band_integrity_check = CheckGuardBands(to_move_to_unallocated);
+	assert(band_integrity_check && "Guardband corruption");
+
+	AddToUnallocatedList(to_move_to_unallocated);
+
+	DEBUGLOG("User freed %04X addr", addr_to_free);
+
+#ifdef _DEBUG
+	DEBUGLOG("Allocated:");
+	PrintList(allocated_root_);
+	DEBUGLOG("Unallocated:");
+	PrintList(unallocated_root_);
+	DEBUGLOG("Free:");
+	PrintList(free_root_);
+#endif
+	return true;
 }
 
 void GAllocator::GGCollect() {
@@ -70,7 +109,7 @@ void GAllocator::GGCollect() {
 		return;
 
 	while (conductor != NULL) {
-		uintptr_t * addr_to_search_for = static_cast<uintptr_t*>(conductor->base) + conductor->master_size;
+		uint8_t* addr_to_search_for = static_cast<uint8_t*>(conductor->base) + conductor->master_size;
 		_Descriptor * found_block = SearchForBlock(addr_to_search_for, unallocated_root_);
 
 		if (found_block == NULL) {
@@ -81,6 +120,17 @@ void GAllocator::GGCollect() {
 		}
 	}
 
+
+	DEBUGLOG("GARBAGE COLLECTED");
+
+#ifdef _DEBUG
+	DEBUGLOG("Allocated:");
+	PrintList(allocated_root_);
+	DEBUGLOG("Unallocated:");
+	PrintList(unallocated_root_);
+	DEBUGLOG("Free:");
+	PrintList(free_root_);
+#endif
 }
 
 GAllocator * GAllocator::GetInstance()
@@ -115,7 +165,7 @@ void GAllocator::PrintList(_Descriptor * root)
 void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 {
 
-	front_of_pool_ = reinterpret_cast<_Descriptor*>(reinterpret_cast<uintptr_t*>(back_of_chunk) - (sizeof(_Descriptor) * num_of_descriptors));
+	front_of_pool_ = reinterpret_cast<_Descriptor*>(reinterpret_cast<uint8_t*>(back_of_chunk_) - (sizeof(_Descriptor) * num_of_descriptors));
 
 	//make sure we didn't create too many descriptors
 	assert(front_of_pool_ > front_of_chunk_ && "Too many descriptors, pool is larger than the total size");
@@ -136,11 +186,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	for (size_t i = 0; i < num_of_descriptors - 1; i++) {
 		_Descriptor * new_descriptor = conductor + 1;
 
-		assert(new_descriptor < reinterpret_cast<_Descriptor*>(back_of_chunk));
-		//TODO: Shouldn't need this...
-		////just in case we go too far...
-		//if (new_descriptor >= reinterpret_cast<_Descriptor*>(back_of_chunk))
-		//	break;
+		assert(new_descriptor < reinterpret_cast<_Descriptor*>(back_of_chunk_));
 
 		//set links
 		conductor->next = new_descriptor;
@@ -165,7 +211,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	free_root_ = front_of_pool_;
 	tail_of_free_ = conductor;
 
-	total_bytes_left = front_of_pool_ - static_cast<_Descriptor*>(front_of_chunk_);
+	total_bytes_left -= sizeof(_Descriptor) * num_of_descriptors;
 
 	//initial unallocated block
 
@@ -186,15 +232,35 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 
 	AddToUnallocatedList(init_unalloc_block);
 
-	DEBUGLOG("FREE:");
-	PRINT_LIST(free_root_);
-	DEBUGLOG("UNALLOC:");
-	PRINT_LIST(unallocated_root_);
-
+#ifdef _DEBUG
+	DEBUGLOG("Allocated:");
+	PrintList(allocated_root_);
+	DEBUGLOG("Unallocated:");
+	PrintList(unallocated_root_);
+	DEBUGLOG("Free:");
+	PrintList(free_root_);
+#endif // _DEBUG
+	
 }
 
-void GAllocator::AddToAllocatedList(const _Descriptor * node_to_insert)
+void GAllocator::AddToAllocatedList(_Descriptor * node_to_insert)
 {
+	_Descriptor * conductor = allocated_root_;
+
+	//we are the first
+	if (allocated_root_ == 0) {
+		node_to_insert->prev = NULL;
+		node_to_insert->next = NULL;
+		allocated_root_ = node_to_insert;
+	}
+	else {
+		while (conductor->next != NULL) {
+			conductor = conductor->next;
+		}
+		conductor->next = node_to_insert;
+		node_to_insert->prev = conductor;
+	}
+
 }
 
 
@@ -214,26 +280,95 @@ void GAllocator::AddToUnallocatedList(_Descriptor * node_to_insert)
 
 		conductor->next = node_to_insert;
 		node_to_insert->prev = conductor;
-
 	}
 }
 
-void GAllocator::AddToFreeList(const _Descriptor * node_to_insert)
+void GAllocator::AddToFreeList(_Descriptor * node_to_insert)
 {
+	//nullify descriptor
+	node_to_insert->base = NULL;
+	node_to_insert->master_size = NULL;
+	node_to_insert->user_size = NULL;
+	node_to_insert->user_ptr = NULL;
+	node_to_insert->next = NULL;
+
+	//set at end
+	tail_of_free_->next = node_to_insert;
+	node_to_insert->prev = tail_of_free_->prev;
+	tail_of_free_ = node_to_insert;
+	
+
 }
 
 bool GAllocator::CheckGuardBands(_Descriptor * node_to_check)
 {
-	return false;
+	uint8_t* front_band_addr = static_cast<uint8_t*>(node_to_check->base);
+	for (size_t i = 0; i < BAND_SIZE; i++) {
+		if (*(front_band_addr + i) != BAND_VAL) {
+			return false;
+		}
+	}
+
+	uint8_t * back_band_addr = static_cast<uint8_t*>(node_to_check->user_ptr) + node_to_check->user_size;
+	for (size_t i = 0; i < BAND_SIZE; i++) {
+		if (*(front_band_addr + i) != BAND_VAL) {
+			return false;
+		}
+	}
+	return true;
 }
 
-bool GAllocator::CombineBlocks(_Descriptor * first, _Descriptor * second)
+void GAllocator::CombineBlocks(_Descriptor * first, _Descriptor * second)
 {
-	return false;
+	size_t size_of_combined_blocks = first->master_size + second->master_size;
+
+	second->master_size = size_of_combined_blocks;
+
+	RemoveBlockFromList(first->user_ptr, unallocated_root_);
+	AddToFreeList(first);
 }
 
-_Descriptor * GAllocator::SearchForBlock(const void * addr_to_search_for, const _Descriptor * root_node) const
+void GAllocator::NullRootReference(_Descriptor * node_to_null)
 {
+	//what type of root are we? Set the appropriate reference
+	if (node_to_null == free_root_) {
+		free_root_ = NULL;
+	}
+	else if (node_to_null == allocated_root_) {
+		allocated_root_ = NULL;
+	}
+	else if (node_to_null == unallocated_root_) {
+		unallocated_root_ = NULL;
+	}
+}
+
+void GAllocator::MoveRootReferencesForward(_Descriptor * node_to_move_forward)
+{
+	//what type of root are we? Set the appropriate reference
+	if (node_to_move_forward == free_root_) {
+		free_root_ = node_to_move_forward->next;
+	}
+	else if (node_to_move_forward == allocated_root_) {
+		allocated_root_ = node_to_move_forward->next;
+	}
+	else if (node_to_move_forward == unallocated_root_) {
+		unallocated_root_ = node_to_move_forward->next;
+	}
+}
+
+_Descriptor * GAllocator::SearchForBlock(const void * addr_to_search_for, _Descriptor * root_node) const
+{
+	_Descriptor * conductor = root_node;
+
+	while (conductor != NULL) {
+		if (conductor->base == addr_to_search_for) {
+			return conductor;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
 	return nullptr;
 }
 
@@ -260,12 +395,63 @@ _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t
 	return NULL;
 }
 
-_Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, const _Descriptor * root_node)
+_Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _Descriptor * root_node)
 {
+	_Descriptor * conductor = root_node;
+
+	while (conductor != NULL) {
+
+		//found it
+		if (conductor->user_ptr == addr_to_search_for) {
+
+			//head case
+			if (conductor->prev == NULL && conductor->next != NULL) {
+
+				//move root references forward to next
+				MoveRootReferencesForward(conductor);  
+				//modify pointers
+				conductor->next->prev = NULL;
+				conductor->next = NULL;
+			}
+			//middle case
+			else if (conductor->prev != NULL && conductor->next != NULL) {
+				conductor->next->prev = conductor->prev;
+				conductor->prev->next = conductor->next;
+
+				conductor->prev = NULL;
+				conductor->next = NULL;
+			}
+
+			//tail case
+			else if (conductor->prev != NULL && conductor->next == NULL) {
+			
+				conductor->prev->next = NULL;
+				conductor->prev = NULL;
+
+				//set tail reference if appropriate
+				if (conductor == tail_of_free_) {
+					tail_of_free_ = NULL;
+				}
+			}
+
+			//root case
+			else if (conductor->prev == NULL && conductor->next == NULL) {
+				//nullify the appropriate root
+				NullRootReference(conductor);
+			}
+
+			return conductor;
+		}
+
+		else {
+			//move on
+			conductor = conductor->next;
+		}
+	}
 	return nullptr;
 }
 
-_Descriptor * GAllocator::StealFromBlock(const _Descriptor * victim, const size_t amt_to_take, const uint8_t alignment)
+_Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t amt_to_take, const uint8_t alignment)
 {
 
 	//grab a descriptor from the free list
@@ -286,9 +472,30 @@ _Descriptor * GAllocator::StealFromBlock(const _Descriptor * victim, const size_
 
 	//take the front of the victim's space
 	thief->base = victim->base;
-	thief->user_ptr = thief->base;;
+	thief->user_ptr = thief->base;
 
-	return nullptr;
+	//guardbands
+#ifdef _DEBUG
+	uint8_t * front_guardband_pos = static_cast<uint8_t*>(thief->base);
+	for (size_t i = 0; i < BAND_SIZE; i++) {
+		*(front_guardband_pos + i) = BAND_VAL;
+	}
+	//reassign user ptr to be in front of the front guardbands
+	thief->user_ptr = static_cast<uint8_t*>(thief->base) + BAND_SIZE;	
+
+	uint8_t* back_guardband_pos = static_cast<uint8_t*>(thief->user_ptr) + amt_to_take;
+	for (size_t i = 0; i < BAND_SIZE; i++) {
+		*(back_guardband_pos + i) = BAND_VAL;
+	}
+
+#endif
+	
+	thief->master_size = entire_amt_to_take;
+	victim->master_size -= entire_amt_to_take;
+	
+	victim->base = static_cast<uint8_t*>(victim->base) + entire_amt_to_take;
+
+	return thief;
 }
 
 size_t GAllocator::GetAlignmentOffset(const void * addr, uint8_t alignment)

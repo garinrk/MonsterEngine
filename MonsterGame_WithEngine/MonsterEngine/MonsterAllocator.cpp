@@ -6,7 +6,6 @@ void* MonsterAllocator::singleton_addr_ = NULL;
 
 MonsterAllocator::MonsterAllocator(size_t size_of_chunk, const unsigned int num_of_descriptors, uint8_t initial_alignment)
 {
-	//TODO: Make sure initial alignment is a power of 2
 	front_of_chunk_ = _aligned_malloc(size_of_chunk, initial_alignment);
 	assert(front_of_chunk_ != NULL && "NULL Memory Allocation");
 

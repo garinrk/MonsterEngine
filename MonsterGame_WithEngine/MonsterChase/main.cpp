@@ -7,10 +7,10 @@
 #include "Player.h"
 #include "MMath.h"
 //#define ALLOCATOR_TESTS
-//#define NEW_ALLOCATOR_TESTS
+#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
-#define NEW_GAMEPLAY
+//#define NEW_GAMEPLAY
 //#define NEW_TESTS
 //#define NAN_TEST
 
@@ -171,7 +171,7 @@ void NANTests() {
 
 
 void RunGAllocTests() {
-	const size_t 		sizeHeap = 1024*1024;
+	const size_t 		sizeHeap = 1024;
 	const unsigned int 	numDescriptors = 8;
 	const size_t		align = 4;
 
@@ -185,6 +185,5 @@ void RunGAllocTests() {
 
 	my_allocator.GGCollect();
 
-	int x = 0;
 }
 
