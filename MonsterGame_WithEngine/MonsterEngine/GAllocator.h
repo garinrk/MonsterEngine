@@ -21,8 +21,8 @@ struct _Descriptor {
 #define BAND_SIZE 4
 #define ALIGN 4
 
-#define DEFAULT_SIZE 1024*1024
-#define DEFAULT_DESCRIPTORS 256
+//#define DEFAULT_SIZE 1024*1024
+//#define DEFAULT_DESCRIPTORS 256
 class GAllocator
 {
 public:
@@ -48,6 +48,9 @@ public:
 	bool ContainsAddress(const void* addr_to_find);
 	bool IsAllocatedAddress(const void* addr_to_find);
 	size_t GetLargestFreeBlockSize();
+
+	//debug
+	void PrintAllocatorState();
 private:
 
 	void InitializeFreeList(const unsigned int num_of_descriptors);
@@ -69,6 +72,7 @@ private:
 	size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
 
 	bool IsPowerOfTwo(uint8_t input);
+
 #pragma region AllocatorMemberVars
 	_Descriptor * free_root_ = 0;
 	_Descriptor * tail_of_free_ = 0;

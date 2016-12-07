@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <vector>
-#define TEST_SINGLE_LARGE_ALLOCATION
+//#define TEST_SINGLE_LARGE_ALLOCATION
 //#define __TRACK_ALLOCATIONS
 
 bool MonsterTesting::ModifiedAllocatorTests()
@@ -494,8 +494,10 @@ bool MonsterTesting::GAllocatorTests() {
 		pHeapManager.PrintLists();
 #endif // __TRACK_ALLOCATIONS
 
+		pHeapManager.GGCollect();
 		// do a large test allocation to see if garbage collection worked
-		void * pPtr = pHeapManager.GAlloc(sizeHeap / 2);
+		size_t largest_block = pHeapManager.GetLargestFreeBlockSize();
+		void * pPtr = pHeapManager.GAlloc(largest_block);
 		assert(pPtr);
 
 		if (pPtr)

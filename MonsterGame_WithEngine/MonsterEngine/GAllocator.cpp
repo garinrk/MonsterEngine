@@ -14,6 +14,8 @@ GAllocator::GAllocator(const size_t total_allocator_size, const unsigned int num
 
 	back_of_chunk_ = reinterpret_cast<uint8_t*>(front_of_chunk_) + total_allocator_size;
 	InitializeFreeList(num_of_descriptors);
+	DEBUGLOG("GALLOCATOR INIT");
+	PRINT_GALLOC_STATE;
 	
 }
 
@@ -35,11 +37,13 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 
 	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt, alignment);
 
-	assert(sufficiently_sized_block != NULL && "Ran out of descriptors after garbage collecting");
-
 	//even after garbage collecting we don't have a descriptor
 	if (sufficiently_sized_block == NULL)
 		return nullptr;
+
+	//assert(sufficiently_sized_block != NULL && "Ran out of descriptors after garbage collecting");
+
+
 
 	_Descriptor * new_descriptor = StealFromBlock(sufficiently_sized_block,amt,alignment);
 
@@ -52,15 +56,7 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	AddToAllocatedList(new_descriptor);
 
 	DEBUGLOG("User requested %zu BYTES", amt);
-
-#ifdef _DEBUG
-	DEBUGLOG("Allocated:");
-	PrintList(allocated_root_);
-	DEBUGLOG("Unallocated:");
-	PrintList(unallocated_root_);
-	DEBUGLOG("Free:");
-	PrintList(free_root_);
-#endif
+	PRINT_GALLOC_STATE;
 
 
 
@@ -82,15 +78,7 @@ bool GAllocator::GFree(const void * addr_to_free)
 	AddToUnallocatedList(to_move_to_unallocated);
 
 	DEBUGLOG("User freed %04X addr", addr_to_free);
-
-#ifdef _DEBUG
-	DEBUGLOG("Allocated:");
-	PrintList(allocated_root_);
-	DEBUGLOG("Unallocated:");
-	PrintList(unallocated_root_);
-	DEBUGLOG("Free:");
-	PrintList(free_root_);
-#endif
+	PRINT_GALLOC_STATE;
 	return true;
 }
 
@@ -122,15 +110,7 @@ void GAllocator::GGCollect() {
 
 
 	DEBUGLOG("GARBAGE COLLECTED");
-
-#ifdef _DEBUG
-	DEBUGLOG("Allocated:");
-	PrintList(allocated_root_);
-	DEBUGLOG("Unallocated:");
-	PrintList(unallocated_root_);
-	DEBUGLOG("Free:");
-	PrintList(free_root_);
-#endif
+	PRINT_GALLOC_STATE;
 }
 
 GAllocator * GAllocator::GetInstance()
@@ -231,16 +211,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	init_unalloc_block->user_size = 0;
 
 	AddToUnallocatedList(init_unalloc_block);
-
-#ifdef _DEBUG
-	DEBUGLOG("Allocated:");
-	PrintList(allocated_root_);
-	DEBUGLOG("Unallocated:");
-	PrintList(unallocated_root_);
-	DEBUGLOG("Free:");
-	PrintList(free_root_);
-#endif // _DEBUG
-	
+	PRINT_GALLOC_STATE;
 }
 
 void GAllocator::AddToAllocatedList(_Descriptor * node_to_insert)
@@ -377,11 +348,11 @@ _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t
 	_Descriptor * conductor = unallocated_root_;
 
 	size_t toLookFor = amt;/*+ alignment;*/
-//
-//#ifdef _DEBUG
-//	toLookFor += BAND_SIZE * 2;
-//#endif
-//
+
+#ifdef _DEBUG
+	toLookFor += BAND_SIZE * 2;
+#endif
+
 	while (conductor != NULL)
 	{
 		if (conductor->master_size >= toLookFor) {
@@ -495,6 +466,12 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t amt_
 	
 	victim->base = static_cast<uint8_t*>(victim->base) + entire_amt_to_take;
 
+	if (victim->master_size == 0) {
+		RemoveBlockFromList(victim->user_ptr, unallocated_root_);
+		AddToFreeList(victim);
+		
+	}
+
 	return thief;
 }
 
@@ -572,6 +549,35 @@ size_t GAllocator::GetLargestFreeBlockSize() {
 		}
 	}
 
-
+#ifdef _DEBUG
+	if (largest > 0) {
+		largest -= BAND_SIZE * 2;
+	}
+#endif
 	return largest;
+}
+
+void GAllocator::PrintAllocatorState() {
+	DEBUGLOG("===ALLOCATOR STATE===");
+
+	_Descriptor * conductor = free_root_;
+
+	while (conductor != NULL) {
+		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->debug_id, conductor->prev, conductor->base, conductor->user_ptr, conductor->master_size, conductor->next);
+		conductor = conductor->next;
+	}
+
+	conductor = allocated_root_;
+
+	while (conductor != NULL) {
+		DEBUGLOG("ALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->debug_id, conductor->prev, conductor->base, conductor->user_ptr, conductor->master_size, conductor->next);
+		conductor = conductor->next;
+	}
+	
+	conductor = unallocated_root_;
+
+	while (conductor != NULL) {
+		DEBUGLOG("UNALLOC NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->debug_id, conductor->prev, conductor->base, conductor->user_ptr, conductor->master_size, conductor->next);
+		conductor = conductor->next;
+	}
 }
