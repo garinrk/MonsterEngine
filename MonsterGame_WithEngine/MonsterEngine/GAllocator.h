@@ -44,6 +44,10 @@ public:
 
 	void PrintList(_Descriptor* root);
 
+	//For unit tests
+	bool ContainsAddress(const void* addr_to_find);
+	bool IsAllocatedAddress(const void* addr_to_find);
+	size_t GetLargestFreeBlockSize();
 private:
 
 	void InitializeFreeList(const unsigned int num_of_descriptors);

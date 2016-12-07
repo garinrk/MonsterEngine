@@ -377,11 +377,11 @@ _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t
 	_Descriptor * conductor = unallocated_root_;
 
 	size_t toLookFor = amt;/*+ alignment;*/
-
-#ifdef _DEBUG
-	toLookFor += BAND_SIZE * 2;
-#endif
-
+//
+//#ifdef _DEBUG
+//	toLookFor += BAND_SIZE * 2;
+//#endif
+//
 	while (conductor != NULL)
 	{
 		if (conductor->master_size >= toLookFor) {
@@ -515,4 +515,63 @@ bool GAllocator::IsPowerOfTwo(uint8_t input)
 
 void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
 {
+}
+
+bool GAllocator::ContainsAddress(const void* addr_to_find) {
+
+	_Descriptor * conductor = allocated_root_;
+
+	while (conductor != NULL) {
+		if (conductor->user_ptr == addr_to_find) {
+			return true;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
+	while (conductor != NULL) {
+		if (conductor->user_ptr == addr_to_find) {
+			return true;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
+	return false;
+}
+
+bool GAllocator::IsAllocatedAddress(const void* addr_to_find) {
+	_Descriptor * conductor = allocated_root_;
+
+	while (conductor != NULL) {
+		if (conductor->user_ptr == addr_to_find) {
+			return true;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
+	return false;
+}
+
+size_t GAllocator::GetLargestFreeBlockSize() {
+	size_t largest = 0;
+	
+	_Descriptor * conductor = unallocated_root_;
+
+
+	while (conductor != NULL) {
+		if (conductor->master_size > largest) {
+			largest = conductor->master_size;
+		}
+		else {
+			conductor = conductor->next;
+		}
+	}
+
+
+	return largest;
 }

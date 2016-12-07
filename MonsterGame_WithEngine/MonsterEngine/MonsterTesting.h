@@ -1,10 +1,9 @@
-#ifndef MONSTERTESTING_H
-#define MONSTERTESTING_H
+#pragma once
 
 class MonsterTesting {
 public:
 	static bool ModifiedAllocatorTests();
 	static bool OriginalAllocatorTests();
+	static bool GAllocatorTests();
+	static bool GAllocatorWithAlignmentTests();
 };
-
-#endif
