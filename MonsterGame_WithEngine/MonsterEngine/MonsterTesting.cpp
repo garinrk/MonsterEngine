@@ -348,8 +348,8 @@ bool MonsterTesting::OriginalAllocatorTests()
 bool MonsterTesting::GAllocatorTests() {
 
 
-	const size_t 		sizeHeap = 1024;
-	const unsigned int 	numDescriptors = 8;
+	const size_t 		sizeHeap = 1024*1024;
+	const unsigned int 	numDescriptors = 512;
 	const uint8_t		initial_alignment = 4;
 	// Create a heap manager for my test heap.
 	GAllocator pHeapManager = GAllocator(sizeHeap, numDescriptors, initial_alignment);
@@ -399,7 +399,7 @@ bool MonsterTesting::GAllocatorTests() {
 	// until it runs out of memory
 	do
 	{
-		const size_t maxTestAllocationSize = 512;
+		const size_t maxTestAllocationSize = sizeHeap / 2;
 
 
 		size_t	sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));

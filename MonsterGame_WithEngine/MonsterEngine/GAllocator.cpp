@@ -30,11 +30,13 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	if (!IsPowerOfTwo(alignment))
 		return nullptr;
 
+	//TODO: What if there is a sufficiently sized unallocated node?
 	//check to see if we need to garbage collect some nodes
 	if (tail_of_free_ == NULL) {
 		GGCollect();
 	}
 
+	
 	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt, alignment);
 
 	//even after garbage collecting we don't have a descriptor
@@ -52,6 +54,7 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	//if (new_descriptor == NULL)
 	//	return nullptr;
 
+	//TODO: If you don't fragment and just hand back a suitable block, this user_size may be more
 	new_descriptor->user_size = amt;
 	AddToAllocatedList(new_descriptor);
 
@@ -211,26 +214,36 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	init_unalloc_block->user_size = 0;
 
 	AddToUnallocatedList(init_unalloc_block);
-	PRINT_GALLOC_STATE;
 }
 
 void GAllocator::AddToAllocatedList(_Descriptor * node_to_insert)
 {
-	_Descriptor * conductor = allocated_root_;
+	//_Descriptor * conductor = allocated_root_;
 
-	//we are the first
-	if (allocated_root_ == 0) {
-		node_to_insert->prev = NULL;
-		node_to_insert->next = NULL;
-		allocated_root_ = node_to_insert;
+	if (allocated_root_ != NULL) {
+		allocated_root_->prev = node_to_insert;
 	}
-	else {
-		while (conductor->next != NULL) {
-			conductor = conductor->next;
-		}
-		conductor->next = node_to_insert;
-		node_to_insert->prev = conductor;
-	}
+
+	node_to_insert->prev = NULL;
+	node_to_insert->next = allocated_root_;
+
+	allocated_root_ = node_to_insert;
+
+	//TODO: Add to the head, not the tails of lists.
+
+	////we are the first
+	//if (allocated_root_ == 0) {
+	//	node_to_insert->prev = NULL;
+	//	node_to_insert->next = NULL;
+	//	allocated_root_ = node_to_insert;
+	//}
+	//else {
+	//	while (conductor->next != NULL) {
+	//		conductor = conductor->next;
+	//	}
+	//	conductor->next = node_to_insert;
+	//	node_to_insert->prev = conductor;
+	//}
 
 }
 
@@ -399,9 +412,12 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _
 				conductor->prev->next = NULL;
 				conductor->prev = NULL;
 
+				//TODO: Use of free tail? Does order matter in free list?
+
 				//set tail reference if appropriate
 				if (conductor == tail_of_free_) {
-					tail_of_free_ = NULL;
+					//tail_of_free_ = NULL;
+					tail_of_free_ = conductor->prev;
 				}
 			}
 
@@ -422,20 +438,27 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _
 	return nullptr;
 }
 
-_Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t amt_to_take, const uint8_t alignment)
+_Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user_amt, const uint8_t alignment)
 {
 
 	//grab a descriptor from the free list
 	_Descriptor * thief = tail_of_free_;
+
+
+	//set tail based on previous, could be null.
+	tail_of_free_ = thief->prev;
+
+	//if there's stuff, make it a tail
 	if (thief->prev != NULL) {
-		tail_of_free_ = thief->prev;
+		tail_of_free_->next = NULL;
 	}
 
-	tail_of_free_->next = NULL;
+	//thief doesn't point anywhere, zero out references
 	thief->prev = NULL;
 	thief->next = NULL;
+	
 
-	size_t entire_amt_to_take = amt_to_take;
+	size_t entire_amt_to_take = user_amt;
 
 #ifdef _DEBUG
 	entire_amt_to_take += BAND_SIZE * 2;
@@ -443,7 +466,7 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t amt_
 
 	//take the front of the victim's space
 	thief->base = victim->base;
-	thief->user_ptr = thief->base;
+	//thief->user_ptr = thief->base;
 
 	//guardbands
 #ifdef _DEBUG
@@ -454,7 +477,7 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t amt_
 	//reassign user ptr to be in front of the front guardbands
 	thief->user_ptr = static_cast<uint8_t*>(thief->base) + BAND_SIZE;	
 
-	uint8_t* back_guardband_pos = static_cast<uint8_t*>(thief->user_ptr) + amt_to_take;
+	uint8_t* back_guardband_pos = static_cast<uint8_t*>(thief->user_ptr) + user_amt;
 	for (size_t i = 0; i < BAND_SIZE; i++) {
 		*(back_guardband_pos + i) = BAND_VAL;
 	}
@@ -465,11 +488,12 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t amt_
 	victim->master_size -= entire_amt_to_take;
 	
 	victim->base = static_cast<uint8_t*>(victim->base) + entire_amt_to_take;
-
+	
+	//TODO: Fragmentation Minimum. Fall over to handing back
+	//a sufficient unallocated block
 	if (victim->master_size == 0) {
 		RemoveBlockFromList(victim->user_ptr, unallocated_root_);
 		AddToFreeList(victim);
-		
 	}
 
 	return thief;
