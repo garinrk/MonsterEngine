@@ -36,6 +36,8 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 		GGCollect();
 	}
 
+	if (tail_of_free_ == NULL)
+		return nullptr;
 	
 	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt, alignment);
 
@@ -52,7 +54,6 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	//TODO: If you don't fragment and just hand back a suitable block, this user_size may be more
 	new_descriptor->user_size = amt;
 	AddToAllocatedList(new_descriptor);
-
 	DEBUGLOG("User requested %zu BYTES", amt);
 	PRINT_GALLOC_STATE;
 
@@ -213,32 +214,32 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 
 void GAllocator::AddToAllocatedList(_Descriptor * node_to_insert)
 {
-	//_Descriptor * conductor = allocated_root_;
+	_Descriptor * conductor = allocated_root_;
 
-	if (allocated_root_ != NULL) {
-		allocated_root_->prev = node_to_insert;
+	//if (allocated_root_ != NULL) {
+	//	allocated_root_->prev = node_to_insert;
+	//}
+
+	//node_to_insert->prev = NULL;
+	//node_to_insert->next = allocated_root_;
+
+	//allocated_root_ = node_to_insert;
+
+	////TODO: Add to the head, not the tails of lists.
+
+	//we are the first
+	if (allocated_root_ == 0) {
+		node_to_insert->prev = NULL;
+		node_to_insert->next = NULL;
+		allocated_root_ = node_to_insert;
 	}
-
-	node_to_insert->prev = NULL;
-	node_to_insert->next = allocated_root_;
-
-	allocated_root_ = node_to_insert;
-
-	//TODO: Add to the head, not the tails of lists.
-
-	////we are the first
-	//if (allocated_root_ == 0) {
-	//	node_to_insert->prev = NULL;
-	//	node_to_insert->next = NULL;
-	//	allocated_root_ = node_to_insert;
-	//}
-	//else {
-	//	while (conductor->next != NULL) {
-	//		conductor = conductor->next;
-	//	}
-	//	conductor->next = node_to_insert;
-	//	node_to_insert->prev = conductor;
-	//}
+	else {
+		while (conductor->next != NULL) {
+			conductor = conductor->next;
+		}
+		conductor->next = node_to_insert;
+		node_to_insert->prev = conductor;
+	}
 
 }
 
@@ -537,28 +538,38 @@ void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigne
 }
 
 bool GAllocator::ContainsAddress(const void* addr_to_find) {
+	//_Descriptor * conductor = allocated_root_;
 
-	_Descriptor * conductor = allocated_root_;
+	//while (conductor != NULL) {
+	//	if (conductor->user_ptr == addr_to_find) {
+	//		return true;
+	//	}
+	//	else {
+	//		conductor = conductor->next;
+	//	}
+	//}
 
-	while (conductor != NULL) {
-		if (conductor->user_ptr == addr_to_find) {
-			return true;
-		}
-		else {
-			conductor = conductor->next;
-		}
+	//while (conductor != NULL) {
+	//	if (conductor->user_ptr == addr_to_find) {
+	//		return true;
+	//	}
+	//	else {
+	//		conductor = conductor->next;
+	//	}
+	//}
+
+	//return false;
+
+	//PRINT_GALLOC_STATE;
+
+	if (addr_to_find <= back_of_chunk_ && addr_to_find >= front_of_chunk_){
+		return true;
+	}
+	else {
+		return false;
 	}
 
-	while (conductor != NULL) {
-		if (conductor->user_ptr == addr_to_find) {
-			return true;
-		}
-		else {
-			conductor = conductor->next;
-		}
-	}
-
-	return false;
+	
 }
 
 bool GAllocator::IsAllocatedAddress(const void* addr_to_find) {
