@@ -171,20 +171,21 @@ void NANTests() {
 
 
 void RunGAllocTests() {
-	const size_t 		sizeHeap = 1024;
-	const unsigned int 	numDescriptors = 8;
-	const size_t		align = 4;
+	//const size_t 		sizeHeap = 1024;
+	//const unsigned int 	numDescriptors = 8;
+	//const size_t		align = 4;
 
-	GAllocator my_allocator = GAllocator(sizeHeap, numDescriptors, align);
+	//GAllocator my_allocator = GAllocator(sizeHeap, numDescriptors, align);
 
-	void * first = my_allocator.GAlloc(5,8);
-	void * second = my_allocator.GAlloc(6,8);
+	//void * first = my_allocator.GAlloc(5,8);
+	//void * second = my_allocator.GAlloc(6,8);
 
-	my_allocator.GFree(first);
-	my_allocator.GFree(second);
+	//my_allocator.GFree(first);
+	//my_allocator.GFree(second);
 
-	my_allocator.GGCollect();
+	//my_allocator.GGCollect();
 
 	//MonsterTesting::GAllocatorTests();
+	MonsterTesting::GAllocatorWithAlignmentTests();
 }
 
