@@ -272,10 +272,14 @@ void GAllocator::AddToFreeList(_Descriptor * node_to_insert)
 	node_to_insert->user_ptr = NULL;
 	node_to_insert->next = NULL;
 
+
 	//set at end
-	tail_of_free_->next = node_to_insert;
+	node_to_insert->prev = free_root_;
+	free_root_->next = node_to_insert;
+
+	/*tail_of_free_->next = node_to_insert;
 	node_to_insert->prev = tail_of_free_->prev;
-	tail_of_free_ = node_to_insert;
+	tail_of_free_ = node_to_insert;*/
 	
 
 }
@@ -437,6 +441,9 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _
 _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user_amt, const uint8_t alignment)
 {
 
+	if(free_root_ == tail_of_free_) {
+		free_root_ = NULL;
+	}
 	//grab a descriptor from the free list
 	_Descriptor * thief = tail_of_free_;
 

@@ -659,6 +659,9 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 
 		// do garbage collection
 		pHeapManager.GGCollect();
+
+		//TODO: GARBAGE COLLECTING NEEDS TO ADD TO THE FREE LIST FROM THE FRONT
+		//TODO: USE CASE OF IF USED ALL THE FREE NODES
 		// our heap should be one single block, all the memory it started with
 
 
