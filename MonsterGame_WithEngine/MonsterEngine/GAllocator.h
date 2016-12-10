@@ -5,7 +5,7 @@ struct _Descriptor {
 	void * user_ptr;
 	size_t master_size;
 	size_t user_size;
-	size_t offset_pad;
+	//size_t offset_pad;
 
 #if _DEBUG
 	int debug_id;
@@ -69,7 +69,7 @@ private:
 	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const;
 	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, _Descriptor* root_node);
 	_Descriptor * StealFromBlock(_Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
-	size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
+	//size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
 
 	bool IsPowerOfTwo(uint8_t input);
 

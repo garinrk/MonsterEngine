@@ -156,8 +156,8 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	//set up front of pool
 	front_of_pool_->prev = NULL;
 	front_of_pool_->base = NULL;
-	front_of_pool_->master_size = 0;
 	front_of_pool_->user_ptr = NULL;
+	front_of_pool_->master_size = 0;
 	front_of_pool_->user_size = 0;
 
 	_Descriptor * conductor = front_of_pool_;
@@ -360,7 +360,7 @@ _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t
 {
 	_Descriptor * conductor = unallocated_root_;
 
-	size_t toLookFor = amt;/*+ alignment;*/
+	size_t toLookFor = amt /*+ alignment*/;
 
 #ifdef _DEBUG
 	toLookFor += BAND_SIZE * 2;
@@ -470,24 +470,47 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user
 
 	//guardbands
 #ifdef _DEBUG
-	uint8_t * front_guardband_pos = static_cast<uint8_t*>(thief->base);
+	/*uint8_t * front_guardband_pos = static_cast<uint8_t*>(thief->base);
+	for (size_t i = 0; i < BAND_SIZE; i++) {
+		*(front_guardband_pos + i) = BAND_VAL;
+	}*/
+
+	//check to see if "user ptr" address is aligned
+	void * addr_to_check = static_cast<uint8_t*>(thief->base) + BAND_SIZE;
+
+	uint8_t * front_guardband_pos;
+
+	//TODO: Make sure this works
+	if (reinterpret_cast<size_t>(addr_to_check) % alignment == 0) {
+		//aligned
+		front_guardband_pos = static_cast<uint8_t*>(thief->base);
+	}
+	else {
+		//get padding
+		size_t alignment_padding = alignment - (reinterpret_cast<size_t>(addr_to_check) % alignment);
+		front_guardband_pos = static_cast<uint8_t*>(addr_to_check) + alignment_padding - BAND_SIZE;
+	}
+
 	for (size_t i = 0; i < BAND_SIZE; i++) {
 		*(front_guardband_pos + i) = BAND_VAL;
 	}
+
 	//reassign user ptr to be in front of the front guardbands
-	thief->user_ptr = static_cast<uint8_t*>(thief->base) + BAND_SIZE;	
+	thief->user_ptr = front_guardband_pos + BAND_SIZE;	
 
 	uint8_t* back_guardband_pos = static_cast<uint8_t*>(thief->user_ptr) + user_amt;
+
+
 	for (size_t i = 0; i < BAND_SIZE; i++) {
 		*(back_guardband_pos + i) = BAND_VAL;
 	}
 
 #endif
 	
-	thief->master_size = entire_amt_to_take;
-	victim->master_size -= entire_amt_to_take;
+	thief->master_size = (back_guardband_pos + BAND_SIZE) - static_cast<uint8_t*>(thief->base);
+	victim->master_size -= thief->master_size;
 	
-	victim->base = static_cast<uint8_t*>(victim->base) + entire_amt_to_take;
+	victim->base = static_cast<uint8_t*>(victim->base) + thief->master_size;
 	
 	//TODO: Fragmentation Minimum. Fall over to handing back
 	//a sufficient unallocated block
@@ -499,10 +522,10 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user
 	return thief;
 }
 
-size_t GAllocator::GetAlignmentOffset(const void * addr, uint8_t alignment)
-{
-	return size_t();
-}
+//size_t GAllocator::GetAlignmentOffset(const void * addr, uint8_t alignment)
+//{
+//	return size_t();
+//}
 
 bool GAllocator::IsPowerOfTwo(uint8_t input)
 {
