@@ -49,11 +49,6 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 
 	_Descriptor * new_descriptor = StealFromBlock(sufficiently_sized_block,amt,alignment);
 
-	assert(new_descriptor != NULL);
-	//TODO: if null, should reverse what happened in steal from block
-	//if (new_descriptor == NULL)
-	//	return nullptr;
-
 	//TODO: If you don't fragment and just hand back a suitable block, this user_size may be more
 	new_descriptor->user_size = amt;
 	AddToAllocatedList(new_descriptor);
@@ -286,7 +281,7 @@ void GAllocator::AddToFreeList(_Descriptor * node_to_insert)
 
 bool GAllocator::CheckGuardBands(_Descriptor * node_to_check)
 {
-	uint8_t* front_band_addr = static_cast<uint8_t*>(node_to_check->base);
+	uint8_t* front_band_addr = static_cast<uint8_t*>(node_to_check->user_ptr) - BAND_SIZE;
 	for (size_t i = 0; i < BAND_SIZE; i++) {
 		if (*(front_band_addr + i) != BAND_VAL) {
 			return false;

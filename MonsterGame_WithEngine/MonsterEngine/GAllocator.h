@@ -57,21 +57,24 @@ private:
 	void AddToAllocatedList(_Descriptor* node_to_insert);
 	void AddToUnallocatedList( _Descriptor* node_to_insert);
 	void AddToFreeList(_Descriptor* node_to_insert);
-
-	bool CheckGuardBands(_Descriptor* node_to_check);
-
 	void CombineBlocks(_Descriptor* first, _Descriptor* second);
-
 	void NullRootReference(_Descriptor* node_to_null);
 	void MoveRootReferencesForward(_Descriptor* node_to_move_forward);
+
+	bool CheckGuardBands(_Descriptor* node_to_check);
+	bool IsPowerOfTwo(uint8_t input);
+
 
 	_Descriptor * SearchForBlock(const void * addr_to_search_for, _Descriptor* root_node) const;
 	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const;
 	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, _Descriptor* root_node);
 	_Descriptor * StealFromBlock(_Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
 	//size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
+	
 
-	bool IsPowerOfTwo(uint8_t input);
+
+
+
 
 #pragma region AllocatorMemberVars
 	_Descriptor * free_root_ = 0;

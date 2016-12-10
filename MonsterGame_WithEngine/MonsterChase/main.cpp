@@ -173,7 +173,7 @@ void NANTests() {
 void RunGAllocTests() {
 	const size_t 		sizeHeap = 1024;
 	const unsigned int 	numDescriptors = 8;
-	const size_t		align = 8;
+	const size_t		align = 4;
 
 	GAllocator my_allocator = GAllocator(sizeHeap, numDescriptors, align);
 
