@@ -8,7 +8,7 @@
 
 class MonsterDebug
 {
-public: 
+public:
 	static void DebugPrint(const char * input, ...);
 
 
@@ -17,7 +17,6 @@ public:
 
 #ifdef _DEBUG
 #define DEBUGLOG(fmt,...) MonsterDebug::DebugPrint(fmt,__VA_ARGS__)
-//#define DEBUGLOG(fmt,...) void(0)
 #define DEBUG_LIST_DISPLAY MonsterAllocator::PrintLists()
 //#define PRINT_GALLOC_STATE GAllocator::PrintAllocatorState()
 #define PRINT_GALLOC_STATE void(0)

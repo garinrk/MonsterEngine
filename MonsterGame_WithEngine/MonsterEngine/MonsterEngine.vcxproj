@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BitArray.h" />
     <ClInclude Include="GAllocator.h" />
     <ClInclude Include="IGameObjectController.h" />
     <ClInclude Include="MonsterAllocator-inl.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="PlayerController.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BitArray.cpp" />
     <ClCompile Include="GAllocator.cpp" />
     <ClCompile Include="MonsterAllocator.cpp" />
     <ClCompile Include="MonsterDebug.cpp" />

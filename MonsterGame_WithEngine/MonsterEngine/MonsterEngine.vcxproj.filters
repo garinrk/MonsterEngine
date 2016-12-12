@@ -108,6 +108,9 @@
     <ClInclude Include="GAllocator.h">
       <Filter>Header Files\Allocator</Filter>
     </ClInclude>
+    <ClInclude Include="BitArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">
@@ -139,6 +142,9 @@
     </ClCompile>
     <ClCompile Include="GAllocator.cpp">
       <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="BitArray.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -6,10 +6,12 @@
 #include "MonsterObject.h"
 #include "Player.h"
 #include "MMath.h"
+#include "BitArray.h"
 //#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
-#define NEW_GAMEPLAY
+//#define NEW_GAMEPLAY
+#define BIT_ARRAY_TESTS
 //#define NEW_TESTS
 //#define NAN_TEST
 
@@ -18,8 +20,8 @@ void RunGame();
 void RunNewGame();
 void NANTests();
 void RunNewTests();
-
 void RunGAllocTests();
+void ArrayTests();
 
 int main() {
 	
@@ -50,6 +52,10 @@ int main() {
 #ifdef NEW_ALLOCATOR_TESTS
 	RunGAllocTests();
 #endif // NEW_ALLOCATOR_TESTS
+
+#ifdef BIT_ARRAY_TESTS
+	ArrayTests();
+#endif
 
 
 	
@@ -137,7 +143,10 @@ void NANTests() {
 void RunGAllocTests() {
 	MonsterTesting::GAllocatorTests();
 	MonsterTesting::GAllocatorWithAlignmentTests();
+}
 
-	
+void ArrayTests()
+{
+	BitArray ba = BitArray(32);
 }
 
