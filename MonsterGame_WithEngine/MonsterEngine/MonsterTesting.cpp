@@ -470,7 +470,7 @@ bool MonsterTesting::GAllocatorTests() {
 			void * pPtr = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 
-			bool success = pHeapManager.ContainsAddress(pPtr);
+			bool success = pHeapManager.ContainsAddressInBlock(pPtr);
 			assert(success);
 
 
@@ -515,7 +515,7 @@ bool MonsterTesting::GAllocatorTests() {
 bool MonsterTesting::GAllocatorWithAlignmentTests() {
 
 	const size_t 		sizeHeap = 1024*1024;
-	const unsigned int 	numDescriptors = 256;
+	const unsigned int 	numDescriptors = 512;
 	const uint8_t		initial_alignment = 4;
 	// Allocate memory for my test heap.
 	void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
@@ -643,7 +643,7 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 			void * pPtr = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
 			
-			bool success = pHeapManager.ContainsAddress(pPtr);
+			bool success = pHeapManager.ContainsAddressInBlock(pPtr);
 			assert(success);
 
 			success = pHeapManager.IsAllocatedAddress(pPtr);

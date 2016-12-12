@@ -5,6 +5,9 @@
 #include <inttypes.h>
 #include <malloc.h>
 
+GAllocator* GAllocator::singleton_instance_ = NULL;
+void* GAllocator::singleton_instance_addr_ = NULL;
+
 GAllocator::GAllocator(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
 {
 	front_of_chunk_ = _aligned_malloc(total_allocator_size, alignment);
@@ -39,16 +42,12 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 	if (free_root_ == NULL)
 		return nullptr;
 	
-	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt, alignment);
+	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt);
 
 	//even after garbage collecting we don't have a descriptor
 	if (sufficiently_sized_block == NULL)
 		return nullptr;
-
-	//assert(sufficiently_sized_block != NULL && "Ran out of descriptors after garbage collecting");
-
-
-
+	
 	_Descriptor * new_descriptor = StealFromBlock(sufficiently_sized_block,amt,alignment);
 
 	//TODO: If you don't fragment and just hand back a suitable block, this user_size may be more
@@ -105,22 +104,35 @@ void GAllocator::GGCollect() {
 		else {
 			DEBUGLOG("Combining blocks %d and %d\n", conductor->debug_id, found_block->debug_id);
 			CombineBlocks(found_block, conductor);
-			PRINT_GALLOC_STATE;
 		}
 	}
-
-
 	DEBUGLOG("AFTER GARBAGE COLLECTION");
 	PRINT_GALLOC_STATE;
 }
 
+void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
+{
+	GAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(GAllocator), 4);
+	singleton_instance_ = new  (singleton_instance_addr_) GAllocator(total_allocator_size, num_of_descriptors, alignment);
+}
+
 GAllocator * GAllocator::GetInstance()
 {
-	return nullptr;
+	if (!singleton_instance_) {
+		CreateInstance(DEFAULT_SIZE, DEFAULT_DESCRIPTORS, DEFAULT_ALIGNMENT);
+		return singleton_instance_;
+	}
+	else {
+		return singleton_instance_;
+	}
 }
 
 void GAllocator::DestroyInstance()
 {
+	singleton_instance_->~GAllocator();
+
+	_aligned_free(singleton_instance_);
+	singleton_instance_ = NULL;
 }
 
 GAllocator::~GAllocator()
@@ -201,8 +213,6 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	//steals the last free block to set itself up
 	init_unalloc_block = free_root_;
 	free_root_ = free_root_->next;
-	//tail_of_free_->next = NULL;
-
 	//set other block properties
 	init_unalloc_block->prev = NULL;
 	init_unalloc_block->base = front_of_chunk_;
@@ -217,17 +227,6 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 void GAllocator::AddToAllocatedList(_Descriptor * node_to_insert)
 {
 	_Descriptor * conductor = allocated_root_;
-
-	//if (allocated_root_ != NULL) {
-	//	allocated_root_->prev = node_to_insert;
-	//}
-
-	//node_to_insert->prev = NULL;
-	//node_to_insert->next = allocated_root_;
-
-	//allocated_root_ = node_to_insert;
-
-	////TODO: Add to the head, not the tails of lists.
 
 	//we are the first
 	if (allocated_root_ == 0) {
@@ -283,41 +282,6 @@ void GAllocator::AddToFreeList(_Descriptor * node_to_insert)
 		free_root_->prev = node_to_insert;
 		free_root_ = node_to_insert;
 	}
-	
-	//if (free_root_ == NULL) {
-	//
-	//	free_root_ = node_to_insert;
-	//	free_root_->prev = NULL;
-
-
-	//}
-	//else if(free_root_ != NULL && tail_of_free_ == NULL) {
-	//	tail_of_free_ = node_to_insert;
-
-	//	tail_of_free_->next = node_to_insert;
-	//	node_to_insert->prev = tail_of_free_;
-
-	//	tail_of_free_ = node_to_insert;
-	//}
-	//if (free_root_ == NULL) {
-	//	free_root_ = node_to_insert;
-	//	free_root_->prev = NULL;
-	//}
-	//else {
-	//	//set at end
-	//	node_to_insert->prev = free_root_;
-	//	free_root_->next = node_to_insert;
-	//}
-	//if (tail_of_free_ == NULL) {
-	//	tail_of_free_ = node_to_insert;
-	//	//tail_of_free_->prev = NULL;
-	//}
-	//else {
-	//	tail_of_free_->next = node_to_insert;
-	//	node_to_insert->prev = tail_of_free_->prev;
-	//	tail_of_free_ = node_to_insert;
-	//}
-
 }
 
 bool GAllocator::CheckGuardBands(_Descriptor * node_to_check)
@@ -392,11 +356,11 @@ _Descriptor * GAllocator::SearchForBlock(const void * addr_to_search_for, _Descr
 	return nullptr;
 }
 
-_Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const
+_Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t amt) const
 {
 	_Descriptor * conductor = unallocated_root_;
 
-	size_t toLookFor = amt /*+ alignment*/;
+	size_t toLookFor = amt;
 
 #ifdef _DEBUG
 	toLookFor += BAND_SIZE * 2;
@@ -448,13 +412,6 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _
 				conductor->prev->next = NULL;
 				conductor->prev = NULL;
 
-				//TODO: Use of free tail? Does order matter in free list?
-
-				////set tail reference if appropriate
-				//if (conductor == tail_of_free_) {
-				//	//tail_of_free_ = NULL;
-				//	tail_of_free_ = conductor->prev;
-				//}
 			}
 
 			//root case
@@ -480,15 +437,9 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user
 	
 	//grab a descriptor from the free list
 	_Descriptor * thief = free_root_;
-
-
-	//set tail based on previous, could be null.
 	free_root_ = free_root_->next;
 
-	//if there's stuff, make it a tail
-	/*if (thief->prev != NULL) {
-		tail_of_free_->next = NULL;
-	}*/
+
 
 	//thief doesn't point anywhere, zero out references
 	thief->prev = NULL;
@@ -503,21 +454,17 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user
 
 	//take the front of the victim's space
 	thief->base = victim->base;
-	//thief->user_ptr = thief->base;
+
 
 	//guardbands
 #ifdef _DEBUG
-	/*uint8_t * front_guardband_pos = static_cast<uint8_t*>(thief->base);
-	for (size_t i = 0; i < BAND_SIZE; i++) {
-		*(front_guardband_pos + i) = BAND_VAL;
-	}*/
 
 	//check to see if "user ptr" address is aligned
 	void * addr_to_check = static_cast<uint8_t*>(thief->base) + BAND_SIZE;
 
 	uint8_t * front_guardband_pos;
 
-	//TODO: Make sure this works
+
 	if (reinterpret_cast<size_t>(addr_to_check) % alignment == 0) {
 		//aligned
 		front_guardband_pos = static_cast<uint8_t*>(thief->base);
@@ -541,11 +488,19 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user
 	for (size_t i = 0; i < BAND_SIZE; i++) {
 		*(back_guardband_pos + i) = BAND_VAL;
 	}
-
+	
+	
 #endif
 	
-	thief->master_size = (back_guardband_pos + BAND_SIZE) - static_cast<uint8_t*>(thief->base);
-	victim->master_size -= thief->master_size;
+	entire_amt_to_take = (static_cast<uint8_t*>(thief->user_ptr) + user_amt) - static_cast<uint8_t*>(thief->base);
+
+	//add guardbands for size to modify if in debug
+#ifdef _DEBUG
+	entire_amt_to_take = (back_guardband_pos + BAND_SIZE) - static_cast<uint8_t*>(thief->base);
+#endif
+
+	thief->master_size = entire_amt_to_take;
+	victim->master_size -= entire_amt_to_take;
 	
 	victim->base = static_cast<uint8_t*>(victim->base) + thief->master_size;
 	
@@ -559,12 +514,9 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user
 	return thief;
 }
 
-//size_t GAllocator::GetAlignmentOffset(const void * addr, uint8_t alignment)
-//{
-//	return size_t();
-//}
 
-bool GAllocator::IsPowerOfTwo(uint8_t input)
+
+bool GAllocator::IsPowerOfTwo(const uint8_t input)
 {
 	uint8_t val = (input != 0) && !(input & (input - 1));
 
@@ -574,34 +526,10 @@ bool GAllocator::IsPowerOfTwo(uint8_t input)
 		return false;
 }
 
-void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
-{
-}
 
-bool GAllocator::ContainsAddress(const void* addr_to_find) {
-	//_Descriptor * conductor = allocated_root_;
 
-	//while (conductor != NULL) {
-	//	if (conductor->user_ptr == addr_to_find) {
-	//		return true;
-	//	}
-	//	else {
-	//		conductor = conductor->next;
-	//	}
-	//}
+bool GAllocator::ContainsAddressInBlock(const void* addr_to_find) {
 
-	//while (conductor != NULL) {
-	//	if (conductor->user_ptr == addr_to_find) {
-	//		return true;
-	//	}
-	//	else {
-	//		conductor = conductor->next;
-	//	}
-	//}
-
-	//return false;
-
-	//PRINT_GALLOC_STATE;
 
 	if (addr_to_find <= back_of_chunk_ && addr_to_find >= front_of_chunk_){
 		return true;

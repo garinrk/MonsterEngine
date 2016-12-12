@@ -19,10 +19,11 @@ struct _Descriptor {
 
 #define BAND_VAL 0xFF
 #define BAND_SIZE 4
-#define ALIGN 4
 
-//#define DEFAULT_SIZE 1024*1024
-//#define DEFAULT_DESCRIPTORS 256
+
+#define DEFAULT_ALIGNMENT 4
+#define DEFAULT_SIZE 1024*1024
+#define DEFAULT_DESCRIPTORS 256
 class GAllocator
 {
 public:
@@ -35,8 +36,9 @@ public:
 	bool GFree(const void* addr_to_free);
 	void GGCollect();
 
-	GAllocator* GetInstance();
-	void DestroyInstance();
+	static void CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment);
+	static GAllocator* GetInstance();
+	static void DestroyInstance();
 
 	~GAllocator();
 
@@ -45,7 +47,7 @@ public:
 	void PrintList(_Descriptor* root);
 
 	//For unit tests
-	bool ContainsAddress(const void* addr_to_find);
+	bool ContainsAddressInBlock(const void* addr_to_find);
 	bool IsAllocatedAddress(const void* addr_to_find);
 	size_t GetLargestFreeBlockSize();
 
@@ -62,15 +64,13 @@ private:
 	void MoveRootReferencesForward(_Descriptor* node_to_move_forward);
 
 	bool CheckGuardBands(_Descriptor* node_to_check);
-	bool IsPowerOfTwo(uint8_t input);
+	bool IsPowerOfTwo(const uint8_t input);
 
 
 	_Descriptor * SearchForBlock(const void * addr_to_search_for, _Descriptor* root_node) const;
-	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt, uint8_t alignment) const;
+	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt) const;
 	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, _Descriptor* root_node);
 	_Descriptor * StealFromBlock(_Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
-	//size_t GetAlignmentOffset(const void* addr, uint8_t alignment);
-	
 
 
 
@@ -78,7 +78,6 @@ private:
 
 #pragma region AllocatorMemberVars
 	_Descriptor * free_root_ = 0;
-	//_Descriptor * tail_of_free_ = 0;
 	_Descriptor * allocated_root_ = 0;
 	_Descriptor * unallocated_root_ = 0;
 	_Descriptor * front_of_pool_ = 0;
@@ -92,8 +91,7 @@ private:
 	static void * singleton_instance_addr_;
 
 
-	void CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment);
-
+	
 
 #pragma endregion Singleton
 };
