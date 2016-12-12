@@ -78,7 +78,7 @@ private:
 
 #pragma region AllocatorMemberVars
 	_Descriptor * free_root_ = 0;
-	_Descriptor * tail_of_free_ = 0;
+	//_Descriptor * tail_of_free_ = 0;
 	_Descriptor * allocated_root_ = 0;
 	_Descriptor * unallocated_root_ = 0;
 	_Descriptor * front_of_pool_ = 0;

@@ -11,8 +11,8 @@
 bool MonsterTesting::ModifiedAllocatorTests()
 {
 
-	const size_t 		sizeHeap = 1024;
-	const unsigned int 	numDescriptors =  8;
+	const size_t 		sizeHeap = 1024*1024;
+	const unsigned int 	numDescriptors =  256;
 	const uint8_t		initial_alignment = 4;
 	// Create a heap manager for my test heap.
 	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors,initial_alignment);

@@ -32,11 +32,11 @@ void * GAllocator::GAlloc(const size_t amt, const uint8_t alignment) {
 
 	//TODO: What if there is a sufficiently sized unallocated node?
 	//check to see if we need to garbage collect some nodes
-	if (tail_of_free_ == NULL) {
+	if (free_root_ == NULL) {
 		GGCollect();
 	}
 
-	if (tail_of_free_ == NULL)
+	if (free_root_ == NULL)
 		return nullptr;
 	
 	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(amt, alignment);
@@ -103,12 +103,14 @@ void GAllocator::GGCollect() {
 			conductor = conductor->next;
 		}
 		else {
+			DEBUGLOG("Combining blocks %d and %d\n", conductor->debug_id, found_block->debug_id);
 			CombineBlocks(found_block, conductor);
+			PRINT_GALLOC_STATE;
 		}
 	}
 
 
-	DEBUGLOG("GARBAGE COLLECTED");
+	DEBUGLOG("AFTER GARBAGE COLLECTION");
 	PRINT_GALLOC_STATE;
 }
 
@@ -188,7 +190,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 
 	//free list properties
 	free_root_ = front_of_pool_;
-	tail_of_free_ = conductor;
+	//tail_of_free_ = conductor;
 
 	total_bytes_left -= sizeof(_Descriptor) * num_of_descriptors;
 
@@ -197,9 +199,9 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	_Descriptor * init_unalloc_block;
 
 	//steals the last free block to set itself up
-	init_unalloc_block = tail_of_free_;
-	tail_of_free_ = tail_of_free_->prev;
-	tail_of_free_->next = NULL;
+	init_unalloc_block = free_root_;
+	free_root_ = free_root_->next;
+	//tail_of_free_->next = NULL;
 
 	//set other block properties
 	init_unalloc_block->prev = NULL;
@@ -271,16 +273,50 @@ void GAllocator::AddToFreeList(_Descriptor * node_to_insert)
 	node_to_insert->user_size = NULL;
 	node_to_insert->user_ptr = NULL;
 	node_to_insert->next = NULL;
-
-
-	//set at end
-	node_to_insert->prev = free_root_;
-	free_root_->next = node_to_insert;
-
-	/*tail_of_free_->next = node_to_insert;
-	node_to_insert->prev = tail_of_free_->prev;
-	tail_of_free_ = node_to_insert;*/
 	
+	if (free_root_ == NULL) {
+		free_root_ = node_to_insert;
+		free_root_->prev = NULL;
+	}
+	else {
+		node_to_insert->next = free_root_;
+		free_root_->prev = node_to_insert;
+		free_root_ = node_to_insert;
+	}
+	
+	//if (free_root_ == NULL) {
+	//
+	//	free_root_ = node_to_insert;
+	//	free_root_->prev = NULL;
+
+
+	//}
+	//else if(free_root_ != NULL && tail_of_free_ == NULL) {
+	//	tail_of_free_ = node_to_insert;
+
+	//	tail_of_free_->next = node_to_insert;
+	//	node_to_insert->prev = tail_of_free_;
+
+	//	tail_of_free_ = node_to_insert;
+	//}
+	//if (free_root_ == NULL) {
+	//	free_root_ = node_to_insert;
+	//	free_root_->prev = NULL;
+	//}
+	//else {
+	//	//set at end
+	//	node_to_insert->prev = free_root_;
+	//	free_root_->next = node_to_insert;
+	//}
+	//if (tail_of_free_ == NULL) {
+	//	tail_of_free_ = node_to_insert;
+	//	//tail_of_free_->prev = NULL;
+	//}
+	//else {
+	//	tail_of_free_->next = node_to_insert;
+	//	node_to_insert->prev = tail_of_free_->prev;
+	//	tail_of_free_ = node_to_insert;
+	//}
 
 }
 
@@ -414,11 +450,11 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _
 
 				//TODO: Use of free tail? Does order matter in free list?
 
-				//set tail reference if appropriate
-				if (conductor == tail_of_free_) {
-					//tail_of_free_ = NULL;
-					tail_of_free_ = conductor->prev;
-				}
+				////set tail reference if appropriate
+				//if (conductor == tail_of_free_) {
+				//	//tail_of_free_ = NULL;
+				//	tail_of_free_ = conductor->prev;
+				//}
 			}
 
 			//root case
@@ -441,20 +477,18 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * addr_to_search_for, _
 _Descriptor * GAllocator::StealFromBlock(_Descriptor * victim, const size_t user_amt, const uint8_t alignment)
 {
 
-	if(free_root_ == tail_of_free_) {
-		free_root_ = NULL;
-	}
+	
 	//grab a descriptor from the free list
-	_Descriptor * thief = tail_of_free_;
+	_Descriptor * thief = free_root_;
 
 
 	//set tail based on previous, could be null.
-	tail_of_free_ = thief->prev;
+	free_root_ = free_root_->next;
 
 	//if there's stuff, make it a tail
-	if (thief->prev != NULL) {
+	/*if (thief->prev != NULL) {
 		tail_of_free_->next = NULL;
-	}
+	}*/
 
 	//thief doesn't point anywhere, zero out references
 	thief->prev = NULL;
