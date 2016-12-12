@@ -148,5 +148,6 @@ void RunGAllocTests() {
 void ArrayTests()
 {
 	BitArray ba = BitArray(32);
+	ba.SetBit(2);
 }
 

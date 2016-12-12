@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MonsterDebug.h"
-#include "GAllocator.h"
+#include <string.h>
 class BitArray
 {
 public:
@@ -22,7 +22,7 @@ public:
 
 private:
 	size_t number_of_bits_;
-	GAllocator* my_block_allocator;
+	size_t* bits_;
 
 	bool IsValidBlockAddr(const void * addr_to_check) const;
 };
