@@ -514,8 +514,8 @@ bool MonsterTesting::GAllocatorTests() {
 
 bool MonsterTesting::GAllocatorWithAlignmentTests() {
 
-	const size_t 		sizeHeap = 5096;
-	const unsigned int 	numDescriptors = 8;
+	const size_t 		sizeHeap = 1024*1024;
+	const unsigned int 	numDescriptors = 256;
 	const uint8_t		initial_alignment = 4;
 	// Allocate memory for my test heap.
 	void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
