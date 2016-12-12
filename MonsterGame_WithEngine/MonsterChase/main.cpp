@@ -6,16 +6,13 @@
 #include "MonsterObject.h"
 #include "Player.h"
 #include "MMath.h"
-//#define ALLOCATOR_TESTS
-#define NEW_ALLOCATOR_TESTS
+//#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
-//#define NEW_GAMEPLAY
+#define NEW_GAMEPLAY
 //#define NEW_TESTS
 //#define NAN_TEST
 
-void RunAllocatorTests();
-void RunMyAllocatorTests();
 void RunConstTests();
 void RunGame();
 void RunNewGame();
@@ -23,6 +20,7 @@ void NANTests();
 void RunNewTests();
 
 void RunGAllocTests();
+
 int main() {
 	
 	
@@ -31,20 +29,15 @@ int main() {
 #endif // _GAMEPLAY
 
 #ifdef NEW_GAMEPLAY
-	MonsterAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
+	GAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
 	RunNewGame();
-	MonsterAllocator::DestroyInstance();
+	GAllocator::DestroyInstance();
 #endif
 
 #ifdef CONST_TESTS
 	RunConstTests();
 #endif
 
-
-#ifdef ALLOCATOR_TESTS
-	RunAllocatorTests();
-	RunMyAllocatorTests();
-#endif // _ALLOCATORTESTS
 
 #ifdef NEW_TESTS
 	RunNewTests();
@@ -101,36 +94,7 @@ void RunConstTests() {
 
 }
 
-void RunAllocatorTests() {
-	bool result = MonsterTesting::ModifiedAllocatorTests();
-	assert(result);
-/*
-	bool result2 = MonsterTesting::OriginalTests();
-	assert(result2);*/
-}
 
-void RunMyAllocatorTests() {
-	const size_t 		sizeHeap = 1024;
-	const unsigned int 	numDescriptors = 8;
-	const size_t		align = 4;
-
-	// Create a heap manager for my test heap.
-	MonsterAllocator pHeapManager = MonsterAllocator(sizeHeap, numDescriptors,align);
-	void* addr1 = pHeapManager.MonsterMalloc(1);
-	void* addr2 = pHeapManager.MonsterMalloc(1);
-	void* addr3 = pHeapManager.MonsterMalloc(1);
-	void* addr4 = pHeapManager.MonsterMalloc(1);
-	*((__int8*)addr1) = 0x11;
-	*((__int8*)addr2) = 0x22;
-	*((__int8*)addr3) = 0x33;
-	*((__int8*)addr4) = 0x44;
-
-
-	pHeapManager.MonsterFree(addr1);
-	pHeapManager.MonsterFree(addr2);
-	pHeapManager.MonsterFree(addr3);
-	pHeapManager.MonsterFree(addr4);
-}
 
 void RunNewTests(){
 
@@ -142,7 +106,7 @@ void RunNewTests(){
 	Player *p2 = new("Debug Information\n") Player("PlayerTwo");
 	delete p2;
 	//destroy the singleton.
-	MonsterAllocator::DestroyInstance();
+	GAllocator::DestroyInstance();
 }
 
 void NANTests() {

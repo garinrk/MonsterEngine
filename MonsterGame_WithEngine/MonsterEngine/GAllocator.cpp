@@ -202,7 +202,6 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 
 	//free list properties
 	free_root_ = front_of_pool_;
-	//tail_of_free_ = conductor;
 
 	total_bytes_left -= sizeof(_Descriptor) * num_of_descriptors;
 
@@ -213,6 +212,7 @@ void GAllocator::InitializeFreeList(const unsigned int num_of_descriptors)
 	//steals the last free block to set itself up
 	init_unalloc_block = free_root_;
 	free_root_ = free_root_->next;
+
 	//set other block properties
 	init_unalloc_block->prev = NULL;
 	init_unalloc_block->base = front_of_chunk_;
