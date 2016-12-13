@@ -147,8 +147,20 @@ void RunGAllocTests() {
 
 void ArrayTests()
 {
-	BitArray ba = BitArray(32);
-	ba.SetBit(2);
-	ba.ClearBit(2);
+	size_t num = 8;
+	BitArray ba = BitArray(num);
+	size_t b = 2;
+
+	ba.ClearBit(b);
+
+	//ba.ClearBit(b);
+	//if (ba.IsClear(b)) {
+	//	DEBUGLOG("Bit two clear");
+	//}
+	/*ba.SetBit(b);
+	if (ba.IsSet(b)) {
+		DEBUGLOG("Bit Two Set");
+	}*/
+
 }
 

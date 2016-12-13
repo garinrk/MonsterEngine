@@ -15,16 +15,19 @@ public:
 	bool AreAllClear();
 	bool AreAllSet();
 
-	inline bool IsSet(size_t bit_number) const;
-	inline bool IsClear(size_t bit_number) const;
+	bool IsSet(size_t bit_number) const;
+	bool IsClear(size_t bit_number) const;
 
 	void SetBit(const size_t bit_to_set);
 	void ClearBit(const size_t bit_to_clear);
+	
+	bool GetFirstClearBit(size_t & o_index) const;
+	bool GetFirstSetBit(size_t & o_index) const;
 
+	inline bool operator[](const size_t index);
 private:
 	size_t number_of_bits_;
 	size_t* bits_;
 
-	bool IsValidBlockAddr(const void * addr_to_check) const;
 };
 

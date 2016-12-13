@@ -109,7 +109,7 @@
       <Filter>Header Files\Allocator</Filter>
     </ClInclude>
     <ClInclude Include="BitArray.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\MEngine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -144,7 +144,7 @@
       <Filter>Source Files\Allocator</Filter>
     </ClCompile>
     <ClCompile Include="BitArray.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\MEngine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,7 +10,7 @@ BitArray::BitArray(const size_t num_of_bits) :
 
 	bits_ = new size_t[num_of_bits / 8];
 
-	memset(bits_, 0xFF, sizeof(bits_)*4);
+	memset(bits_, 0xFF, sizeof(bits_));
 
 
 }
@@ -41,7 +41,7 @@ bool BitArray::AreAllSet()
 	return false;
 }
 
-inline bool BitArray::IsSet(size_t bit_number) const
+bool BitArray::IsSet(size_t bit_number) const
 {
 	size_t val = (*(bits_) >> bit_number) & 1;
 	if (val == 1)
@@ -51,15 +51,18 @@ inline bool BitArray::IsSet(size_t bit_number) const
 	
 }
 
-inline bool BitArray::IsClear(size_t bit_number) const
+bool BitArray::IsClear(size_t bit_number) const
 {
-	return false;
+	size_t val = (*(bits_) >> bit_number) & 1;
+	if (val == 0)
+		return true;
+	else
+		return false;
 }
 
 void BitArray::SetBit(const size_t bit_to_set)
 {
-
-	*(bits_) |= 1 << bit_to_set;
+	*(bits_) |= 0xF << bit_to_set;
 }
 
 void BitArray::ClearBit(const size_t bit_to_clear)
@@ -67,7 +70,18 @@ void BitArray::ClearBit(const size_t bit_to_clear)
 	*(bits_) &= ~(1 << bit_to_clear);
 }
 
-bool BitArray::IsValidBlockAddr(const void * addr_to_check) const
+bool BitArray::GetFirstClearBit(size_t & o_index) const
 {
 	return false;
 }
+
+bool BitArray::GetFirstSetBit(size_t & o_index) const
+{
+	return false;
+}
+
+inline bool BitArray::operator[](const size_t index)
+{
+	return IsSet(index);
+}
+
