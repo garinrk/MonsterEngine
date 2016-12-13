@@ -6,11 +6,9 @@ BitArray::BitArray(const size_t num_of_bits) :
 	number_of_bits_(num_of_bits)
 {
 	DEBUGLOG("Creating Bitarray");
-	DEBUGLOG("Size of size_t: %d", sizeof(size_t));
 
 	bits_ = new size_t[num_of_bits / 8];
-
-	memset(bits_, 0xFF, sizeof(bits_));
+	memset(bits_, 0xFF, (num_of_bits / 8) * sizeof(size_t));
 
 
 }
@@ -25,10 +23,12 @@ BitArray::~BitArray()
 
 void BitArray::ClearAll()
 {
+	memset(bits_, 0xFF, sizeof(bits_));
 }
 
 void BitArray::SetAll()
 {
+	memset(bits_, 0x00, sizeof(bits_));
 }
 
 bool BitArray::AreAllClear()
@@ -43,7 +43,7 @@ bool BitArray::AreAllSet()
 
 bool BitArray::IsSet(size_t bit_number) const
 {
-	size_t val = (*(bits_) >> bit_number) & 1;
+	size_t val = (*(bits_) >> bit_number*4) & 1;
 	if (val == 1)
 		return true;
 	else
@@ -53,7 +53,7 @@ bool BitArray::IsSet(size_t bit_number) const
 
 bool BitArray::IsClear(size_t bit_number) const
 {
-	size_t val = (*(bits_) >> bit_number) & 1;
+	size_t val = (*(bits_) >> bit_number*4) & 1;
 	if (val == 0)
 		return true;
 	else
@@ -62,12 +62,12 @@ bool BitArray::IsClear(size_t bit_number) const
 
 void BitArray::SetBit(const size_t bit_to_set)
 {
-	*(bits_) |= 0xF << bit_to_set;
+	*(bits_) |= 0xF << bit_to_set*4;
 }
 
 void BitArray::ClearBit(const size_t bit_to_clear)
 {
-	*(bits_) &= ~(1 << bit_to_clear);
+	*(bits_) &= ~(0xF << bit_to_clear * 4);
 }
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
