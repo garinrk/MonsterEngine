@@ -149,5 +149,6 @@ void ArrayTests()
 {
 	BitArray ba = BitArray(32);
 	ba.SetBit(2);
+	ba.ClearBit(2);
 }
 

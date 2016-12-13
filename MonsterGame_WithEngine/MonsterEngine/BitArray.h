@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MonsterDebug.h"
+#include "GAllocator.h"
 #include <string.h>
 class BitArray
 {

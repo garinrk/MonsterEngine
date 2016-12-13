@@ -19,6 +19,8 @@ BitArray::BitArray(const size_t num_of_bits) :
 BitArray::~BitArray()
 {
 	//TODO: Check for outstanding allocations
+	GAllocator::DestroyInstance();
+	
 }
 
 void BitArray::ClearAll()
@@ -41,7 +43,12 @@ bool BitArray::AreAllSet()
 
 inline bool BitArray::IsSet(size_t bit_number) const
 {
-	return false;
+	size_t val = (*(bits_) >> bit_number) & 1;
+	if (val == 1)
+		return true;
+	else
+		return false;
+	
 }
 
 inline bool BitArray::IsClear(size_t bit_number) const
@@ -51,10 +58,13 @@ inline bool BitArray::IsClear(size_t bit_number) const
 
 void BitArray::SetBit(const size_t bit_to_set)
 {
+
+	*(bits_) |= 1 << bit_to_set;
 }
 
 void BitArray::ClearBit(const size_t bit_to_clear)
 {
+	*(bits_) &= ~(1 << bit_to_clear);
 }
 
 bool BitArray::IsValidBlockAddr(const void * addr_to_check) const

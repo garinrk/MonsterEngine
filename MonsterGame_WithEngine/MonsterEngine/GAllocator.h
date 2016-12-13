@@ -17,7 +17,7 @@ struct _Descriptor {
 #include <inttypes.h>
 #include "MonsterDebug.h"
 
-#define BAND_VAL 0xFF
+#define BAND_VAL 0xFD
 #define BAND_SIZE 4
 
 
