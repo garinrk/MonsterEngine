@@ -153,7 +153,7 @@ BitArray::BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes,
 	DEBUGLOG("BitArray created for %zu bits\t%zu containers\t%zu bytes ", amt_of_user_requested_bits,amt_of_containers, amt_of_bytes);
 
 	//lets set all da containers to empty.
-	memset(bits_, 0xFF, amt_of_bytes - sizeof(BitArray));
+	memset(bits_, 0x00, amt_of_bytes - sizeof(BitArray));
 
 	//memset(bits_, 0xFF, (num_of_user_requested_bits / 8) /** sizeof(bitContainer)*/);
 }

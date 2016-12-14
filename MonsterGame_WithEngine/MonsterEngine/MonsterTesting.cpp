@@ -1,10 +1,4 @@
 #include "MonsterTesting.h"
-#include "MonsterAllocator.h"
-#include "GAllocator.h"
-#include "MonsterDebug.h"
-#include <assert.h>
-#include <algorithm>
-#include <vector>
 //#define TEST_SINGLE_LARGE_ALLOCATION
 //#define __TRACK_ALLOCATIONS
 
@@ -683,5 +677,53 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 	_aligned_free(pHeapMemory);
 
 	// we succeeded
+	return true;
+}
+
+bool MonsterTesting::BitArrayTests() {
+
+	const size_t bitCount = 1000;
+	GAllocator* my_allocator = GAllocator::GetInstance();
+	BitArray* my_array = BitArray::Create(bitCount, false, my_allocator);
+
+	my_array->SetBit(20);
+
+	size_t firstSetBit = 0;
+	size_t firstClearBit = 0;
+
+	bool foundSetBit = my_array->GetFirstSetBit(firstSetBit);
+	assert(foundSetBit && (firstSetBit == 20));
+
+	my_array->ClearBit(20);
+	foundSetBit = my_array->GetFirstSetBit(firstSetBit);
+	assert(foundSetBit == false);
+
+	for (unsigned int i = 0; i < bitCount; i++)
+	{
+		assert(my_array->IsClear(i) == true);
+		assert(my_array->IsSet(i) == false);
+
+		size_t bit = 0;
+
+		my_array->GetFirstClearBit(bit);
+		assert(bit == i);
+
+		my_array->SetBit(i);
+
+		assert(my_array->IsClear(i) == false);
+		assert(my_array->IsSet(i) == true);
+
+		bool success = my_array->GetFirstClearBit(bit);
+		assert(((i < (bitCount - 1)) && success && (bit == (i + 1))) || ((i == (bitCount - 1)) && !success));
+	}
+
+	my_array->SetAll();
+	assert(my_array->GetFirstClearBit(firstClearBit) == false);
+
+	my_array->ClearAll();
+	assert(my_array->GetFirstSetBit(firstSetBit) == false);
+
+	delete my_array;
+
 	return true;
 }

@@ -147,31 +147,33 @@ void RunGAllocTests() {
 
 void ArrayTests()
 {
-	size_t numberOfBits = 16;
-	size_t bitToClear = 3;
-	GAllocator* my_allocator = GAllocator::GetInstance();
-	BitArray* my_array = BitArray::Create(numberOfBits, false, my_allocator);
 
-	//my_array->ClearBit(bitToClear);
-	//assert(my_array->IsClear(bitToClear));
+	assert(MonsterTesting::BitArrayTests());
+	//size_t numberOfBits = 16;
+	//size_t bitToClear = 3;
+	//GAllocator* my_allocator = GAllocator::GetInstance();
+	//BitArray* my_array = BitArray::Create(numberOfBits, false, my_allocator);
 
-	//my_array->SetBit(bitToClear);
-	//assert(my_array->IsSet(bitToClear));
-	/*for (size_t i = 0; i < 16; i++) {
-		my_array->ClearBit(i);
-	}*/
+	////my_array->ClearBit(bitToClear);
+	////assert(my_array->IsClear(bitToClear));
 
-	my_array->ClearAll();
-	assert(my_array->AreAllClear());
-	my_array->SetAll();
-	assert(my_array->AreAllSet());
-	my_array->ClearBit(4);
-	size_t in = 0;
-	bool val = my_array->GetFirstClearBit(in);
-	assert(val);
+	////my_array->SetBit(bitToClear);
+	////assert(my_array->IsSet(bitToClear));
+	///*for (size_t i = 0; i < 16; i++) {
+	//	my_array->ClearBit(i);
+	//}*/
 
-	
-	my_array->~BitArray();
+	//my_array->ClearAll();
+	//assert(my_array->AreAllClear());
+	//my_array->SetAll();
+	//assert(my_array->AreAllSet());
+	//my_array->ClearBit(4);
+	//size_t in = 0;
+	//bool val = my_array->GetFirstClearBit(in);
+	//assert(val);
+
+	//
+	//my_array->~BitArray();
 
 }
 
