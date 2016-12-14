@@ -148,19 +148,18 @@ void RunGAllocTests() {
 void ArrayTests()
 {
 	size_t numberOfBits = 16;
-	//BitArray myArray = BitArray(numberOfBits);
 	size_t bitToClear = 3;
 	GAllocator* my_allocator = GAllocator::GetInstance();
-	BitArray* my_array = BitArray::Create(16, false, my_allocator);
+	BitArray* my_array = BitArray::Create(numberOfBits, false, my_allocator);
 
 	//my_array->ClearBit(bitToClear);
 	//assert(my_array->IsClear(bitToClear));
 
 	//my_array->SetBit(bitToClear);
 	//assert(my_array->IsSet(bitToClear));
-	for (size_t i = 0; i < 16; i++) {
+	/*for (size_t i = 0; i < 16; i++) {
 		my_array->ClearBit(i);
-	}
+	}*/
 
 	my_array->ClearAll();
 	assert(my_array->AreAllClear());

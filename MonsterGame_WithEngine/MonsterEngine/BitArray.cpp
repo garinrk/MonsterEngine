@@ -1,23 +1,27 @@
 #include "BitArray.h"
 
-
 BitArray * BitArray::Create(const size_t num_of_bits, bool start_cleared, GAllocator * my_allocator)
 {
+	//Don't forget!
+	const size_t bits_per_byte = 8;
+	
+	//given the amount of bits needed, how many containers will we be needing? 32 - 64 dependent
+	const size_t amt_per_container = bits_per_byte * sizeof(bitContainer);
 
+	//now, how many containers are we gonna need to store the amount of bits that you need?
+	size_t number_of_containers = (num_of_bits + (amt_per_container - 1)) / amt_per_container;
 
-	//don't forget that we need this many size_t elements
-	size_t bytes_to_set = (num_of_bits / 8) * sizeof(size_t) + sizeof(BitArray);
+	//how much memory we gonna need for all these containers and the bit array structure itself?
+	size_t total_bytes_needed = number_of_containers * sizeof(bitContainer) + sizeof(BitArray);
 
-	size_t number_of_bytes = (num_of_bits / 8) * sizeof(size_t);
+	//let's get dat memory
+	void * memory_chunk = my_allocator->GAlloc(total_bytes_needed);
 
-	//allocate memory
-	void* heap_memory = my_allocator->GAlloc(bytes_to_set);	
+	//but wait, where are the actual bits gonna be? Past the BitArray!
+	size_t* bits_memory = reinterpret_cast<size_t*>(reinterpret_cast<uintptr_t>(memory_chunk) + sizeof(BitArray));
 
-	//the actual bit array is just a bit past the structure itself
-	size_t* bits_memory = reinterpret_cast<size_t*>(reinterpret_cast<uint8_t*>(heap_memory) + sizeof(BitArray));
-
-	//create a new bit array using placement new, bypassing the overridden new
-	return new (heap_memory) BitArray(num_of_bits, bits_memory,number_of_bytes);
+	//create dat bit array.
+	return new (memory_chunk) BitArray(num_of_bits, total_bytes_needed, number_of_containers, bits_memory);
 }
 
 BitArray::~BitArray()
@@ -29,41 +33,44 @@ BitArray::~BitArray()
 
 void BitArray::ClearAll()
 {
-	size_t index = number_of_bits_;
-
-	while (index >= 0) {
-		ClearBit(index);
-		index--;
-	}
-
+	memset(bits_, 0x00, number_of_bytes - sizeof(BitArray));
+	//memset(bits_, 0x00, (number_of_bits_ / 8)/* * sizeof(size_t)*/);
 }
 
 void BitArray::SetAll()
 {
-	size_t index = number_of_bits_;
 
-	while (index >= 0) {
-		SetBit(index);
-		index--;
-	}
+	memset(bits_, 0xFF, (number_of_bits_ / 8)/* * sizeof(size_t)*/);
+	//size_t index = number_of_bits_;
+
+	//while (index >= 0) {
+	//	SetBit(index);
+	//	index--;
+	//}
 }
 
 bool BitArray::AreAllClear()
 {
-	//TODO: TRIPLE CHECK
-	for (size_t i = 0; i <= number_of_bytes; i++) {
-		if (!(*(bits_) << i * bits_per_byte) && 0xFF) {
-			return false;
-		}
-	}
-	return true;
+	////TODO: TRIPLE CHECK
+	//bitContainer empty_container = 0;
+	//if()
+	//for (size_t i = 0; i <= number_of_bytes; i++) {
+	//	if (!(*(bits_) << i * bits_per_byte) && 0x00) {
+	//		return false;
+	//	}
+	//}
+	//return true;
+
+	//using bitscanforward, look through all the containers
+
+	return false;
 }
 
 bool BitArray::AreAllSet()
 {
 	//TODO: TRIPLE CHECK
 	for (size_t i = 0; i <= number_of_bytes; i++) {
-		if (!(*(bits_) << i * bits_per_byte) && 0x00) {
+		if (!(*(bits_) << i * bits_per_byte) && 0xFF) {
 			return false;
 		}
 	}
@@ -91,12 +98,12 @@ bool BitArray::IsClear(size_t bit_number) const
 
 void BitArray::SetBit(const size_t bit_to_set)
 {
-	*(bits_) |= 0xF << bit_to_set*4;
+	*(bits_) |= 1 << bit_to_set;
 }
 
 void BitArray::ClearBit(const size_t bit_to_clear)
 {
-	*(bits_) &= ~(0xF << bit_to_clear*4);
+	*(bits_) &= ~(1 << bit_to_clear);
 }
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
@@ -117,11 +124,17 @@ inline bool BitArray::operator[](const size_t index)
 //////////
 //PRIVATES
 //////////
-BitArray::BitArray(const size_t num_of_bits, size_t* created_bit_array, size_t num_of_bytes) :
-	number_of_bits_(num_of_bits),
-	bits_(created_bit_array),
-	number_of_bytes(num_of_bytes)
+BitArray::BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes, size_t amt_of_containers, size_t* bits_array_addr) :
+	number_of_bits_(amt_of_user_requested_bits),
+	number_of_bytes(amt_of_bytes),
+	number_of_containers(amt_of_containers),
+	bits_(bits_array_addr)
+	
 {
-	DEBUGLOG("BitArray created with %zu bits ", num_of_bits);
-	memset(bits_, 0xFF, (num_of_bits / 8) * sizeof(size_t));
+	DEBUGLOG("BitArray created for %zu bits\t%zu containers\t%zu bytes ", amt_of_user_requested_bits,amt_of_containers, amt_of_bytes);
+
+	//lets set all da containers to empty.
+	memset(bits_, 0xFF, amt_of_bytes - sizeof(BitArray));
+
+	//memset(bits_, 0xFF, (num_of_user_requested_bits / 8) /** sizeof(bitContainer)*/);
 }
