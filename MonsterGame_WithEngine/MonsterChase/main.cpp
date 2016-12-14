@@ -154,16 +154,17 @@ void ArrayTests()
 	BitArray* my_array = BitArray::Create(16, false, my_allocator);
 
 	my_array->ClearBit(bitToClear);
-	if (my_array->IsClear(bitToClear)) {
-		DEBUGLOG("Hello");
-	}
+	assert(my_array->IsClear(bitToClear));
+
 	my_array->SetBit(bitToClear);
-	if (my_array->IsSet(bitToClear)) {
-		DEBUGLOG("HELLO");
-	}
-	my_array->SetAll();
-	my_array->ClearAll();
+	assert(my_array->IsSet(bitToClear));
 	
+	my_array->ClearAll();
+	assert(my_array->AreAllClear());
+	my_array->SetAll();
+	assert(my_array->AreAllSet());
+	
+	my_array->~BitArray();
 
 }
 

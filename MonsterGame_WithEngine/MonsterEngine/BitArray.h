@@ -29,7 +29,9 @@ public:
 private:
 	size_t number_of_bits_;
 	size_t* bits_;
-	BitArray(const size_t num_of_bits, size_t* created_bit_array);
+	size_t number_of_bytes;
+
+	BitArray(const size_t num_of_bits, size_t* created_bit_array, size_t num_of_bytes);
 
 	const size_t bits_per_byte = 8;
 };
