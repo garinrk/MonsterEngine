@@ -29,19 +29,30 @@ BitArray::~BitArray()
 
 void BitArray::ClearAll()
 {
-	memset(bits_, 0xFF, (number_of_bits_ / 8) * sizeof(size_t));
+	size_t index = number_of_bits_;
+
+	while (index >= 0) {
+		ClearBit(index);
+		index--;
+	}
+
 }
 
 void BitArray::SetAll()
 {
-	memset(bits_, 0x00, (number_of_bits_ / 8) * sizeof(size_t));
-	//walk through the entirety of the bit array setting each individually
+	size_t index = number_of_bits_;
+
+	while (index >= 0) {
+		SetBit(index);
+		index--;
+	}
 }
 
 bool BitArray::AreAllClear()
 {
-	for (size_t i = 0; i < number_of_bits_; i++) {
-		if (!(*(bits_) << i*8) && 0xFF) {
+	//TODO: TRIPLE CHECK
+	for (size_t i = 0; i <= number_of_bytes; i++) {
+		if (!(*(bits_) << i * bits_per_byte) && 0xFF) {
 			return false;
 		}
 	}
@@ -50,8 +61,9 @@ bool BitArray::AreAllClear()
 
 bool BitArray::AreAllSet()
 {
-	for (size_t i = 0; i < number_of_bits_; i++) {
-		if (!(*(bits_) << i * 8) && 0x00) {
+	//TODO: TRIPLE CHECK
+	for (size_t i = 0; i <= number_of_bytes; i++) {
+		if (!(*(bits_) << i * bits_per_byte) && 0x00) {
 			return false;
 		}
 	}
@@ -84,7 +96,7 @@ void BitArray::SetBit(const size_t bit_to_set)
 
 void BitArray::ClearBit(const size_t bit_to_clear)
 {
-	*(bits_) &= ~(0xF << bit_to_clear * 4);
+	*(bits_) &= ~(0xF << bit_to_clear*4);
 }
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
