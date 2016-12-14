@@ -723,7 +723,8 @@ bool MonsterTesting::BitArrayTests() {
 	my_array->ClearAll();
 	assert(my_array->GetFirstSetBit(firstSetBit) == false);
 
-	delete my_array;
+	/*delete my_array;*/
+	my_array->~BitArray();
 
 	return true;
 }
