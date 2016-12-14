@@ -148,19 +148,21 @@ void RunGAllocTests() {
 void ArrayTests()
 {
 	size_t numberOfBits = 16;
-	BitArray myArray = BitArray(numberOfBits);
+	//BitArray myArray = BitArray(numberOfBits);
 	size_t bitToClear = 3;
+	GAllocator* my_allocator = GAllocator::GetInstance();
+	BitArray* my_array = BitArray::Create(16, false, my_allocator);
 
-	myArray.ClearBit(bitToClear);
-	if (myArray.IsClear(bitToClear)) {
+	my_array->ClearBit(bitToClear);
+	if (my_array->IsClear(bitToClear)) {
 		DEBUGLOG("Hello");
 	}
-	myArray.SetBit(bitToClear);
-	if (myArray.IsSet(bitToClear)) {
+	my_array->SetBit(bitToClear);
+	if (my_array->IsSet(bitToClear)) {
 		DEBUGLOG("HELLO");
 	}
-	myArray.SetAll();
-	myArray.ClearAll();
+	my_array->SetAll();
+	my_array->ClearAll();
 	
 
 }

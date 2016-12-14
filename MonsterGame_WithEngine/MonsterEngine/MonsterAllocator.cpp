@@ -609,7 +609,7 @@ size_t MonsterAllocator::GetLargestFreeBlock() const
 
 void MonsterAllocator::CreateInstance(size_t total_size_of_heap, const unsigned int num_of_descriptors, uint8_t align) {
 	MonsterAllocator::singleton_addr_ = _aligned_malloc(sizeof(MonsterAllocator), 4);
-	single_ = new (singleton_addr_) MonsterAllocator(total_size_of_heap, num_of_descriptors,align);
+	single_ = new (singleton_addr_) MonsterAllocator(total_size_of_heap, num_of_descriptors, align);
 }
 
 MonsterAllocator * MonsterAllocator::getInstance()

@@ -3,10 +3,11 @@
 #include "MonsterDebug.h"
 #include "GAllocator.h"
 #include <string.h>
+#include <new>
 class BitArray
 {
 public:
-	BitArray(const size_t num_of_bits);
+	static BitArray * Create(const size_t num_of_bits, bool start_cleared, GAllocator * my_allocator);
 	~BitArray();
 
 	void ClearAll();
@@ -28,6 +29,8 @@ public:
 private:
 	size_t number_of_bits_;
 	size_t* bits_;
+	BitArray(const size_t num_of_bits, size_t* created_bit_array);
 
+	const size_t bits_per_byte = 8;
 };
 
