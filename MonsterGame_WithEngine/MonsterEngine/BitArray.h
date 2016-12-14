@@ -1,13 +1,20 @@
 #pragma once
 
-#include "MonsterDebug.h"
+#include <intrin.h>
+#include <new> //placement new
+#include <string.h> //memset
+
 #include "GAllocator.h"
-#include <string.h>
-#include <new>
+#include "MonsterDebug.h" //logging
+
+#pragma intrinsic(_BitScanForward) 
+
 #ifdef _WIN32
 typedef uint32_t	bitContainer;
+#define BITSCAN(index_found,value_to_search) _BitScanForward(index_found,value_to_search)		
 #else 
 typedef uint64_t	bitContainer;
+#define BITSCAN(index_found,value_to_search) _BitScanForward64(index_found,value_to_search)		
 #endif
 
 class BitArray

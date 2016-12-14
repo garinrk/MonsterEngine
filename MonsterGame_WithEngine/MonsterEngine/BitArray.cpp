@@ -39,40 +39,37 @@ void BitArray::ClearAll()
 
 void BitArray::SetAll()
 {
-
-	memset(bits_, 0xFF, (number_of_bits_ / 8)/* * sizeof(size_t)*/);
-	//size_t index = number_of_bits_;
-
-	//while (index >= 0) {
-	//	SetBit(index);
-	//	index--;
-	//}
+	memset(bits_, 0xFF, number_of_bytes - sizeof(BitArray));
 }
 
 bool BitArray::AreAllClear()
 {
-	////TODO: TRIPLE CHECK
-	//bitContainer empty_container = 0;
-	//if()
-	//for (size_t i = 0; i <= number_of_bytes; i++) {
-	//	if (!(*(bits_) << i * bits_per_byte) && 0x00) {
-	//		return false;
-	//	}
-	//}
-	//return true;
-
 	//using bitscanforward, look through all the containers
+	for (size_t i = 0; i < number_of_containers; i++) {
+		unsigned long index = 0;
+		//position of container
+		if (BITSCAN(&index, bits_[i])) {
+			return false;
+		}
 
-	return false;
+		
+	}
+
+	return true;
 }
 
 bool BitArray::AreAllSet()
 {
 	//TODO: TRIPLE CHECK
-	for (size_t i = 0; i <= number_of_bytes; i++) {
-		if (!(*(bits_) << i * bits_per_byte) && 0xFF) {
+	//using bitscanforward, look through all the containers
+	for (size_t i = 0; i < number_of_containers; i++) {
+		unsigned long index = 0;
+		//position of container
+		if (!BITSCAN(&index, bits_[i])) {
 			return false;
 		}
+
+
 	}
 	return true;
 }
@@ -108,11 +105,33 @@ void BitArray::ClearBit(const size_t bit_to_clear)
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
 {
+	//negate and use the inverse to find the first set
+	for (size_t i = 0; i < number_of_containers; i++) {
+		unsigned long index = 0;
+
+		size_t negated_bits = ~(*bits_+ sizeof(bitContainer) * i);
+
+		//position of container
+		if (BITSCAN(&index, negated_bits)) {
+			o_index = static_cast<size_t>(index);
+			return true;
+		}
+	}
 	return false;
 }
 
 bool BitArray::GetFirstSetBit(size_t & o_index) const
 {
+	//using bitscanforward, look through all the containers
+	for (size_t i = 0; i < number_of_containers; i++) {
+		unsigned long index = 0;
+		//position of container
+		if (BITSCAN(&index, bits_[i])) {
+			o_index = static_cast<size_t>(index);
+			return true;
+		}
+	}
+
 	return false;
 }
 

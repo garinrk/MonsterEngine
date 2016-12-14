@@ -165,6 +165,11 @@ void ArrayTests()
 	assert(my_array->AreAllClear());
 	my_array->SetAll();
 	assert(my_array->AreAllSet());
+	my_array->ClearBit(4);
+	size_t in = 0;
+	bool val = my_array->GetFirstClearBit(in);
+	assert(val);
+
 	
 	my_array->~BitArray();
 
