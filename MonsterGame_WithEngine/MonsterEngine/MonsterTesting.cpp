@@ -682,49 +682,50 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 
 bool MonsterTesting::BitArrayTests() {
 
-	const size_t bitCount = 31;
-	GAllocator* my_allocator = GAllocator::GetInstance();
-	BitArray* my_array = BitArray::Create(bitCount, false, my_allocator);
+	for (size_t bit_count = 1; bit_count <= 1000; bit_count++) {
+		GAllocator* my_allocator = GAllocator::GetInstance();
+		BitArray* my_array = BitArray::Create(bit_count, false, my_allocator);
 
-	my_array->SetBit(20);
+		size_t random_bit_to_set = rand() % bit_count;
+		my_array->SetBit(random_bit_to_set);
 
-	size_t firstSetBit = 0;
-	size_t firstClearBit = 0;
+		size_t firstSetBit = 0;
+		size_t firstClearBit = 0;
 
-	bool foundSetBit = my_array->GetFirstSetBit(firstSetBit);
-	assert(foundSetBit && (firstSetBit == 20));
+		bool foundSetBit = my_array->GetFirstSetBit(firstSetBit);
+		assert(foundSetBit && (firstSetBit == random_bit_to_set));
 
-	my_array->ClearBit(20);
-	foundSetBit = my_array->GetFirstSetBit(firstSetBit);
-	assert(foundSetBit == false);
+		my_array->ClearBit(random_bit_to_set);
+		foundSetBit = my_array->GetFirstSetBit(firstSetBit);
+		assert(foundSetBit == false);
 
-	for (unsigned int i = 0; i < bitCount; i++)
-	{
-		assert(my_array->IsClear(i) == true);
-		assert(my_array->IsSet(i) == false);
+		for (unsigned int i = 0; i < bit_count; i++)
+		{
+			assert(my_array->IsClear(i) == true);
+			assert(my_array->IsSet(i) == false);
 
-		size_t bit = 0;
+			size_t bit = 0;
 
-		my_array->GetFirstClearBit(bit);
-		assert(bit == i);
+			my_array->GetFirstClearBit(bit);
+			assert(bit == i);
 
-		my_array->SetBit(i);
+			my_array->SetBit(i);
 
-		assert(my_array->IsClear(i) == false);
-		assert(my_array->IsSet(i) == true);
+			assert(my_array->IsClear(i) == false);
+			assert(my_array->IsSet(i) == true);
 
-		bool success = my_array->GetFirstClearBit(bit);
-		assert(((i < (bitCount - 1)) && success && (bit == (i + 1))) || ((i == (bitCount - 1)) && !success));
+			bool success = my_array->GetFirstClearBit(bit);
+			assert(((i < (bit_count - 1)) && success && (bit == (i + 1))) || ((i == (bit_count - 1)) && !success));
+		}
+
+		my_array->SetAll();
+		assert(my_array->GetFirstClearBit(firstClearBit) == false);
+
+		my_array->ClearAll();
+		assert(my_array->GetFirstSetBit(firstSetBit) == false);
+
+		delete my_array;
 	}
-
-	my_array->SetAll();
-	assert(my_array->GetFirstClearBit(firstClearBit) == false);
-
-	my_array->ClearAll();
-	assert(my_array->GetFirstSetBit(firstSetBit) == false);
-
-	delete my_array;
-	//my_array->~BitArray();
 
 	return true;
 }
