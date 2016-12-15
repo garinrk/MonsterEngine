@@ -146,10 +146,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BitArray.h" />
+    <ClInclude Include="FixedSizeAllocator.h" />
     <ClInclude Include="GAllocator.h" />
     <ClInclude Include="IGameObjectController.h" />
-    <ClInclude Include="MonsterAllocator-inl.h" />
-    <ClInclude Include="MonsterAllocator.h" />
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine-inl.h" />
     <ClInclude Include="MonsterEngine.h" />
@@ -166,8 +165,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitArray.cpp" />
+    <ClCompile Include="FixedSizeAllocator.cpp" />
     <ClCompile Include="GAllocator.cpp" />
-    <ClCompile Include="MonsterAllocator.cpp" />
     <ClCompile Include="MonsterDebug.cpp" />
     <ClCompile Include="MonsterEngine.cpp" />
     <ClCompile Include="MMath.cpp" />

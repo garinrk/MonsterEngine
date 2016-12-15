@@ -1,7 +1,7 @@
 #pragma once
 #include "MonsterTesting.h"
-#include "MonsterAllocator.h"
 #include "GAllocator.h"
+#include "FixedSizeAllocator.h"
 #include "BitArray.h"
 #include "MonsterDebug.h"
 #include <assert.h>
@@ -14,4 +14,5 @@ public:
 	static bool GAllocatorTests();
 	static bool GAllocatorWithAlignmentTests();
 	static bool BitArrayTests();
+	static bool FSATests();
 };

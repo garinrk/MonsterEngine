@@ -66,12 +66,6 @@
     <ClInclude Include="MMath.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterAllocator.h">
-      <Filter>Header Files\Allocator</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterAllocator-inl.h">
-      <Filter>Header Files\Allocator</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterEngine.h">
       <Filter>Header Files\MEngine</Filter>
     </ClInclude>
@@ -111,6 +105,9 @@
     <ClInclude Include="BitArray.h">
       <Filter>Header Files\MEngine</Filter>
     </ClInclude>
+    <ClInclude Include="FixedSizeAllocator.h">
+      <Filter>Header Files\Allocator</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">
@@ -118,9 +115,6 @@
     </ClCompile>
     <ClCompile Include="MMath.cpp">
       <Filter>Source Files\Math</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterAllocator.cpp">
-      <Filter>Source Files\Allocator</Filter>
     </ClCompile>
     <ClCompile Include="MonsterDebug.cpp">
       <Filter>Source Files\Debug_Testing</Filter>
@@ -145,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="BitArray.cpp">
       <Filter>Source Files\MEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="FixedSizeAllocator.cpp">
+      <Filter>Source Files\Allocator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

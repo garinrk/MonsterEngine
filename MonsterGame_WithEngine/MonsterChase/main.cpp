@@ -1,4 +1,3 @@
-#include "MonsterAllocator.h"
 #include "GAllocator.h"
 #include "MonsterTesting.h"
 #include "Game.h"
@@ -6,14 +5,14 @@
 #include "MonsterObject.h"
 #include "Player.h"
 #include "MMath.h"
-#include "BitArray.h"
 //#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
 //#define NEW_GAMEPLAY
-#define BIT_ARRAY_TESTS
+//#define BIT_ARRAY_TESTS
 //#define NEW_TESTS
 //#define NAN_TEST
+#define FSA_TESTS
 
 void RunConstTests();
 void RunGame();
@@ -22,9 +21,15 @@ void NANTests();
 void RunNewTests();
 void RunGAllocTests();
 void ArrayTests();
+void RunFSATest();
+
+//For allocator singleton instantiation, default parameters
+#define DEFAULT_ALIGNMENT 4
+#define DEFAULT_TOTAL_SIZE 1024*1024
+#define DEFAULT_NUM_DESCRIPTORS 256
 
 int main() {
-	GAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
+	GAllocator::CreateInstance(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
 #ifdef OLD_GAMEPLAY
 	RunGame();
 #endif // _GAMEPLAY
@@ -54,6 +59,10 @@ int main() {
 
 #ifdef BIT_ARRAY_TESTS
 	ArrayTests();
+#endif
+
+#ifdef FSA_TESTS
+	RunFSATest();
 #endif
 
 
@@ -140,30 +149,19 @@ void NANTests() {
 
 
 void RunGAllocTests() {
-	MonsterTesting::GAllocatorTests();
-	MonsterTesting::GAllocatorWithAlignmentTests();
+	assert(MonsterTesting::GAllocatorTests());
+	assert(MonsterTesting::GAllocatorWithAlignmentTests());
 }
 
 void ArrayTests()
 {
 	assert(MonsterTesting::BitArrayTests());
 
-
-
-	//size_t numberOfBits = 64;
-	//GAllocator* my_allocator = GAllocator::GetInstance();
-	//BitArray* my_array = BitArray::Create(numberOfBits, false, my_allocator);
-
-	//my_array->SetBit(0);
-	//my_array->SetBit(31);
-	//my_array->SetBit(32);
-	//my_array->SetBit(63);
-
-	//assert(my_array->IsSet(0));
-
-	//my_array->ClearAll();
-	//assert(my_array->IsClear(0));
-
-
 }
+
+void RunFSATest() {
+	
+	assert(MonsterTesting::FSATests());
+}
+
 

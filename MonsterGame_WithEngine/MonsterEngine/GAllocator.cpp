@@ -113,7 +113,7 @@ void GAllocator::GGCollect() {
 void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment)
 {
 	GAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(GAllocator), 4);
-	singleton_instance_ = new  (singleton_instance_addr_) GAllocator(total_allocator_size, num_of_descriptors, alignment);
+	singleton_instance_ = new (singleton_instance_addr_) GAllocator(total_allocator_size, num_of_descriptors, alignment);
 }
 
 GAllocator * GAllocator::GetInstance()
