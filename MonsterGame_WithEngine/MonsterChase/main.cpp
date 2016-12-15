@@ -24,8 +24,7 @@ void RunGAllocTests();
 void ArrayTests();
 
 int main() {
-	
-	
+	GAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
 #ifdef OLD_GAMEPLAY
 	RunGame();
 #endif // _GAMEPLAY
@@ -59,7 +58,7 @@ int main() {
 
 
 	
-
+	GAllocator::DestroyInstance();
 #if defined _DEBUG
 	_CrtDumpMemoryLeaks();
 #endif // _DEBUG
@@ -147,7 +146,6 @@ void RunGAllocTests() {
 
 void ArrayTests()
 {
-
 	assert(MonsterTesting::BitArrayTests());
 
 

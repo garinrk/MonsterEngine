@@ -27,7 +27,6 @@ BitArray * BitArray::Create(const size_t num_of_bits, bool start_cleared, GAlloc
 BitArray::~BitArray()
 {
 	//TODO: Check for outstanding allocations
-	GAllocator::DestroyInstance();
 	
 }
 
@@ -119,18 +118,45 @@ void BitArray::ClearBit(const size_t bit_to_clear)
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
 {
+	size_t negated_bits = 0;
+	size_t bit_pos = 0;
 	//negate and use the inverse to find the first set
 	for (size_t i = 0; i < number_of_containers; i++) {
 		unsigned long index = 0;
 
-		size_t negated_bits = ~bits_[i];
+		if (i == number_of_containers - 1) {
+			size_t bits_left = number_of_bits_ % (sizeof(bitContainer) * bits_per_byte);
 
-		//position of container
-		if (BITSCAN(&index, negated_bits)) {
-			o_index = /*static_cast<size_t>*/(index + (sizeof(bitContainer) * bits_per_byte) * i);
-			return true;
+			size_t index = 0;
+			while (index < bits_left) {
+				bit_pos = index + (sizeof(bitContainer) * bits_per_byte) * i;
+				if (IsClear(bit_pos)) {
+					o_index = bit_pos;
+					return true;
+				}
+				index++;
+			}
+
+			
+
+			//
+			//size_t index = 1;
+			//while (index < bits_left) {
+			//	//create mask
+			//	mask |= mask << 1;
+			//	index++;
+			//}
+
+			//negated_bits = ~(bits_[i] & mask);
 		}
-	}
+		else {
+			//position of container
+			if (BITSCAN(&index, ~bits_[i])) {
+				o_index = /*static_cast<size_t>*/(index + (sizeof(bitContainer) * bits_per_byte) * i);
+				return true;
+			}
+		}
+	}//for
 	return false;
 }
 

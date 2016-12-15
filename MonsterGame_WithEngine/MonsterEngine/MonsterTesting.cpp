@@ -682,7 +682,7 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 
 bool MonsterTesting::BitArrayTests() {
 
-	const size_t bitCount = 1000;
+	const size_t bitCount = 31;
 	GAllocator* my_allocator = GAllocator::GetInstance();
 	BitArray* my_array = BitArray::Create(bitCount, false, my_allocator);
 
@@ -723,8 +723,8 @@ bool MonsterTesting::BitArrayTests() {
 	my_array->ClearAll();
 	assert(my_array->GetFirstSetBit(firstSetBit) == false);
 
-	/*delete my_array;*/
-	my_array->~BitArray();
+	delete my_array;
+	//my_array->~BitArray();
 
 	return true;
 }
