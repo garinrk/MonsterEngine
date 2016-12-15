@@ -77,11 +77,15 @@ bool BitArray::IsSet(size_t bit_number) const
 {
 	//bit position within the container
 	size_t bit_pos = bit_number % (sizeof(bitContainer) * bits_per_byte);
+
 	size_t which_container = bit_number / (sizeof(bitContainer) * bits_per_byte);
+	
+
 
 	//which container?
-	size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
-	if (val == 1)
+	//size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
+	size_t val = bits_[which_container] & (1 << bit_pos);
+	if (val)
 		return true;
 	else
 		return false;
@@ -96,7 +100,7 @@ bool BitArray::IsClear(size_t bit_number) const
 
 	//which container?
 	size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
-	if (val == 0)
+	if (val==0)
 		return true;
 	else
 		return false;
@@ -118,15 +122,17 @@ void BitArray::ClearBit(const size_t bit_to_clear)
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
 {
-	size_t negated_bits = 0;
 	size_t bit_pos = 0;
+	size_t bits_left = 0;
 	//negate and use the inverse to find the first set
 	for (size_t i = 0; i < number_of_containers; i++) {
 		unsigned long index = 0;
 
 		if (i == number_of_containers - 1) {
-			size_t bits_left = number_of_bits_ % (sizeof(bitContainer) * bits_per_byte);
-
+			bits_left = number_of_bits_ % (sizeof(bitContainer) * bits_per_byte);
+			if (bits_left == 0) {
+				bits_left = sizeof(bitContainer) * bits_per_byte;
+			}
 			size_t index = 0;
 			while (index < bits_left) {
 				bit_pos = index + (sizeof(bitContainer) * bits_per_byte) * i;
@@ -137,22 +143,11 @@ bool BitArray::GetFirstClearBit(size_t & o_index) const
 				index++;
 			}
 
-			
-
-			//
-			//size_t index = 1;
-			//while (index < bits_left) {
-			//	//create mask
-			//	mask |= mask << 1;
-			//	index++;
-			//}
-
-			//negated_bits = ~(bits_[i] & mask);
 		}
 		else {
 			//position of container
 			if (BITSCAN(&index, ~bits_[i])) {
-				o_index = /*static_cast<size_t>*/(index + (sizeof(bitContainer) * bits_per_byte) * i);
+				o_index = (index + (sizeof(bitContainer) * bits_per_byte) * i);
 				return true;
 			}
 		}
@@ -162,13 +157,35 @@ bool BitArray::GetFirstClearBit(size_t & o_index) const
 
 bool BitArray::GetFirstSetBit(size_t & o_index) const
 {
+	size_t bit_pos = 0;
+	size_t bits_left = 0;
 	//using bitscanforward, look through all the containers
 	for (size_t i = 0; i < number_of_containers; i++) {
 		unsigned long index = 0;
-		//position of container
-		if (BITSCAN(&index, bits_[i])) {
-			o_index = static_cast<size_t>(index);
-			return true;
+
+		if (i == number_of_containers - 1) {
+			bits_left = number_of_bits_ % (sizeof(bitContainer) * bits_per_byte);
+
+			if (bits_left == 0) {
+				bits_left = sizeof(bitContainer) * bits_per_byte;
+			}
+			
+			size_t index = 0;
+			while (index < bits_left) {
+				bit_pos = index + (sizeof(bitContainer) * bits_per_byte) * i;
+				if (IsSet(bit_pos)) {
+					o_index = bit_pos;
+					return true;
+				}
+				index++;
+			}
+		}
+		else {
+			//position of container
+			if (BITSCAN(&index, bits_[i])) {
+				o_index = static_cast<size_t>(index + (sizeof(bitContainer) * bits_per_byte) * i);
+				return true;
+			}
 		}
 	}
 
