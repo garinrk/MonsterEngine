@@ -9,12 +9,13 @@
 
 #pragma intrinsic(_BitScanForward) 
 
-#ifdef _WIN32
+#if _WIN64
+typedef uint64_t	bitContainer;
+
+#define BITSCAN(index_found,value_to_search) _BitScanForward64(index_found,value_to_search)		
+#else 
 typedef uint32_t	bitContainer;
 #define BITSCAN(index_found,value_to_search) _BitScanForward(index_found,value_to_search)		
-#else 
-typedef uint64_t	bitContainer;
-#define BITSCAN(index_found,value_to_search) _BitScanForward64(index_found,value_to_search)		
 #endif
 
 class BitArray
@@ -44,6 +45,12 @@ private:
 	size_t number_of_bytes;
 	size_t number_of_containers;
 	size_t* bits_;
+
+#ifdef _WIN64
+	uint64_t BIT_CHECK = 1;
+#else
+	uint32_t BIT_CHECK = 1;
+#endif
 
 	BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes,  size_t amt_of_containers, size_t* bits_array_addr);
 

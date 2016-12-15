@@ -64,7 +64,7 @@ bool BitArray::AreAllSet()
 	for (size_t i = 0; i < number_of_containers; i++) {
 		unsigned long index = 0;
 		//position of container
-		if (!BITSCAN(&index, bits_[i])) {
+		if (!BITSCAN(&index,bits_[i])) {
 			return false;
 		}
 
@@ -84,7 +84,7 @@ bool BitArray::IsSet(size_t bit_number) const
 
 	//which container?
 	//size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
-	size_t val = bits_[which_container] & (1 << bit_pos);
+	size_t val = bits_[which_container] & (BIT_CHECK << bit_pos);
 	if (val)
 		return true;
 	else
@@ -110,14 +110,14 @@ void BitArray::SetBit(const size_t bit_to_set)
 {
 	size_t bit_pos = bit_to_set % (sizeof(bitContainer)*bits_per_byte);
 	size_t which_container = bit_to_set / (sizeof(bitContainer)*bits_per_byte);
-	*(bits_ + which_container) |= 1 << bit_pos;
+	*(bits_ + which_container) |= BIT_CHECK << bit_pos;
 }
 
 void BitArray::ClearBit(const size_t bit_to_clear)
 {
 	size_t bit_pos = bit_to_clear % (sizeof(bitContainer)*bits_per_byte);
 	size_t which_container = bit_to_clear / (sizeof(bitContainer)*bits_per_byte);
-	*(bits_ + which_container) &= ~(1 << bit_to_clear);
+	*(bits_ + which_container) &= ~(BIT_CHECK << bit_to_clear);
 }
 
 bool BitArray::GetFirstClearBit(size_t & o_index) const
