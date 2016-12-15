@@ -26,14 +26,13 @@ BitArray * BitArray::Create(const size_t num_of_bits, bool start_cleared, GAlloc
 
 BitArray::~BitArray()
 {
-	//TODO: Check for outstanding allocations
-	
+	//TODO: Check for outstanding allocations in a more graceful way?
+	assert(AreAllClear());
 }
 
 void BitArray::ClearAll()
 {
 	memset(bits_, 0x00, number_of_bytes - sizeof(BitArray));
-	//memset(bits_, 0x00, (number_of_bits_ / 8)/* * sizeof(size_t)*/);
 }
 
 void BitArray::SetAll()
@@ -41,7 +40,7 @@ void BitArray::SetAll()
 	memset(bits_, 0xFF, number_of_bytes - sizeof(BitArray));
 }
 
-bool BitArray::AreAllClear()
+bool BitArray::AreAllClear() const
 {
 	//using bitscanforward, look through all the containers
 	for (size_t i = 0; i < number_of_containers; i++) {
@@ -50,16 +49,13 @@ bool BitArray::AreAllClear()
 		if (BITSCAN(&index, bits_[i])) {
 			return false;
 		}
-
-		
 	}
 
 	return true;
 }
 
-bool BitArray::AreAllSet()
+bool BitArray::AreAllSet() const
 {
-	//TODO: TRIPLE CHECK
 	//using bitscanforward, look through all the containers
 	for (size_t i = 0; i < number_of_containers; i++) {
 		unsigned long index = 0;
@@ -78,12 +74,9 @@ bool BitArray::IsSet(size_t bit_number) const
 	//bit position within the container
 	size_t bit_pos = bit_number % (sizeof(bitContainer) * bits_per_byte);
 
+	//which container?
 	size_t which_container = bit_number / (sizeof(bitContainer) * bits_per_byte);
 	
-
-
-	//which container?
-	//size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
 	size_t val = bits_[which_container] & (BIT_CHECK << bit_pos);
 	if (val)
 		return true;
@@ -100,7 +93,7 @@ bool BitArray::IsClear(size_t bit_number) const
 
 	//which container?
 	size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
-	if (val==0)
+	if (!val)
 		return true;
 	else
 		return false;
@@ -212,5 +205,4 @@ BitArray::BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes,
 	//lets set all da containers to empty.
 	memset(bits_, 0x00, amt_of_bytes - sizeof(BitArray));
 
-	//memset(bits_, 0xFF, (num_of_user_requested_bits / 8) /** sizeof(bitContainer)*/);
 }

@@ -27,8 +27,8 @@ public:
 	void ClearAll();
 	void SetAll();
 
-	bool AreAllClear();
-	bool AreAllSet();
+	bool AreAllClear() const;
+	bool AreAllSet() const;
 
 	bool IsSet(size_t bit_number) const;
 	bool IsClear(size_t bit_number) const;
@@ -45,6 +45,7 @@ private:
 	size_t number_of_bytes;
 	size_t number_of_containers;
 	size_t* bits_;
+
 
 #ifdef _WIN64
 	uint64_t BIT_CHECK = 1;
