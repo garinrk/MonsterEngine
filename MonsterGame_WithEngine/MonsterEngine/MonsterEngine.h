@@ -12,7 +12,6 @@ namespace MonsterEngine {
 	int RandomTrueOrFalse();
 	inline int RandomIntInRange_Inclusive(int min, int max);
 
-	//MemoryManager::is_init = false;
 };
 //void * operator new(size_t n);
 //

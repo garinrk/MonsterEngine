@@ -25,6 +25,8 @@ MemoryManager::~MemoryManager() {
 
 void * MemoryManager::Malloc(const size_t amt)
 {
+
+	
 	void* user_ptr = nullptr;
 	size_t fsa_to_use = -1;
 	//look through FSAs that satisfy the requirement

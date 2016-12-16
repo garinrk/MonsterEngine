@@ -493,44 +493,14 @@ bool MonsterTesting::MemoryManagerTests() {
 		{
 			void * pPtr = AllocatedAddresses.back();
 			AllocatedAddresses.pop_back();
-/*
-			bool success = pHeapManager.contains(pPtr);
-			assert(success);
 
-
-			success = pHeapManager.IsAllocatedAddress(pPtr);
-			assert(success);
-*/
 			bool success = pHeapManager.Free(pPtr);
 			assert(success);
 		}
 
-		//pHeapManager.GGCollect();
-		// do a large test allocation to see if garbage collection worked
-		//size_t largest_block = pHeapManager.GetLargestFreeBlockSize();
-		//void * pPtr = pHeapManager.Malloc(largest_block);
-		//assert(pPtr);
 
-		//if (pPtr)
-		//{
-		//	bool success = pHeapManager.GFree(pPtr);
-		//	assert(success);
-
-		//}
 	}
 	
-	//MemoryManager mm = MemoryManager(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT);
 
-	//void* addr1 = mm.Malloc(7);
-	//void* addr2 = mm.Malloc(87);
-	//void* addr3 = mm.Malloc(878);
-
-	//bool val = mm.Free(addr1);
-	//assert(val);
-	//bool val2 = mm.Free(addr2);
-	//assert(val2);
-	//bool val3 = mm.Free(addr3);
-
-	//pHeapManager.~MemoryManager();
 	return true;
 }
