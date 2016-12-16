@@ -24,7 +24,7 @@ void * FixedSizeAllocator::Falloc(size_t amt)
 
 	size_t free_block_check = -1;
 	//return null if there are no blocks left
-	if (bit_array_->GetFirstClearBit(free_block_check)) {
+	if (!bit_array_->GetFirstClearBit(free_block_check)) {
 		if (free_block_check == -1) {
 			return nullptr;
 		}
