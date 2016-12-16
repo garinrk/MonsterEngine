@@ -1,6 +1,11 @@
 #include "MonsterTesting.h"
 //#define TEST_SINGLE_LARGE_ALLOCATION
 
+#define DEFAULT_BLOCK_ALLOCATOR_SIZE 1024*1024*50
+#define DEFAULT_NUM_OF_DESCRIPTORS 5192
+#define DEFAULT_NUM_OF_FSA_BLOCKS 64
+#define DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT 4
+
 bool MonsterTesting::GAllocatorTests() {
 
 
@@ -365,9 +370,7 @@ bool MonsterTesting::FSATests() {
 	GAllocator* my_allocator = GAllocator::GetInstance();
 	for (size_t number_of_blocks = 1; number_of_blocks < 1000; number_of_blocks++) {
 
-		//const size_t number_of_blocks = 256;
 		const size_t size_of_blocks = 128;
-		//my_allocator->PrintAllocatorState();
 		FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks, my_allocator);
 		BitArray* my_ba = my_fsa->GetArray();
 
@@ -417,5 +420,117 @@ bool MonsterTesting::FSATests() {
 
 		my_fsa->~FixedSizeAllocator();
 	}
+	return true;
+}
+
+bool MonsterTesting::MemoryManagerTests() {
+
+	// Create a heap manager for my test heap.
+	MemoryManager pHeapManager = MemoryManager(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT);
+
+	std::vector<void *> AllocatedAddresses;
+
+	long	numAllocs = 0;
+	long	numFrees = 0;
+	long	numCollects = 0;
+
+	bool	done = false;
+
+	// allocate memory of random sizes up to 1024 bytes from the heap manager
+	// until it runs out of memory
+	do
+	{
+		const size_t maxTestAllocationSize = DEFAULT_BLOCK_ALLOCATOR_SIZE / 2;
+
+
+		size_t	sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
+
+		void * pPtr = pHeapManager.Malloc(sizeAlloc);
+		//pHeapManager.PrintLists();
+
+		if (pPtr == NULL)
+		{
+			void * pPtr = pHeapManager.Malloc(sizeAlloc);
+
+
+			if (pPtr == NULL)
+			{
+				done = true;
+				break;
+			}
+		}
+
+		AllocatedAddresses.push_back(pPtr);
+		numAllocs++;
+
+		const unsigned int freeAboutEvery = 10;
+		const unsigned int garbageCollectAboutEvery = 40;
+
+		if (!AllocatedAddresses.empty() && ((rand() % freeAboutEvery) == 0))
+		{
+			void * pPtr = AllocatedAddresses.back();
+			AllocatedAddresses.pop_back();
+
+			bool success = pHeapManager.Free(pPtr);
+			assert(success);
+
+			numFrees++;
+		}
+
+	} while (1);
+
+
+
+
+	// now free those blocks in a random order
+	if (!AllocatedAddresses.empty())
+	{
+		// randomize the addresses
+		std::random_shuffle(AllocatedAddresses.begin(), AllocatedAddresses.end());
+
+		// return them back to the heap manager
+		while (!AllocatedAddresses.empty())
+		{
+			void * pPtr = AllocatedAddresses.back();
+			AllocatedAddresses.pop_back();
+/*
+			bool success = pHeapManager.contains(pPtr);
+			assert(success);
+
+
+			success = pHeapManager.IsAllocatedAddress(pPtr);
+			assert(success);
+*/
+			bool success = pHeapManager.Free(pPtr);
+			assert(success);
+		}
+
+		//pHeapManager.GGCollect();
+		// do a large test allocation to see if garbage collection worked
+		//size_t largest_block = pHeapManager.GetLargestFreeBlockSize();
+		//void * pPtr = pHeapManager.Malloc(largest_block);
+		//assert(pPtr);
+
+		//if (pPtr)
+		//{
+		//	bool success = pHeapManager.GFree(pPtr);
+		//	assert(success);
+
+		//}
+	}
+	
+	//MemoryManager mm = MemoryManager(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT);
+
+	//void* addr1 = mm.Malloc(7);
+	//void* addr2 = mm.Malloc(87);
+	//void* addr3 = mm.Malloc(878);
+
+	//bool val = mm.Free(addr1);
+	//assert(val);
+	//bool val2 = mm.Free(addr2);
+	//assert(val2);
+	//bool val3 = mm.Free(addr3);
+
+	//pHeapManager.~MemoryManager();
 	return true;
 }

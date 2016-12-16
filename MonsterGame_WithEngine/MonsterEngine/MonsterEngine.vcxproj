@@ -149,6 +149,7 @@
     <ClInclude Include="FixedSizeAllocator.h" />
     <ClInclude Include="GAllocator.h" />
     <ClInclude Include="IGameObjectController.h" />
+    <ClInclude Include="MemoryManager.h" />
     <ClInclude Include="MonsterDebug.h" />
     <ClInclude Include="MonsterEngine-inl.h" />
     <ClInclude Include="MonsterEngine.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="BitArray.cpp" />
     <ClCompile Include="FixedSizeAllocator.cpp" />
     <ClCompile Include="GAllocator.cpp" />
+    <ClCompile Include="MemoryManager.cpp" />
     <ClCompile Include="MonsterDebug.cpp" />
     <ClCompile Include="MonsterEngine.cpp" />
     <ClCompile Include="MMath.cpp" />

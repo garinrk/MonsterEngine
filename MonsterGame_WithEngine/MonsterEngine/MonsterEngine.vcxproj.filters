@@ -52,6 +52,12 @@
     <Filter Include="Source Files\Controllers">
       <UniqueIdentifier>{18282e65-9846-455e-8a80-11a977aaa42e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\MemoryManagement">
+      <UniqueIdentifier>{339ab4cb-808c-42a6-be09-fbd7fd09e892}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MemoryManagement">
+      <UniqueIdentifier>{4b5c889b-ca6a-4450-9c0d-580ddce66c90}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -108,6 +114,9 @@
     <ClInclude Include="FixedSizeAllocator.h">
       <Filter>Header Files\Allocator</Filter>
     </ClInclude>
+    <ClInclude Include="MemoryManager.h">
+      <Filter>Header Files\MemoryManagement</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MonsterEngine.cpp">
@@ -142,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="FixedSizeAllocator.cpp">
       <Filter>Source Files\Allocator</Filter>
+    </ClCompile>
+    <ClCompile Include="MemoryManager.cpp">
+      <Filter>Source Files\MemoryManagement</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
