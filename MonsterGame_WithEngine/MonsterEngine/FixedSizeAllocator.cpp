@@ -98,5 +98,7 @@ FixedSizeAllocator::FixedSizeAllocator(const size_t size_of_blocks, const size_t
 FixedSizeAllocator::~FixedSizeAllocator()
 {
 	//check for outstanding allocations
-	assert(bit_array_->AreAllClear());
+	if (!bit_array_->AreAllClear()) {
+		DEBUGLOG("OUTSTANDING ALLOCATIONS IN FIXED SIZE ALLOCATOR");
+	}
 }

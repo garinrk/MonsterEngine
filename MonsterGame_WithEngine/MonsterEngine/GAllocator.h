@@ -22,8 +22,8 @@ struct _Descriptor {
 
 
 #define DEFAULT_ALIGNMENT 4
-#define DEFAULT_SIZE 1024*1024
-#define DEFAULT_DESCRIPTORS 256
+#define DEFAULT_SIZE 1024*1024*5
+#define DEFAULT_DESCRIPTORS 2048
 class GAllocator
 {
 public:

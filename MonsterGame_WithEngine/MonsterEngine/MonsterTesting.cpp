@@ -362,57 +362,60 @@ bool MonsterTesting::BitArrayTests() {
 
 bool MonsterTesting::FSATests() {
 
-
-	const size_t number_of_blocks = 128;
-	const size_t size_of_blocks = 8;
 	GAllocator* my_allocator = GAllocator::GetInstance();
-	FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks, my_allocator);
-	BitArray* my_ba = my_fsa->GetArray();
+	for (size_t number_of_blocks = 1; number_of_blocks < 512; number_of_blocks++) {
+
+		//const size_t number_of_blocks = 256;
+		const size_t size_of_blocks = 2;
+		//my_allocator->PrintAllocatorState();
+		FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks, my_allocator);
+		BitArray* my_ba = my_fsa->GetArray();
 
 
-	std::vector<void *> AllocatedAddresses;
+		std::vector<void *> AllocatedAddresses;
 
-	long	numAllocs = 0;
-	long	numFrees = 0;
-	long	numCollects = 0;
+		long	numAllocs = 0;
+		long	numFrees = 0;
+		long	numCollects = 0;
 
-	bool	done = false;
+		bool	done = false;
 
-	do {
+		do {
 
-		size_t	sizeAlloc = 1 + (rand() & (size_of_blocks - 1));
-		numAllocs++;
-		void * ptr = my_fsa->Falloc(sizeAlloc);
-		
-		if (ptr == NULL) {
-			assert(my_ba->AreAllSet());
-			break;
-		}
+			size_t	sizeAlloc = 1 + (rand() & (size_of_blocks - 1));
+			numAllocs++;
+			void * ptr = my_fsa->Falloc(sizeAlloc);
 
-		AllocatedAddresses.push_back(ptr);
+			if (ptr == NULL) {
+				assert(my_ba->AreAllSet());
+				break;
+			}
 
-	} while (1);
+			AllocatedAddresses.push_back(ptr);
+
+		} while (1);
 
 
-	// now free those blocks in a random order
-	if (!AllocatedAddresses.empty())
-	{
-		// randomize the addresses
-		std::random_shuffle(AllocatedAddresses.begin(), AllocatedAddresses.end());
-
-		// return them back to the heap manager
-		while (!AllocatedAddresses.empty())
+		// now free those blocks in a random order
+		if (!AllocatedAddresses.empty())
 		{
-			void * pPtr = AllocatedAddresses.back();
-			AllocatedAddresses.pop_back();
-			bool success = my_fsa->Free(pPtr);
+			// randomize the addresses
+			std::random_shuffle(AllocatedAddresses.begin(), AllocatedAddresses.end());
 
-			assert(success);
+			// return them back to the heap manager
+			while (!AllocatedAddresses.empty())
+			{
+				void * pPtr = AllocatedAddresses.back();
+				AllocatedAddresses.pop_back();
+				bool success = my_fsa->Free(pPtr);
+
+				assert(success);
+			}
+
+			assert(my_ba->AreAllClear());
 		}
 
-		assert(my_ba->AreAllClear());
+		my_fsa->~FixedSizeAllocator();
 	}
-
-	my_fsa->~FixedSizeAllocator();
 	return true;
 }
