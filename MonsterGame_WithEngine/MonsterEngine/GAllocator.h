@@ -22,8 +22,8 @@ struct _Descriptor {
 
 
 #define DEFAULT_ALIGNMENT 4
-#define DEFAULT_SIZE 1024*1024*5
-#define DEFAULT_DESCRIPTORS 2048
+#define DEFAULT_TOTAL_SIZE 1024*1024*100 // 100mb, to handle std::vector and up to 128 byte wide FSAs
+#define DEFAULT_NUM_DESCRIPTORS 5192*2
 class GAllocator
 {
 public:
@@ -37,6 +37,7 @@ public:
 	void GGCollect();
 
 	static void CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment);
+	static void CreateInstance(); //default using defined sizes
 	static GAllocator* GetInstance();
 	static void DestroyInstance();
 

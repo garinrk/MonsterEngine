@@ -363,10 +363,10 @@ bool MonsterTesting::BitArrayTests() {
 bool MonsterTesting::FSATests() {
 
 	GAllocator* my_allocator = GAllocator::GetInstance();
-	for (size_t number_of_blocks = 1; number_of_blocks < 512; number_of_blocks++) {
+	for (size_t number_of_blocks = 1; number_of_blocks < 1000; number_of_blocks++) {
 
 		//const size_t number_of_blocks = 256;
-		const size_t size_of_blocks = 2;
+		const size_t size_of_blocks = 128;
 		//my_allocator->PrintAllocatorState();
 		FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks, my_allocator);
 		BitArray* my_ba = my_fsa->GetArray();

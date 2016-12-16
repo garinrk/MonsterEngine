@@ -23,13 +23,8 @@ void RunGAllocTests();
 void ArrayTests();
 void RunFSATest();
 
-//For allocator singleton instantiation, default parameters
-#define DEFAULT_ALIGNMENT 4
-#define DEFAULT_TOTAL_SIZE 1024*1024
-#define DEFAULT_NUM_DESCRIPTORS 256
-
 int main() {
-	GAllocator::CreateInstance(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
+	GAllocator::CreateInstance();
 #ifdef OLD_GAMEPLAY
 	RunGame();
 #endif // _GAMEPLAY

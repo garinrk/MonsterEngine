@@ -116,10 +116,17 @@ void GAllocator::CreateInstance(const size_t total_allocator_size, const unsigne
 	singleton_instance_ = new (singleton_instance_addr_) GAllocator(total_allocator_size, num_of_descriptors, alignment);
 }
 
+void GAllocator::CreateInstance()
+{
+	GAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(GAllocator), 4);
+	singleton_instance_ = new (singleton_instance_addr_) GAllocator(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
+}
+
+
 GAllocator * GAllocator::GetInstance()
 {
 	if (!singleton_instance_) {
-		CreateInstance(DEFAULT_SIZE, DEFAULT_DESCRIPTORS, DEFAULT_ALIGNMENT);
+		CreateInstance(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
 		return singleton_instance_;
 	}
 	else {
