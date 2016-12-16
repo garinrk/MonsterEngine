@@ -1,6 +1,6 @@
 #include "BitArray.h"
 
-BitArray * BitArray::Create(const size_t num_of_bits, bool start_cleared, GAllocator * my_allocator)
+BitArray * BitArray::Create(const size_t num_of_bits, GAllocator * my_allocator)
 {
 	//Don't forget!
 	const size_t bits_per_byte = 8;

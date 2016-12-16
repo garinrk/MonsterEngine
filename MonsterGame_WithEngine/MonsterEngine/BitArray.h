@@ -21,7 +21,7 @@ typedef uint32_t	bitContainer;
 class BitArray
 {
 public:
-	static BitArray * Create(const size_t num_of_bits, bool start_cleared, GAllocator * my_allocator);
+	static BitArray * Create(const size_t num_of_bits, GAllocator * my_allocator);
 	~BitArray();
 
 	void ClearAll();

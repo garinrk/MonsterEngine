@@ -334,7 +334,7 @@ bool MonsterTesting::BitArrayTests() {
 
 	for (size_t bit_count = 1; bit_count <= 1000; bit_count++) {
 		GAllocator* my_allocator = GAllocator::GetInstance();
-		BitArray* my_array = BitArray::Create(bit_count, false, my_allocator);
+		BitArray* my_array = BitArray::Create(bit_count, my_allocator);
 
 		size_t random_bit_to_set = rand() % bit_count;
 		my_array->SetBit(random_bit_to_set);
@@ -374,7 +374,7 @@ bool MonsterTesting::BitArrayTests() {
 		my_array->ClearAll();
 		assert(my_array->GetFirstSetBit(firstSetBit) == false);
 
-		delete my_array;
+		my_array->~BitArray();
 	}
 
 	return true;
@@ -385,9 +385,20 @@ bool MonsterTesting::FSATests() {
 	GAllocator* my_allocator = GAllocator::GetInstance();
 	const size_t number_of_blocks = 16;
 	const size_t size_of_blocks = 8;
-	FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks);
+	FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks,my_allocator);
+	BitArray* my_ba = my_fsa->GetArray();
+
+	assert(my_ba->AreAllClear());
+	void* addr = my_fsa->Falloc(4);
+
+	void* addr2 = my_fsa->Falloc(5);
+
 	
+	my_fsa->Free(addr);
+	my_fsa->Free(addr2);
+	assert(my_ba->AreAllClear());
 
+
+	my_fsa->~FixedSizeAllocator();
 	return true;
-
 }
