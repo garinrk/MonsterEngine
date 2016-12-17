@@ -28,6 +28,8 @@ public:
 	void GarbageCollectBlockAllocator();
 	bool is_init = false;
 
+	bool ContainsAddress(void* addr_to_check);
+
 	static MemoryManager* GetInstance();
 	static void CreateInstance(const size_t block_allocator_size, const unsigned int num_of_descriptors, const int8_t initial_alignment);
 	static void CreateInstance(); //default using defined parameters

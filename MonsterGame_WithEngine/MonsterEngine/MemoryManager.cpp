@@ -90,6 +90,14 @@ void MemoryManager::GarbageCollectBlockAllocator()
 	block_allocator_->GGCollect();
 }
 
+bool MemoryManager::ContainsAddress(void * addr_to_check)
+{
+	for (size_t i = 0; i < SIZEOFSIZES; i++) {
+		//if(fixed_allocators_[i]-)
+	}
+	return false;
+}
+
 MemoryManager * MemoryManager::GetInstance()
 {
 	if (!manager_instance_) {

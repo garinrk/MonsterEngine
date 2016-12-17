@@ -6,7 +6,7 @@ class FixedSizeAllocator
 {
 public:
 	static FixedSizeAllocator* Create(GAllocator* my_allocator, size_t amt_of_blocks, size_t initial_size_of_blocks,GAllocator* allocator);
-	FixedSizeAllocator(const size_t size_of_blocks, const size_t number_of_blocks, size_t* base_of_blocks, size_t total_size, GAllocator* allocator);
+	FixedSizeAllocator(const size_t size_of_blocks, const size_t number_of_blocks, size_t* base_of_blocks, size_t total_size, GAllocator* allocator,void* fsa_base, void* fsa_back);
 	void* Falloc(size_t amt);
 	bool Free(void* addr_to_check);
 
@@ -20,6 +20,10 @@ private:
 	
 	
 	size_t* base_address_;
+
+	void* front_of_fsa_;
+	void* back_of_fsa_;
+
 	size_t total_size_of_FSA_;
 };
 
