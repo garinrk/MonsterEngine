@@ -11,11 +11,11 @@ int MonsterEngine::RandomTrueOrFalse()
 	return rand() % 2;
 }
 
-//regular new using our monsterallocator
+//override operator new
 void * operator new(size_t n)
 {
 
-	return MemoryManager::GetInstance()->Malloc(n);
+	return GAllocator::GetInstance()->GAlloc(n);
 }
 
 //support for debug logs
@@ -26,11 +26,16 @@ void * operator new(size_t n, const char * msg) {
 
 }
 
-//delete using our monsterallocator
+//override operator new with alignment
+void * operator new(size_t n, uint8_t alignment) {
+	return MemoryManager::GetInstance()->Malloc(n,alignment);
+}
+
+
+//override operator delete
 void operator delete(void * p)
 {
-
-	bool result = MemoryManager::GetInstance()->Free(p);
+	bool result = GAllocator::GetInstance()->GFree(p);
 	assert(result);
 }
 
@@ -39,30 +44,37 @@ void operator delete(void * p)
 void operator delete(void * p, const char * msg)
 {
 	DEBUGLOG(msg);
-	bool result = MemoryManager::GetInstance()->Free(p);
+	bool result = GAllocator::GetInstance()->GFree(p);
 	assert(result);
 }
 
-//regular new[] using our monsterallocator
+//override operator new[]
 void * operator new[](size_t n)
 {
 
-	return MemoryManager::GetInstance()->Malloc(n);
+	return GAllocator::GetInstance()->GAlloc(n);
 
-	return nullptr;
+}
+
+//override operator new[] with alignment
+void * operator new[](size_t n, uint8_t alignment)
+{
+
+	return GAllocator::GetInstance()->GAlloc(n, alignment);
+
 }
 
 //delete[] using our monster allocator
 void operator delete[](void * p)
 {
-	bool result = MemoryManager::GetInstance()->Free(p);
+	bool result = GAllocator::GetInstance()->GFree(p);
 	assert(result);
 }
 
 //delete using debug log, won't get called.
 void operator delete[](void * p, const char * msg) {
 	DEBUGLOG(msg);
-	bool result = MemoryManager::GetInstance()->Free(p);
+	bool result = GAllocator::GetInstance()->GFree(p);
 	assert(result);
 	
 }
