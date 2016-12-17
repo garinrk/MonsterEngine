@@ -13,7 +13,7 @@
 //#define NEW_TESTS
 //#define NAN_TEST
 //#define FSA_TESTS
-#define MM_TESTS
+//#define MM_TESTS
 
 void RunConstTests();
 void RunGame();

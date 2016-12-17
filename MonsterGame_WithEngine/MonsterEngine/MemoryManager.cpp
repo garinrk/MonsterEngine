@@ -8,6 +8,7 @@ MemoryManager::MemoryManager(const size_t block_allocator_size, const unsigned i
 	//create FSAs
 	for (size_t index = 0; index < SIZEOFSIZES; index++) {
 		fixed_allocators_[index] = FixedSizeAllocator::Create(block_allocator_, DEFAULT_NUM_OF_FSA_BLOCKS, default_fsa_sizes[index], block_allocator_);
+		assert(fixed_allocators_[index] != NULL);
 	}
 
 
@@ -80,7 +81,7 @@ bool MemoryManager::Free(void * addr)
 	return free_status;
 }
 
-void MemoryManager::GarbageCollect()
+void MemoryManager::GarbageCollectBlockAllocator()
 {
 	//garbage collect the block allocator;
 	block_allocator_->GGCollect();

@@ -25,7 +25,7 @@ public:
 
 	bool Free (void* addr);
 	
-	void GarbageCollect();
+	void GarbageCollectBlockAllocator();
 	bool is_init = false;
 private:
 	GAllocator* block_allocator_;

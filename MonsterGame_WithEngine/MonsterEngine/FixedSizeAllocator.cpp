@@ -24,10 +24,15 @@ void * FixedSizeAllocator::Falloc(size_t amt)
 
 	size_t free_block_check = -1;
 	//return null if there are no blocks left
-	if (!bit_array_->GetFirstClearBit(free_block_check)) {
-		if (free_block_check == -1) {
-			return nullptr;
-		}
+	//if (bit_array_->ock_check)) {
+	//	if (free_block_check == -1) {
+	//		return nullptr;
+	//	}
+	//}
+
+	//ran out of blocks
+	if (bit_array_->AreAllSet()) {
+		return nullptr;
 	}
 	//get first block that is free
 	size_t free_block = 0;

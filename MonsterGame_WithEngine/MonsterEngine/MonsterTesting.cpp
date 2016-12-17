@@ -151,7 +151,7 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 	assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
-	GAllocator pHeapManager = GAllocator(sizeHeap, numDescriptors, initial_alignment);
+	GAllocator pHeapManager = GAllocator(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT);
 
 
 #ifdef TEST_SINGLE_LARGE_ALLOCATION
@@ -420,7 +420,10 @@ bool MonsterTesting::FSATests() {
 
 		my_fsa->~FixedSizeAllocator();
 	}
+
+	GAllocator::DestroyInstance();
 	return true;
+
 }
 
 bool MonsterTesting::MemoryManagerTests() {
