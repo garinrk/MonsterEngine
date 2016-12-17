@@ -1,5 +1,8 @@
 #include "MemoryManager.h"
 
+MemoryManager* MemoryManager::manager_instance_  = NULL;
+void* MemoryManager::singleton_addr_ = NULL;
+
 MemoryManager::MemoryManager(const size_t block_allocator_size, const unsigned int num_of_descriptors, const uint8_t initial_alignment) {
 	//create block allocator
 	GAllocator::CreateInstance(block_allocator_size, num_of_descriptors, initial_alignment);
@@ -85,4 +88,33 @@ void MemoryManager::GarbageCollectBlockAllocator()
 {
 	//garbage collect the block allocator;
 	block_allocator_->GGCollect();
+}
+
+MemoryManager * MemoryManager::GetInstance()
+{
+	if (!manager_instance_) {
+		CreateInstance(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_ALIGNMENT);
+	}
+
+	return manager_instance_;
+}
+
+void MemoryManager::CreateInstance(const size_t block_allocator_size, const unsigned int num_of_descriptors, const int8_t initial_alignment)
+{
+	MemoryManager::singleton_addr_ = _aligned_malloc(sizeof(MemoryManager), 4);
+	manager_instance_ = new (singleton_addr_) MemoryManager(block_allocator_size, num_of_descriptors, initial_alignment);
+}
+
+void MemoryManager::CreateInstance()
+{
+	MemoryManager::singleton_addr_ = _aligned_malloc(sizeof(MemoryManager), 4);
+	manager_instance_ = new (singleton_addr_) MemoryManager(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_ALIGNMENT);
+}
+
+void MemoryManager::DestroyInstance()
+{
+	manager_instance_->~MemoryManager();
+
+	_aligned_free(manager_instance_);
+	manager_instance_ = NULL;
 }

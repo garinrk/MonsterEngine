@@ -27,11 +27,19 @@ public:
 	
 	void GarbageCollectBlockAllocator();
 	bool is_init = false;
+
+	static MemoryManager* GetInstance();
+	static void CreateInstance(const size_t block_allocator_size, const unsigned int num_of_descriptors, const int8_t initial_alignment);
+	static void CreateInstance(); //default using defined parameters
+	static void DestroyInstance();
+
 private:
 	GAllocator* block_allocator_;
 	FixedSizeAllocator* fixed_allocators_[5];
-
 	size_t default_fsa_sizes[5] = {8, 16, 32, 64, 128};
+
+	static MemoryManager* manager_instance_;
+	static void* singleton_addr_;
 
 };
 
