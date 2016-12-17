@@ -145,7 +145,7 @@ void GAllocator::DestroyInstance()
 GAllocator::~GAllocator()
 {
 	if (allocated_root_ != NULL) {
-		DEBUGLOG("OUTSANDING ALLOCATIONS DETECTED IN BLOCK ALLOCATOR");
+		DEBUGLOG("OUTSANDING ALLOCATIONS DETECTED IN BLOCK ALLOCATOR\n");
 	}
 	PRINT_GALLOC_STATE;
 	_aligned_free(front_of_chunk_);

@@ -40,6 +40,10 @@ void * FixedSizeAllocator::Falloc(size_t amt)
 
 	uint8_t * addr_for_user = reinterpret_cast<uint8_t*>(base_address_) +(free_block * size_of_blocks_);
 
+	uint8_t* back_of_fsa = reinterpret_cast<uint8_t*>(base_address_) + (num_of_blocks_ * size_of_blocks_);
+
+	assert(addr_for_user != back_of_fsa);
+
 	bit_array_->SetBit(free_block);
 
 	return static_cast<void*>(addr_for_user);

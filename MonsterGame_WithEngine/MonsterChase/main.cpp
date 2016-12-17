@@ -12,9 +12,8 @@
 //#define BIT_ARRAY_TESTS
 //#define NEW_TESTS
 //#define NAN_TEST
-//#define FSA_TESTS
-//#define MM_TESTS
-
+//#define FSA_TEST
+#define FINAL_MEMORY_TESTING
 void RunConstTests();
 void RunGame();
 void RunNewGame();
@@ -32,7 +31,7 @@ int main() {
 #endif // _GAMEPLAY
 
 #ifdef NEW_GAMEPLAY
-	GAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
+	//GAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
 	RunNewGame();
 	GAllocator::DestroyInstance();
 #endif
@@ -62,7 +61,7 @@ int main() {
 	RunFSATest();
 #endif
 
-#ifdef MM_TESTS
+#ifdef FINAL_MEMORY_TESTING
 	RunMMTests();
 #endif // MM_TESTS
 
@@ -167,7 +166,7 @@ void RunFSATest() {
 }
 
 void RunMMTests() {
-	assert(MonsterTesting::MemoryManagerTests());
+	assert(MonsterTesting::FinalHeapManagerTesting());
 }
 
 
