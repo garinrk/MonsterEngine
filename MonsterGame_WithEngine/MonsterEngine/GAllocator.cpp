@@ -1,9 +1,9 @@
 #include "GAllocator.h"
 
-#include <new>
 #include <assert.h>
 #include <inttypes.h>
 #include <malloc.h>
+#include <new>
 
 GAllocator* GAllocator::singleton_instance_ = NULL;
 void* GAllocator::singleton_instance_addr_ = NULL;
