@@ -169,7 +169,7 @@ void Game::PlayGame() {
 			//to get to the members, you must dereference one more
 		}
 
-		if (MonsterEngine::RandomTrueOrFalse()) {
+		if (MMEngine::RandomTrueOrFalse()) {
 			AddMonster();
 		}
 		

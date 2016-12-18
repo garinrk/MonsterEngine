@@ -70,18 +70,19 @@ bool MemoryManager::Free(void * i_addr)
 
 		//attempt to malloc, will return a valid ptr if there's 
 		//availability and it satisfies the size requirement
-		free_status = fixed_allocators_[i]->Free(i_addr);
+		//free_status = fixed_allocators_[i]->Free(i_addr);
 
-		if (free_status) {
-			return true;
+		if (fixed_allocators_[i]->ContainedInAllocator(i_addr)) {
+			return fixed_allocators_[i]->Free(i_addr);
 		}
 
 	}
 
+	return block_allocator_->GFree(i_addr);
 	//must not be in the fsa, so maybe it's in the block allocator?
-	free_status = block_allocator_->GFree(i_addr);
-	assert(free_status); //double fre check
-	return free_status;
+	//free_status = block_allocator_->GFree(i_addr);
+	//assert(free_status); //double fre check
+	//return free_status;
 }
 
 void MemoryManager::GarbageCollectBlockAllocator()

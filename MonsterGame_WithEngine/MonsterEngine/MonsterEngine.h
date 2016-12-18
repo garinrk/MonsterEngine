@@ -9,20 +9,19 @@
 #include "MonsterDebug.h"
 
 
-namespace MonsterEngine {
+namespace MMEngine {
 	int RandomTrueOrFalse();
-
 };
-void * operator new(size_t n);
-
-void * operator new(size_t n, const char * msg);
-
-void operator delete(void * p);
-
-void operator delete(void * p, const char * msg);
-
-void * operator new[](size_t n);
-
-void operator delete[](void * p);
-
-void operator delete[](void * p, const char * msg);
+//void * operator new(size_t n);
+//
+//void * operator new(size_t n, const char * msg);
+//
+//void operator delete(void * p);
+//
+//void operator delete(void * p, const char * msg);
+//
+//void * operator new[](size_t n);
+//
+//void operator delete[](void * p);
+//
+//void operator delete[](void * p, const char * msg);

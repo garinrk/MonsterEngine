@@ -94,7 +94,8 @@ void GAllocator::GGCollect() {
 		uint8_t* addr_to_search_for = static_cast<uint8_t*>(conductor->base) + conductor->master_size;
 		_Descriptor * found_block = SearchForBlock(addr_to_search_for, unallocated_root_);
 
-		if (found_block == NULL) {
+		//if it found nothing, or it's trying to combine itself, move right on.
+		if (found_block == NULL || found_block->base == conductor->base) {
 			conductor = conductor->next;
 		}
 		else {

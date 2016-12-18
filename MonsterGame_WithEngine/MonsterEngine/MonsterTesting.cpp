@@ -10,7 +10,7 @@ bool MonsterTesting::GAllocatorTests() {
 
 
 	const size_t 		sizeHeap = 1024*1024;
-	const unsigned int 	numDescriptors = 512;
+	const unsigned int 	numDescriptors = 2048;
 	const uint8_t		initial_alignment = 4;
 	// Create a heap manager for my test heap.
 	GAllocator pHeapManager = GAllocator(sizeHeap, numDescriptors, initial_alignment);
@@ -144,7 +144,7 @@ bool MonsterTesting::GAllocatorTests() {
 bool MonsterTesting::GAllocatorWithAlignmentTests() {
 
 	const size_t 		sizeHeap = 1024*1024;
-	const unsigned int 	numDescriptors = 512;
+	const unsigned int 	numDescriptors = 2048;
 	const uint8_t		initial_alignment = 4;
 	// Allocate memory for my test heap.
 	void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
@@ -428,8 +428,8 @@ bool MonsterTesting::FSATests() {
 
 bool MonsterTesting::FinalHeapManagerTesting() {
 
-	const size_t 		sizeHeap = 1024 * 1024;
-	const unsigned int 	numDescriptors = 4096;
+	const size_t 		sizeHeap = 1024*1024;
+	const unsigned int 	numDescriptors = 2048;
 
 	// Allocate memory for my test heap.
 	void * pHeapMemory = _aligned_malloc(sizeHeap, 4);
@@ -500,7 +500,7 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 	// until it runs out of memory
 	do
 	{
-		const size_t		maxTestAllocationSize = 1024;
+		const size_t		maxTestAllocationSize = sizeHeap / 2;
 
 		size_t			sizeAlloc = 1 + (rand() & (maxTestAllocationSize - 1));
 

@@ -12,11 +12,11 @@ public:
 
 	~FixedSizeAllocator();
 	BitArray* GetArray() { return bit_array_; };
+	bool ContainedInAllocator(const void * i_addrToCheck) const;
 private:
 	BitArray* bit_array_;
 	size_t size_of_blocks_;
 	size_t num_of_blocks_;
-	bool ContainedInAllocator(const void * i_addrToCheck) const;
 	
 	
 	size_t* base_address_;

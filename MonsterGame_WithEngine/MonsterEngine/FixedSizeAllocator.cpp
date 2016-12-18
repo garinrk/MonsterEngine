@@ -75,8 +75,6 @@ bool FixedSizeAllocator::Free(void * i_addrToCheck)
 
 	//free the block
 	bit_array_->ClearBit(block_to_free);
-
-	//TODO: Maybe memset the memory returned?
 	return true;
 }
 
@@ -109,8 +107,9 @@ FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const si
 
 FixedSizeAllocator::~FixedSizeAllocator()
 {
-	bit_array_->~BitArray();
+	
 	if (!bit_array_->AreAllClear()) {
 		DEBUGLOG("OUTSTANDING ALLOCATIONS IN FIXED SIZE ALLOCATOR");
 	}
+	bit_array_->~BitArray();
 }
