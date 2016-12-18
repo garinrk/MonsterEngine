@@ -15,6 +15,5 @@ public:
 	static bool GAllocatorWithAlignmentTests();
 	static bool BitArrayTests();
 	static bool FSATests();
-	static bool MemoryManagerTests();
 	static bool FinalHeapManagerTesting();
 };

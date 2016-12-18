@@ -1,9 +1,8 @@
-#ifndef MONSTEROBJECT_INL_H
-#define MONSTEROBJECT_INL_H
+#pragma once
 
-inline void MonsterObject::SetTransform(const MonsterTransform &new_transform)
+inline void MonsterObject::SetTransform(const MonsterTransform &o_transform)
 {
-	transform_ = new_transform;
+	transform_ = o_transform;
 }
 
 inline const MonsterTransform& MonsterObject::GetTransform() const
@@ -11,9 +10,7 @@ inline const MonsterTransform& MonsterObject::GetTransform() const
 	return transform_;
 }
 
-inline void MonsterObject::ObjectTranslate(const MonsterPoint2D &delta_change)
+inline void MonsterObject::ObjectTranslate(const MonsterPoint2D &i_delta)
 {
-	transform_.Translate(delta_change.x(), delta_change.y());
+	transform_.Translate(i_delta.x(), i_delta.y());
 }
-
-#endif

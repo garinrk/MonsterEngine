@@ -371,7 +371,7 @@ bool MonsterTesting::FSATests() {
 	for (size_t number_of_blocks = 1; number_of_blocks < 1000; number_of_blocks++) {
 
 		const size_t size_of_blocks = 128;
-		FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks, my_allocator);
+		FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks);
 		BitArray* my_ba = my_fsa->GetArray();
 
 
@@ -425,6 +425,7 @@ bool MonsterTesting::FSATests() {
 	return true;
 
 }
+
 
 bool MonsterTesting::FinalHeapManagerTesting() {
 

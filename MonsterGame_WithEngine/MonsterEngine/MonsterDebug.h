@@ -9,7 +9,7 @@
 class MonsterDebug
 {
 public:
-	static void DebugPrint(const char * input, ...);
+	static void DebugPrint(const char * i_format, ...);
 
 
 

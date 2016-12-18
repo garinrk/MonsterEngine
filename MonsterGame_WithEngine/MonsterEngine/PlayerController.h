@@ -1,22 +1,23 @@
-#ifndef PLAYERCONTROLLER_H
-#define PLAYERCONTROLLER_H
+#pragma once
 
 #include "IGameObjectController.h"
-#include <conio.h>
 #include "MonsterDebug.h"
+
+#include <conio.h>
+
 class PlayerController : public IGameObjectController
 {
 public:
 	inline MonsterObject * GetMonsterObject() const override;
-	inline void SetMonsterObject(MonsterObject * new_Object) override;
+	inline void SetMonsterObject(MonsterObject * i_object) override;
 	void UpdateMonsterObject() override;
 	void UpdatePlayerPosition();
-	void TranslatePosition(MonsterPoint2D& translation);
+	void TranslatePosition(MonsterPoint2D& o_translate);
 	char GetControllerInput(); //only accounts for keyboard control currently
 	inline bool GetGameOverState() const;
-	inline void SetGameOverState(bool new_value);
+	inline void SetGameOverState(bool i_newValue);
 
-	MonsterPoint2D ParseControllerInput(char in);
+	MonsterPoint2D ParseControllerInput(char i_toParse);
 	
 	PlayerController();
 	~PlayerController();
@@ -26,4 +27,3 @@ private :
 };
 
 #include "PlayerController-inl.h"
-#endif

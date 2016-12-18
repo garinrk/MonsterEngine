@@ -1,9 +1,9 @@
 #include "MonsterPoint2D.h"
 
 
-MonsterPoint2D::MonsterPoint2D(float init_x, float init_y) :
-	coord_x_(init_x),
-	coord_y_(init_y)
+MonsterPoint2D::MonsterPoint2D(float i_x, float i_y) :
+	coord_x_(i_x),
+	coord_y_(i_y)
 {
 	assert(!MMEngine::MMath::IsNAN(coord_x_));
 	assert(!MMEngine::MMath::IsNAN(coord_y_));

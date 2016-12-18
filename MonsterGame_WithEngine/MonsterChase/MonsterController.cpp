@@ -21,8 +21,8 @@ void MonsterController::UpdateMonsterObject() {
 
 void MonsterController::UpdateMonsterPosition() {
 
-	float x_movement = static_cast<float>(MonsterEngine::RandomIntInRange_Inclusive(0, 1));
-	float y_movement = static_cast<float>(MonsterEngine::RandomIntInRange_Inclusive(0, 1));
+	float x_movement = static_cast<float>(MMEngine::MMath::GetRandomIntInBounds(0, 1));
+	float y_movement = static_cast<float>(MMEngine::MMath::GetRandomIntInBounds(0, 1));
 	MonsterPoint2D random_movement(x_movement, y_movement);
 	TranslateMonsterPosition(random_movement);
 

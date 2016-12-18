@@ -1,10 +1,10 @@
+#pragma once
 #include "PlayerController.h"
-#ifndef PLAYERCONTROLLER_INL_H
-#define PLAYERCONTROLLER_INL_H
 
-inline void PlayerController::SetMonsterObject(MonsterObject * new_Object)
+
+inline void PlayerController::SetMonsterObject(MonsterObject * i_newObject)
 {
-	monster_object_ = new_Object;
+	monster_object_ = i_newObject;
 }
 
 inline MonsterObject * PlayerController::GetMonsterObject() const
@@ -15,9 +15,6 @@ inline MonsterObject * PlayerController::GetMonsterObject() const
 inline bool PlayerController::GetGameOverState() const {
 	return game_over_flag_;
 }
-inline void PlayerController::SetGameOverState(bool new_value) {
-	game_over_flag_ = new_value;
+inline void PlayerController::SetGameOverState(bool i_newValue) {
+	game_over_flag_ = i_newValue;
 }
-
-
-#endif // !PLAYERCONTROLLER_INL_H

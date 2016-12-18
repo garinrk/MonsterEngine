@@ -5,8 +5,6 @@ struct _Descriptor {
 	void * user_ptr;
 	size_t master_size;
 	size_t user_size;
-	//size_t offset_pad;
-
 #if _DEBUG
 	int debug_id;
 #endif
@@ -14,12 +12,15 @@ struct _Descriptor {
 };
 
 
-#include <inttypes.h>
 #include "MonsterDebug.h"
+
+#include <assert.h>
+#include <inttypes.h>
+#include <malloc.h>
+#include <new>
 
 #define BAND_VAL 0xFD
 #define BAND_SIZE 4
-
 
 #define DEFAULT_ALIGNMENT 4
 #define DEFAULT_TOTAL_SIZE 1024*1024*100 // 100mb, to handle std::vector and up to 128 byte wide FSAs
@@ -28,15 +29,15 @@ class GAllocator
 {
 public:
 
-	GAllocator(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment );
+	GAllocator(const size_t i_totalSizeOfAllocator, const unsigned int i_amtOfDescriptors, const uint8_t i_align );
 
-	void * GAlloc(const size_t amt);
-	void * GAlloc(const size_t amt, const uint8_t alignment);
+	void * GAlloc(const size_t i_amt);
+	void * GAlloc(const size_t i_amt, const uint8_t i_align);
 
 	bool GFree(const void* addr_to_free);
 	void GGCollect();
 
-	static void CreateInstance(const size_t total_allocator_size, const unsigned int num_of_descriptors, const uint8_t alignment);
+	static void CreateInstance(const size_t i_totalSizeOfAllocator, const unsigned int i_amtOfDescriptors, const uint8_t i_align);
 	static void CreateInstance(); //default using defined sizes
 	static GAllocator* GetInstance();
 	static void DestroyInstance();
@@ -45,33 +46,33 @@ public:
 
 	size_t total_bytes_left = 0;
 
-	void PrintList(_Descriptor* root);
+	void PrintList(_Descriptor* i_root);
 
 	//For unit tests
-	bool ContainsAddressInBlock(const void* addr_to_find);
-	bool IsAllocatedAddress(const void* addr_to_find);
+	bool ContainsAddressInBlock(const void* i_addr);
+	bool IsAllocatedAddress(const void* i_addr);
 	size_t GetLargestFreeBlockSize();
 
 	//debug
 	void PrintAllocatorState();
 private:
 
-	void InitializeFreeList(const unsigned int num_of_descriptors);
-	void AddToAllocatedList(_Descriptor* node_to_insert);
-	void AddToUnallocatedList( _Descriptor* node_to_insert);
-	void AddToFreeList(_Descriptor* node_to_insert);
-	void CombineBlocks(_Descriptor* first, _Descriptor* second);
-	void NullRootReference(_Descriptor* node_to_null);
-	void MoveRootReferencesForward(_Descriptor* node_to_move_forward);
+	void InitializeFreeList(const unsigned int i_amtOfDescriptors);
+	void AddToAllocatedList(_Descriptor* i_node);
+	void AddToUnallocatedList( _Descriptor* i_node);
+	void AddToFreeList(_Descriptor* i_node);
+	void CombineBlocks(_Descriptor* i_firstBlock, _Descriptor* i_secondBlock);
+	void NullRootReference(_Descriptor* i_node);
+	void MoveRootReferencesForward(_Descriptor* i_node);
 
-	bool CheckGuardBands(_Descriptor* node_to_check);
-	bool IsPowerOfTwo(const uint8_t input);
+	bool CheckGuardBands(_Descriptor* i_node);
+	bool IsPowerOfTwo(const uint8_t i_toCheck);
 
 
-	_Descriptor * SearchForBlock(const void * addr_to_search_for, _Descriptor* root_node) const;
-	_Descriptor * FindSuitableUnallocatedBlock(const size_t amt) const;
-	_Descriptor * RemoveBlockFromList(const void* addr_to_search_for, _Descriptor* root_node);
-	_Descriptor * StealFromBlock(_Descriptor* victim, const size_t amt_to_take, const uint8_t alignment);
+	_Descriptor * SearchForBlock(const void * i_addr, _Descriptor* i_root) const;
+	_Descriptor * FindSuitableUnallocatedBlock(const size_t i_amt) const;
+	_Descriptor * RemoveBlockFromList(const void* i_addr, _Descriptor* i_root);
+	_Descriptor * StealFromBlock(_Descriptor* i_victim, const size_t i_amtToTake, const uint8_t i_align);
 
 
 
