@@ -1,9 +1,9 @@
-#ifndef POINT2D_H
-#define POINT2D_H
+#pragma once
 
-#include <math.h>
 #include "MMath.h"
+
 #include "assert.h"
+
 class MonsterPoint2D
 {
 public:
@@ -25,6 +25,4 @@ private:
 	float coord_y_;
 };
 #include "MonsterPoint2D-inl.h"
-#endif
-
 

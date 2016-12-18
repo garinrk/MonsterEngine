@@ -75,9 +75,6 @@
     <ClInclude Include="MonsterEngine.h">
       <Filter>Header Files\MEngine</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterEngine-inl.h">
-      <Filter>Header Files\MEngine</Filter>
-    </ClInclude>
     <ClInclude Include="MonsterObject.h">
       <Filter>Header Files\GameObjects</Filter>
     </ClInclude>

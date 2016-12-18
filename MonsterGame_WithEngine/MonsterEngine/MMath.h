@@ -1,7 +1,9 @@
 #pragma once
+
+#include <math.h>
 #include <stdlib.h>
 #include <time.h>
-#include <math.h>
+
 namespace MMEngine {
 
 	class MMath

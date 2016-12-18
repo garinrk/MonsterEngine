@@ -1,6 +1,6 @@
-#ifndef IGAMEOBJECTCONTROLLER_H
-#define IGAMEOBJECTCONTROLLER_H
+#pragma once
 #include "MonsterObject.h"
+
 class IGameObjectController
 {
 public:
@@ -8,6 +8,4 @@ public:
 	virtual void UpdateMonsterObject() = 0;
 	virtual MonsterObject * GetMonsterObject() const = 0;
 };
-
-#endif
 
