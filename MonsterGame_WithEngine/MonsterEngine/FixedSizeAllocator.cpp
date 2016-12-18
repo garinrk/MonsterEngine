@@ -1,27 +1,27 @@
 #include "FixedSizeAllocator.h"
 
 
-FixedSizeAllocator* FixedSizeAllocator::Create(GAllocator* my_allocator, size_t amt_of_blocks, size_t initial_size_of_blocks, GAllocator* allocator) {
+FixedSizeAllocator* FixedSizeAllocator::Create(GAllocator* i_allocator, size_t i_amtOfBlocks, size_t i_sizeOfBlock) {
 	
 	//TODO: Make sure that the initial size is a power of two
 
-	size_t amount_of_bytes = initial_size_of_blocks * amt_of_blocks + sizeof(FixedSizeAllocator);
+	size_t amount_of_bytes = i_sizeOfBlock * i_amtOfBlocks + sizeof(FixedSizeAllocator);
 
-	void* base_of_fsa = my_allocator->GAlloc(amount_of_bytes);
+	void* base_of_fsa = i_allocator->GAlloc(amount_of_bytes);
 
 	size_t* blocks_base_address = reinterpret_cast<size_t*>(reinterpret_cast<uintptr_t>(base_of_fsa) + sizeof(FixedSizeAllocator));
 	
-	void* back_of_fsa = reinterpret_cast<void*>(static_cast<size_t*>(base_of_fsa) + initial_size_of_blocks * amt_of_blocks);
+	void* back_of_fsa = reinterpret_cast<void*>(static_cast<size_t*>(base_of_fsa) + i_sizeOfBlock * i_amtOfBlocks);
 
 	//using placement new to create fsa, bypassing overridden new 
-	return new (base_of_fsa) FixedSizeAllocator(initial_size_of_blocks, amt_of_blocks, blocks_base_address, amount_of_bytes, allocator, base_of_fsa, back_of_fsa);
+	return new (base_of_fsa) FixedSizeAllocator(i_sizeOfBlock, i_amtOfBlocks, blocks_base_address, amount_of_bytes, i_allocator, base_of_fsa, back_of_fsa);
 }
 
-void * FixedSizeAllocator::Falloc(size_t amt)
+void * FixedSizeAllocator::Falloc(size_t i_amt)
 {
 	//assert(amt <= size_of_blocks_); //make sure we don't ask for more than possible
 
-	if (amt > size_of_blocks_)
+	if (i_amt > size_of_blocks_)
 		return nullptr;
 
 	size_t free_block_check = -1;
@@ -49,11 +49,11 @@ void * FixedSizeAllocator::Falloc(size_t amt)
 	return static_cast<void*>(addr_for_user);
 }
 
-bool FixedSizeAllocator::Free(void * addr_to_check)
+bool FixedSizeAllocator::Free(void * i_addrToCheck)
 {
 	//make sure valid address
 	//assert(ContainedInAllocator(addr_to_check));
-	if (!ContainedInAllocator(addr_to_check)) {
+	if (!ContainedInAllocator(i_addrToCheck)) {
 		return false;
 	}
 	//double free check when there's nothing to free
@@ -65,7 +65,7 @@ bool FixedSizeAllocator::Free(void * addr_to_check)
 
 
 	//which block should we free?
-	size_t block_to_free = static_cast<size_t>(reinterpret_cast<uint8_t*>(addr_to_check) - reinterpret_cast<uint8_t*>(base_address_)) / size_of_blocks_;
+	size_t block_to_free = static_cast<size_t>(reinterpret_cast<uint8_t*>(i_addrToCheck) - reinterpret_cast<uint8_t*>(base_address_)) / size_of_blocks_;
 
 	//double free check
 	assert(bit_array_->IsSet(block_to_free));
@@ -80,11 +80,11 @@ bool FixedSizeAllocator::Free(void * addr_to_check)
 	return true;
 }
 
-bool FixedSizeAllocator::ContainedInAllocator(const void * addr_to_check) const
+bool FixedSizeAllocator::ContainedInAllocator(const void * i_addrToCheck) const
 {
 	uint8_t* back_of_chunk = reinterpret_cast<uint8_t*>(base_address_) + total_size_of_FSA_;
 
-	if (addr_to_check <= back_of_chunk && addr_to_check >= base_address_) {
+	if (i_addrToCheck <= back_of_chunk && i_addrToCheck >= base_address_) {
 		return true;
 	}
 	else {
@@ -92,17 +92,17 @@ bool FixedSizeAllocator::ContainedInAllocator(const void * addr_to_check) const
 	}
 }
 
-FixedSizeAllocator::FixedSizeAllocator(const size_t size_of_blocks, const size_t number_of_blocks, size_t* base_of_blocks, size_t total_size,GAllocator* allocator,void* fsa_base, void* fsa_back) :
-	size_of_blocks_(size_of_blocks),
-	num_of_blocks_(number_of_blocks),
-	base_address_(base_of_blocks),
-	total_size_of_FSA_(total_size),
-	front_of_fsa_(fsa_base),
-	back_of_fsa_(fsa_back)
+FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const size_t i_amtOfBlocks, size_t* i_baseOfBlocks, size_t i_totalSize, GAllocator* i_allocator, void* i_fsaBase, void* i_fsaBack) :
+	size_of_blocks_(i_initSizeOfBlocks),
+	num_of_blocks_(i_amtOfBlocks),
+	base_address_(i_baseOfBlocks),
+	total_size_of_FSA_(i_totalSize),
+	front_of_fsa_(i_fsaBase),
+	back_of_fsa_(i_fsaBack)
 {
 
 	//zero out the memory
-	bit_array_ = BitArray::Create(number_of_blocks, allocator);
+	bit_array_ = BitArray::Create(i_amtOfBlocks, i_allocator);
 	memset(base_address_, 0x00, total_size_of_FSA_ - sizeof(FixedSizeAllocator));
 }
 
@@ -110,9 +110,7 @@ FixedSizeAllocator::FixedSizeAllocator(const size_t size_of_blocks, const size_t
 FixedSizeAllocator::~FixedSizeAllocator()
 {
 	bit_array_->~BitArray();
-	//bool val = bit_array_->AreAllClear();
-	//check for outstanding allocations
-	//if (!bit_array_->AreAllClear()) {
-	//	DEBUGLOG("OUTSTANDING ALLOCATIONS IN FIXED SIZE ALLOCATOR");
-	//}
+	if (!bit_array_->AreAllClear()) {
+		DEBUGLOG("OUTSTANDING ALLOCATIONS IN FIXED SIZE ALLOCATOR");
+	}
 }

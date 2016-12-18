@@ -17,21 +17,21 @@
 class MemoryManager
 {
 public:
-	MemoryManager(const size_t block_allocator_size, const unsigned int num_of_descriptors, const uint8_t initial_alignment);
+	MemoryManager(const size_t i_blockAllocatorSize, const unsigned int i_amtOfDescriptors, const uint8_t i_initAlign);
 	~MemoryManager();
 
-	void* Malloc(const size_t amt);
-	void* Malloc(const size_t amt, uint8_t alignment);
+	void* Malloc(const size_t i_amt);
+	void* Malloc(const size_t i_amt, uint8_t i_align);
 
-	bool Free (void* addr);
+	bool Free (void* i_addr);
 	
 	void GarbageCollectBlockAllocator();
 	bool is_init = false;
 
-	bool ContainsAddress(void* addr_to_check);
+	bool ContainsAddress(void* i_addr);
 
 	static MemoryManager* GetInstance();
-	static void CreateInstance(const size_t block_allocator_size, const unsigned int num_of_descriptors, const int8_t initial_alignment);
+	static void CreateInstance(const size_t i_blockAllocatorSize, const unsigned int i_amtOfDescriptors, const int8_t i_initAlign);
 	static void CreateInstance(); //default using defined parameters
 	static void DestroyInstance();
 

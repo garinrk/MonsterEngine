@@ -1,15 +1,12 @@
-#ifndef MONSTERDEBUG_H
-#define MONSTERDEBUG_H
+#pragma once
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <assert.h>
+#include <stdio.h> //vsprintf
 
 
 class MonsterDebug
 {
 public:
-	static void DebugPrint(const char * input, ...);
+	static void DebugPrint(const char * i_format, ...);
 
 
 
@@ -27,4 +24,3 @@ public:
 #define PRINT_GALLOC_STATE void(0)
 #endif
 
-#endif

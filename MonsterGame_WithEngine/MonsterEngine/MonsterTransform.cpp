@@ -2,11 +2,11 @@
 
 
 
-MonsterTransform::MonsterTransform(float new_x, float new_y) :
-	position_(new_x, new_y)
+MonsterTransform::MonsterTransform(float i_x, float i_y) :
+	position_(i_x, i_y)
 {
-	assert(!MMEngine::MMath::IsNAN(new_x));
-	assert(!MMEngine::MMath::IsNAN(new_y));
+	assert(!MMEngine::MMath::IsNAN(i_x));
+	assert(!MMEngine::MMath::IsNAN(i_y));
 }
 
 
@@ -14,15 +14,15 @@ MonsterTransform::~MonsterTransform()
 {
 }
 
-void MonsterTransform::Translate(float delta_x, float delta_y)
+void MonsterTransform::Translate(float i_deltaX, float i_deltaY)
 {
-	position_.x(position_.x() + delta_x);
-	position_.y(position_.y() + delta_y);
+	position_.x(position_.x() + i_deltaX);
+	position_.y(position_.y() + i_deltaY);
 }
 
-void MonsterTransform::SetPosition(const MonsterPoint2D& new_pos)
+void MonsterTransform::SetPosition(const MonsterPoint2D& i_pos)
 {
-	position_.x(new_pos.x());
-	position_.y(new_pos.y());
+	position_.x(i_pos.x());
+	position_.y(i_pos.y());
 }
 

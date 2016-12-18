@@ -1,34 +1,23 @@
 #include "MMath.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-/// <summary>	Gets random int in bounds. </summary>
-///
-/// <remarks>	garinrk, 10/23/2016. </remarks>
-///
-/// <param name="min">	The minimum. </param>
-/// <param name="max">	The maximum. </param>
-///
-/// <returns>	The random int in bounds. </returns>
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
 int MMEngine::MMath::GetRandomIntInBounds(int min, int max)
 {
 	srand((unsigned int)time(NULL));
 	return min + rand() % (max - min + 1);
 }
 
-bool MMEngine::MMath::IsNAN(float val) {
+bool MMEngine::MMath::IsNAN(float i_val) {
 
 	//we do this to keep overly smart compilers
 	//from optimizing this whole function away
-	volatile float v = val;
+	volatile float v = i_val;
 
 	return v != v;
 }
 
-bool MMEngine::MMath::IsZero(float val)
+bool MMEngine::MMath::IsZero(float i_val)
 {
-	return AreEqual_Eps(val, 0.0f, .000000001f);
+	return AreEqual_Eps(i_val, 0.0f, .000000001f);
 }
 
 bool MMEngine::MMath::AreEqual(float i_lhs, float i_rhs)

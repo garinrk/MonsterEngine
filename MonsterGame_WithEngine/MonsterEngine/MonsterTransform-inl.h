@@ -1,12 +1,8 @@
 #include "MonsterTransform.h"
-#ifndef MONSTERTRANSFORM_INL_H
-#define MONSTERTRANSFORM_INL_H
+#pragma once
 
 inline const MonsterPoint2D & MonsterTransform::GetPosition() const
 {
 	return position_;
 
 }
-
-
-#endif // !MONSTERTRANSFORM_INL_H

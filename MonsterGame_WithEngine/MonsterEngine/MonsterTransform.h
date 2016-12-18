@@ -1,19 +1,16 @@
-#ifndef MONSTERTRANSFORM_H
-#define MONSTERTRANSFORM_H
+#pragma once
 
 #include "MonsterPoint2D.h"
 class MonsterTransform
 {
 public:
-	MonsterTransform(float new_x, float new_y);
+	MonsterTransform(float i_x, float i_y);
 	~MonsterTransform();
 	inline const MonsterPoint2D& GetPosition() const;
-	void SetPosition(const MonsterPoint2D& new_pos);
-	void Translate(const float delta_x, const float delta_y);
+	void SetPosition(const MonsterPoint2D& i_pos);
+	void Translate(const float i_deltaX, const float i_deltaY);
 private:
 	MonsterPoint2D position_;
 };
 
 #include "MonsterTransform-inl.h"
-
-#endif // !MONSTERTRANSFORM_H

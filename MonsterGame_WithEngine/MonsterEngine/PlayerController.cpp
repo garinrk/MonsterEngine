@@ -36,29 +36,29 @@ char PlayerController::GetControllerInput()
 	return in;
 }
 
-MonsterPoint2D PlayerController::ParseControllerInput(char in)
+MonsterPoint2D PlayerController::ParseControllerInput(char i_toParse)
 {
 	float x_move = 0.0f;
 	float y_move = 0.0f;
 
-	if (in == 'W')
+	if (i_toParse == 'W')
 		y_move++;
-	else if (in == 'A')
+	else if (i_toParse == 'A')
 		x_move--;
-	else if (in == 'S')
+	else if (i_toParse == 'S')
 		y_move--;
-	else if (in == 'D')
+	else if (i_toParse == 'D')
 		x_move++;
-	else if (in == 'Q')
+	else if (i_toParse == 'Q')
 		SetGameOverState(true);
 
 	return MonsterPoint2D(x_move, y_move);
 }
 
-void PlayerController::TranslatePosition(MonsterPoint2D & translation)
+void PlayerController::TranslatePosition(MonsterPoint2D & o_translate)
 {
 	MonsterTransform mt = monster_object_->GetTransform();
-	mt.Translate(translation.x(), translation.y());
+	mt.Translate(o_translate.x(), o_translate.y());
 	monster_object_->SetTransform(mt);
 }
 
@@ -66,7 +66,6 @@ PlayerController::PlayerController()
 {
 	monster_object_ = new MonsterObject();
 }
-
 
 PlayerController::~PlayerController()
 {

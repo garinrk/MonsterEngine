@@ -1,6 +1,6 @@
 #pragma once
 
-#include <intrin.h>
+#include <intrin.h> //bitscanforward
 #include <new> //placement new
 #include <string.h> //memset
 

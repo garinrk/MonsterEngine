@@ -1,17 +1,18 @@
-#ifndef MONSTEROBJECT_H
-#define MONSTEROBJECT_H
+#pragma once
+
+#include "MonsterTransform.h"
 
 #include <string>
-#include "MonsterTransform.h"
+
 class MonsterObject
 {
 
 public:
 	MonsterObject();
 	~MonsterObject();
-	inline void SetTransform(const MonsterTransform &new_transform);
+	inline void SetTransform(const MonsterTransform &i_delta);
 	inline const MonsterTransform& GetTransform() const;
-	inline void ObjectTranslate(const MonsterPoint2D &delta_change);
+	inline void ObjectTranslate(const MonsterPoint2D &i_delta);
 private:
 	MonsterTransform transform_;
 	
@@ -19,4 +20,3 @@ private:
 
 #include "MonsterObject-inl.h"
 
-#endif

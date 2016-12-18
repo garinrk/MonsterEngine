@@ -1,13 +1,13 @@
 #pragma once
-#include "MonsterTesting.h"
-#include "GAllocator.h"
-#include "FixedSizeAllocator.h"
-#include "BitArray.h"
-#include "MonsterDebug.h"
-#include "MemoryManager.h"
 
-#include <assert.h>
+#include "BitArray.h"
+#include "FixedSizeAllocator.h"
+#include "GAllocator.h"
+#include "MemoryManager.h"
+#include "MonsterDebug.h"
+
 #include <algorithm>
+#include <assert.h>
 #include <vector>
 class MonsterTesting {
 public:
@@ -15,6 +15,5 @@ public:
 	static bool GAllocatorWithAlignmentTests();
 	static bool BitArrayTests();
 	static bool FSATests();
-	static bool MemoryManagerTests();
 	static bool FinalHeapManagerTesting();
 };
