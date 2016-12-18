@@ -39,9 +39,6 @@
     <ClCompile Include="Game.cpp">
       <Filter>Source Files\GameLoop</Filter>
     </ClCompile>
-    <ClCompile Include="MonsterGame.cpp">
-      <Filter>Source Files\GameLoop</Filter>
-    </ClCompile>
     <ClCompile Include="ZombieController.cpp">
       <Filter>Source Files\Controllers</Filter>
     </ClCompile>
@@ -81,12 +78,6 @@
       <Filter>Header Files\GameLoop</Filter>
     </ClInclude>
     <ClInclude Include="Game-inl.h">
-      <Filter>Header Files\GameLoop</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterGame.h">
-      <Filter>Header Files\GameLoop</Filter>
-    </ClInclude>
-    <ClInclude Include="MonsterGame-inl.h">
       <Filter>Header Files\GameLoop</Filter>
     </ClInclude>
     <ClInclude Include="Monster-inl.h">

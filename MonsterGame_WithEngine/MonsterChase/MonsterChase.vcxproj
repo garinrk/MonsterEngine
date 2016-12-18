@@ -166,7 +166,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="MonsterController.cpp" />
-    <ClCompile Include="MonsterGame.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ZombieController.cpp" />
   </ItemGroup>
@@ -177,8 +176,6 @@
     <ClInclude Include="Monster.h" />
     <ClInclude Include="MonsterController-inl.h" />
     <ClInclude Include="MonsterController.h" />
-    <ClInclude Include="MonsterGame-inl.h" />
-    <ClInclude Include="MonsterGame.h" />
     <ClInclude Include="Player-inl.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="ZombieController-inl.h" />

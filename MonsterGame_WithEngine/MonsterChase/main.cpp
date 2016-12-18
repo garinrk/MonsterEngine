@@ -1,10 +1,7 @@
 #include "GAllocator.h"
 #include "MonsterTesting.h"
 #include "Game.h"
-#include "MonsterGame.h"
-#include "MonsterObject.h"
 #include "Player.h"
-#include "MMath.h"
 //#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
 //#define OLD_GAMEPLAY
@@ -14,8 +11,8 @@
 //#define NAN_TEST
 //#define FSA_TEST
 #define FINAL_MEMORY_TESTING
+
 void RunConstTests();
-void RunGame();
 void RunNewGame();
 void NANTests();
 void RunNewTests();
@@ -81,15 +78,6 @@ void RunNewGame() {
 	Game mg = Game(100, playerPos, 3);
 	mg.Start();
 
-}
-
-void RunGame() {
-
-	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
-	MonsterGame mg = MonsterGame(100, playerPos);
-	mg.Start();
-
-	
 }
 
 void RunConstTests() {

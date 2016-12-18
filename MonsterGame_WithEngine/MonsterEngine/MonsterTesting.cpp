@@ -426,7 +426,6 @@ bool MonsterTesting::FSATests() {
 
 }
 
-
 bool MonsterTesting::FinalHeapManagerTesting() {
 
 	const size_t 		sizeHeap = 1024 * 1024;
@@ -437,7 +436,6 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 	assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
-	//MemoryManager * pHeapManager = MemoryManager(pHeapMemory, sizeHeap, numDescriptors);
 	MemoryManager::CreateInstance(sizeHeap, numDescriptors, 4);
 	MemoryManager* pHeapManager = MemoryManager::GetInstance();
 	assert(pHeapManager);
