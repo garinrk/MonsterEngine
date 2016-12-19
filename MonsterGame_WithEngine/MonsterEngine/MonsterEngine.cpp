@@ -11,7 +11,7 @@ int MMEngine::RandomTrueOrFalse()
 	return rand() % 2;
 }
 
-//regular new using our monsterallocator
+//regular new using our allocator
 void * operator new(size_t n)
 {
 
@@ -26,7 +26,7 @@ void * operator new(size_t n, const char * msg) {
 
 }
 
-//delete using our monsterallocator
+//delete using our allocator
 void operator delete(void * p)
 {
 
@@ -43,7 +43,7 @@ void operator delete(void * p, const char * msg)
 	assert(result);
 }
 
-//regular new[] using our monsterallocator
+//regular new[] using our allocator
 void * operator new[](size_t n)
 {
 
@@ -52,7 +52,7 @@ void * operator new[](size_t n)
 	return nullptr;
 }
 
-//delete[] using our monster allocator
+//delete[] using our allocator
 void operator delete[](void * p)
 {
 	bool result = MemoryManager::GetInstance()->Free(p);
