@@ -84,8 +84,6 @@ void GAllocator::GGCollect() {
 
 	_Descriptor * conductor = unallocated_root_;
 
-	bool finished = false;
-
 	//there are no unallocated blocks to look through
 	if (unallocated_root_ == 0)
 		return;
@@ -101,6 +99,7 @@ void GAllocator::GGCollect() {
 		else {
 			DEBUGLOG("Combining blocks %d and %d\n", conductor->debug_id, found_block->debug_id);
 			CombineBlocks(found_block, conductor);
+			PRINT_GALLOC_STATE;
 		}
 	}
 	DEBUGLOG("AFTER GARBAGE COLLECTION");
@@ -279,6 +278,7 @@ void GAllocator::AddToFreeList(_Descriptor * i_node)
 	i_node->user_size = NULL;
 	i_node->user_ptr = NULL;
 	i_node->next = NULL;
+	i_node->prev = NULL;
 	
 	if (free_root_ == NULL) {
 		free_root_ = i_node;
@@ -315,7 +315,8 @@ void GAllocator::CombineBlocks(_Descriptor * i_firstBlock, _Descriptor * i_secon
 
 	i_secondBlock->master_size = size_of_combined_blocks;
 
-	RemoveBlockFromList(i_firstBlock->user_ptr, unallocated_root_);
+	//RemoveBlockFromList(i_firstBlock->user_ptr, unallocated_root_);
+	RemoveBlockFromListByBase(i_firstBlock->base, unallocated_root_);
 	AddToFreeList(i_firstBlock);
 }
 
@@ -447,7 +448,6 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * i_victim, const size_t i_
 	free_root_ = free_root_->next;
 
 
-
 	//thief doesn't point anywhere, zero out references
 	thief->prev = NULL;
 	thief->next = NULL;
@@ -519,6 +519,58 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * i_victim, const size_t i_
 	}
 
 	return thief;
+}
+
+_Descriptor * GAllocator::RemoveBlockFromListByBase(const void * i_addr, _Descriptor * i_root)
+{
+	_Descriptor * conductor = i_root;
+
+	while (conductor != NULL) {
+
+		//found it
+		if (conductor->base == i_addr) {
+
+			//head case
+			if (conductor->prev == NULL && conductor->next != NULL) {
+
+				//move root references forward to next
+				MoveRootReferencesForward(conductor);
+				//modify pointers
+				conductor->next->prev = NULL;
+				conductor->next = NULL;
+			}
+			//middle case
+			else if (conductor->prev != NULL && conductor->next != NULL) {
+				conductor->next->prev = conductor->prev;
+				conductor->prev->next = conductor->next;
+
+				conductor->prev = NULL;
+				conductor->next = NULL;
+			}
+
+			//tail case
+			else if (conductor->prev != NULL && conductor->next == NULL) {
+
+				conductor->prev->next = NULL;
+				conductor->prev = NULL;
+
+			}
+
+			//root case
+			else if (conductor->prev == NULL && conductor->next == NULL) {
+				//nullify the appropriate root
+				NullRootReference(conductor);
+			}
+
+			return conductor;
+		}
+
+		else {
+			//move on
+			conductor = conductor->next;
+		}
+	}
+	return nullptr;
 }
 
 bool GAllocator::IsPowerOfTwo(const uint8_t i_toCheck)

@@ -602,8 +602,10 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 		ShowOutstandingAllocations(pHeapManager);
 #endif // __SHOW_ALLOCATIONS
 
+		pHeapManager->PrintBlockAllocatorState();
 		// do garbage collection
 		pHeapManager->GarbageCollectBlockAllocator();
+
 		// our heap should be one single block, all the memory it started with
 
 #ifdef __SHOW_FREE_BLOCKS

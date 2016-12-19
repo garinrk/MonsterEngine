@@ -28,6 +28,8 @@ BitArray::~BitArray()
 {
 	//TODO: Check for outstanding allocations in a more graceful way?
 	assert(AreAllClear());
+
+
 }
 
 void BitArray::ClearAll()

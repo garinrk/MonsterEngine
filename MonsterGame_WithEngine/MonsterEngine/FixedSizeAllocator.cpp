@@ -34,6 +34,7 @@ void * FixedSizeAllocator::Falloc(size_t i_amt)
 
 	//ran out of blocks
 	if (bit_array_->AreAllSet()) {
+		DEBUGLOG("RAN OUT OF BLOCKS IN %ud FSA", i_amt);
 		return nullptr;
 	}
 	//get first block that is free
@@ -96,7 +97,8 @@ FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const si
 	base_address_(i_baseOfBlocks),
 	total_size_of_FSA_(i_totalSize),
 	front_of_fsa_(i_fsaBase),
-	back_of_fsa_(i_fsaBack)
+	back_of_fsa_(i_fsaBack),
+	block_allocator_(i_allocator)
 {
 
 	//zero out the memory
@@ -111,5 +113,9 @@ FixedSizeAllocator::~FixedSizeAllocator()
 	if (!bit_array_->AreAllClear()) {
 		DEBUGLOG("OUTSTANDING ALLOCATIONS IN FIXED SIZE ALLOCATOR");
 	}
+
+	assert(bit_array_->AreAllClear()); //outstanding allocation checks
 	bit_array_->~BitArray();
+	block_allocator_->GFree(bit_array_);
+
 }

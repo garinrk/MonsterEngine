@@ -73,6 +73,7 @@ private:
 	_Descriptor * FindSuitableUnallocatedBlock(const size_t i_amt) const;
 	_Descriptor * RemoveBlockFromList(const void* i_addr, _Descriptor* i_root);
 	_Descriptor * StealFromBlock(_Descriptor* i_victim, const size_t i_amtToTake, const uint8_t i_align);
+	_Descriptor * RemoveBlockFromListByBase(const void* i_addr, _Descriptor * i_root);
 
 
 

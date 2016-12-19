@@ -25,5 +25,7 @@ private:
 	void* back_of_fsa_;
 
 	size_t total_size_of_FSA_;
+
+	GAllocator* block_allocator_;
 };
 

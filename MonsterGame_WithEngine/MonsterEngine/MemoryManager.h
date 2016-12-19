@@ -11,6 +11,7 @@
 #define DEFAULT_NUM_OF_DESCRIPTORS 5192
 #define DEFAULT_NUM_OF_FSA_BLOCKS 64
 #define DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT 4
+#define MAX_FSA_ALLOCATION_SIZE 128
 
 #define SIZEOFSIZES sizeof(default_fsa_sizes) / sizeof(size_t)
 
@@ -28,12 +29,14 @@ public:
 	void GarbageCollectBlockAllocator();
 	bool is_init = false;
 
-	bool ContainsAddress(void* i_addr);
-
 	static MemoryManager* GetInstance();
 	static void CreateInstance(const size_t i_blockAllocatorSize, const unsigned int i_amtOfDescriptors, const int8_t i_initAlign);
 	static void CreateInstance(); //default using defined parameters
 	static void DestroyInstance();
+
+#if _DEBUG
+	void PrintBlockAllocatorState();
+#endif
 
 private:
 	GAllocator* block_allocator_;
