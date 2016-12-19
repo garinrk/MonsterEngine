@@ -3,8 +3,6 @@
 
 FixedSizeAllocator* FixedSizeAllocator::Create(GAllocator* i_allocator, size_t i_amtOfBlocks, size_t i_sizeOfBlock) {
 	
-	//TODO: Make sure that the initial size is a power of two
-
 	size_t amount_of_bytes = i_sizeOfBlock * i_amtOfBlocks + sizeof(FixedSizeAllocator);
 
 	void* base_of_fsa = i_allocator->GAlloc(amount_of_bytes);
@@ -19,31 +17,24 @@ FixedSizeAllocator* FixedSizeAllocator::Create(GAllocator* i_allocator, size_t i
 
 void * FixedSizeAllocator::Falloc(size_t i_amt)
 {
-	//assert(amt <= size_of_blocks_); //make sure we don't ask for more than possible
 
 	if (i_amt > size_of_blocks_)
 		return nullptr;
 
 	size_t free_block_check = -1;
-	//return null if there are no blocks left
-	//if (bit_array_->ock_check)) {
-	//	if (free_block_check == -1) {
-	//		return nullptr;
-	//	}
-	//}
 
 	//ran out of blocks
 	if (bit_array_->AreAllSet()) {
 		DEBUGLOG("RAN OUT OF BLOCKS IN %ud FSA", i_amt);
 		return nullptr;
 	}
+
 	//get first block that is free
 	size_t free_block = 0;
+
 	bit_array_->GetFirstClearBit(free_block);
 
 	uint8_t * addr_for_user = reinterpret_cast<uint8_t*>(base_address_) +(free_block * size_of_blocks_);
-
-	assert(addr_for_user >= front_of_fsa_ && addr_for_user <= back_of_fsa_);
 
 	bit_array_->SetBit(free_block);
 
@@ -52,18 +43,15 @@ void * FixedSizeAllocator::Falloc(size_t i_amt)
 
 bool FixedSizeAllocator::Free(void * i_addrToCheck)
 {
-	//make sure valid address
-	//assert(ContainedInAllocator(addr_to_check));
+	//is it even in here? just in case...
 	if (!ContainedInAllocator(i_addrToCheck)) {
 		return false;
 	}
-	//double free check when there's nothing to free
-	//assert(!bit_array_->AreAllClear());
+	
+	//cant free if there's nothing to free
 	if (bit_array_->AreAllClear()) {
 		return false;
 	}
-
-
 
 	//which block should we free?
 	size_t block_to_free = static_cast<size_t>(reinterpret_cast<uint8_t*>(i_addrToCheck) - reinterpret_cast<uint8_t*>(base_address_)) / size_of_blocks_;
@@ -73,7 +61,6 @@ bool FixedSizeAllocator::Free(void * i_addrToCheck)
 	if (bit_array_->IsClear(block_to_free)) {
 		return false;
 	}
-
 	//free the block
 	bit_array_->ClearBit(block_to_free);
 	return true;
@@ -101,7 +88,7 @@ FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const si
 	block_allocator_(i_allocator)
 {
 
-	//zero out the memory
+	//zero out the memory and create bitarray
 	bit_array_ = BitArray::Create(i_amtOfBlocks, i_allocator);
 	memset(base_address_, 0x00, total_size_of_FSA_ - sizeof(FixedSizeAllocator));
 }
@@ -113,9 +100,9 @@ FixedSizeAllocator::~FixedSizeAllocator()
 	if (!bit_array_->AreAllClear()) {
 		DEBUGLOG("OUTSTANDING ALLOCATIONS IN FIXED SIZE ALLOCATOR");
 	}
-
-	assert(bit_array_->AreAllClear()); //outstanding allocation checks
+	//check bit array and destroy it
 	bit_array_->~BitArray();
 	block_allocator_->GFree(bit_array_);
 
 }
+

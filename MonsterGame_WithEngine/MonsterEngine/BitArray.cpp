@@ -26,10 +26,10 @@ BitArray * BitArray::Create(const size_t num_of_bits, GAllocator * my_allocator)
 
 BitArray::~BitArray()
 {
-	//TODO: Check for outstanding allocations in a more graceful way?
-	assert(AreAllClear());
-
-
+	//NOTE: Outstanding allocations check and freeing of 
+	//BitArray memory is found within the FSA Destructor
+	//FixedSizeAllocator::~FixedSizeAllocator()
+	
 }
 
 void BitArray::ClearAll()

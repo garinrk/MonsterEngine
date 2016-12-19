@@ -2,15 +2,17 @@
 #include "MonsterTesting.h"
 #include "Game.h"
 #include "Player.h"
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 //#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
-//#define OLD_GAMEPLAY
 //#define NEW_GAMEPLAY
-//#define BIT_ARRAY_TESTS
+#define BIT_ARRAY_TESTS
 //#define NEW_TESTS
 //#define NAN_TEST
-//#define FSA_TEST
-#define FINAL_MEMORY_TESTING
+#define FSA_TEST
+//#define FINAL_MEMORY_TESTING
 
 void RunConstTests();
 void RunNewGame();
@@ -22,13 +24,12 @@ void RunFSATest();
 void RunMMTests();
 
 int main() {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//GAllocator::CreateInstance();
-#ifdef OLD_GAMEPLAY
-	RunGame();
-#endif // _GAMEPLAY
+
 
 #ifdef NEW_GAMEPLAY
-	//GAllocator::CreateInstance(TOTAL_SIZE, NUM_DESCRIPTORS, ALIGNMENT);
+	GAllocator::CreateInstance();
 	RunNewGame();
 	GAllocator::DestroyInstance();
 #endif
@@ -62,13 +63,6 @@ int main() {
 	RunMMTests();
 #endif // MM_TESTS
 
-
-
-	
-	//GAllocator::DestroyInstance();
-#if defined _DEBUG
-	_CrtDumpMemoryLeaks();
-#endif // _DEBUG
 	return 0;
 
 }
@@ -96,8 +90,6 @@ void RunConstTests() {
 	MonsterPoint2D D = A - B;
 
 }
-
-
 
 void RunNewTests(){
 
@@ -135,7 +127,6 @@ void NANTests() {
 	assert(!test4);
 
 }
-
 
 void RunGAllocTests() {
 	assert(MonsterTesting::GAllocatorTests());

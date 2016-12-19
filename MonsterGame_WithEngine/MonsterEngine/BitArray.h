@@ -41,11 +41,12 @@ public:
 
 	inline bool operator[](const size_t index);
 private:
+	BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes, size_t amt_of_containers, size_t* bits_array_addr);
 	size_t number_of_bits_;
 	size_t number_of_bytes;
 	size_t number_of_containers;
 	size_t* bits_;
-
+	const size_t bits_per_byte = 8;
 
 #ifdef _WIN64
 	uint64_t BIT_CHECK = 1;
@@ -53,8 +54,6 @@ private:
 	uint32_t BIT_CHECK = 1;
 #endif
 
-	BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes,  size_t amt_of_containers, size_t* bits_array_addr);
 
-	const size_t bits_per_byte = 8;
 };
 

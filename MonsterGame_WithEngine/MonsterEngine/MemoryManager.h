@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "FixedSizeAllocator.h"
 #include "GAllocator.h"
 #include "MonsterDebug.h"
@@ -29,22 +28,24 @@ public:
 	void GarbageCollectBlockAllocator();
 	bool is_init = false;
 
+#pragma region Singleton Creation and Destruction
 	static MemoryManager* GetInstance();
 	static void CreateInstance(const size_t i_blockAllocatorSize, const unsigned int i_amtOfDescriptors, const int8_t i_initAlign);
 	static void CreateInstance(); //default using defined parameters
 	static void DestroyInstance();
+#pragma endregion Singleton Creation and Destruction
 
-#if _DEBUG
 	void PrintBlockAllocatorState();
-#endif
+
 
 private:
 	GAllocator* block_allocator_;
 	FixedSizeAllocator* fixed_allocators_[5];
 	size_t default_fsa_sizes[5] = {8, 16, 32, 64, 128};
 
+#pragma region Singleton Instance Management
 	static MemoryManager* manager_instance_;
 	static void* singleton_addr_;
-
+#pragma endregion Singleton Instance Management
 };
 

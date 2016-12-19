@@ -23,8 +23,8 @@ struct _Descriptor {
 #define BAND_SIZE 4
 
 #define DEFAULT_ALIGNMENT 4
-#define DEFAULT_TOTAL_SIZE 1024*1024*100 // 100mb, to handle std::vector and up to 128 byte wide FSAs
-#define DEFAULT_NUM_DESCRIPTORS 5192*2
+#define DEFAULT_TOTAL_SIZE 1024*1024*100 // 50mb
+#define DEFAULT_NUM_DESCRIPTORS 5192
 class GAllocator
 {
 public:

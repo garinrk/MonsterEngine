@@ -361,7 +361,7 @@ bool MonsterTesting::BitArrayTests() {
 
 		my_array->~BitArray();
 	}
-
+	GAllocator::DestroyInstance();
 	return true;
 }
 
@@ -436,57 +436,13 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 	assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
-	MemoryManager::CreateInstance(sizeHeap, numDescriptors, 4);
+	//MemoryManager::CreateInstance(sizeHeap, numDescriptors, 4);
 	MemoryManager* pHeapManager = MemoryManager::GetInstance();
 	assert(pHeapManager);
 
 	if (pHeapManager == NULL)
 		return false;
 
-#ifdef TEST_SINGLE_LARGE_ALLOCATION
-	// This is a test I wrote to check to see if using the whole block if it was almost consumed by 
-	// an allocation worked. Also helped test my ShowFreeBlocks() and ShowOutstandingAllocations().
-	{
-		ShowFreeBlocks(pHeapManager);
-
-		size_t largestBeforeAlloc = GetLargestFreeBlock(pHeapManager);
-		void * pPtr = alloc(pHeapManager, largestBeforeAlloc - HeapManager::s_MinumumToLeave);
-
-		if (pPtr)
-		{
-#ifdef __SHOW_FREE_BLOCKS
-			ShowFreeBlocks(pHeapManager);
-			printf("\n");
-#endif // __SHOW_FREE_BLOCKS
-#ifdef __SHOW_ALLOCATIONS
-			ShowOutstandingAllocations(pHeapManager);
-			printf("\n");
-#endif // __SHOW_ALLOCATIONS
-
-			size_t largestAfterAlloc = GetLargestFreeBlock(pHeapManager);
-			free(pHeapManager, pPtr);
-
-#ifdef __SHOW_FREE_BLOCKS
-			ShowFreeBlocks(pHeapManager);
-#endif // __SHOW_FREE_BLOCKS
-#ifdef __SHOW_ALLOCATIONS
-			ShowOutstandingAllocations(pHeapManager);
-#endif // __SHOW_ALLOCATIONS
-			printf("\n");
-
-			Collect(pHeapManager);
-#ifdef __SHOW_FREE_BLOCKS
-			ShowFreeBlocks(pHeapManager);
-#endif // __SHOW_FREE_BLOCKS
-#ifdef __SHOW_ALLOCATIONS
-			ShowOutstandingAllocations(pHeapManager);
-#endif // __SHOW_ALLOCATIONS
-			printf("\n");
-
-			size_t largestAfterCollect = GetLargestFreeBlock(pHeapManager);
-		}
-	}
-#endif
 
 	std::vector<void *> AllocatedAddresses;
 
@@ -561,16 +517,6 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 
 	} while (1);
 
-#ifdef __SHOW_FREE_BLOCKS
-	printf("After exhausting allocations:\n");
-	ShowFreeBlocks(pHeapManager);
-#endif // __SHOW_FREE_BLOCKS
-
-#ifdef __SHOW_ALLOCATIONS
-	ShowOutstandingAllocations(pHeapManager);
-#endif // __SHOW_ALLOCATIONS
-	printf("\n");
-
 	// now free those blocks in a random order
 	if (!AllocatedAddresses.empty())
 	{
@@ -593,29 +539,12 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 			assert(success);
 		}
 
-#ifdef __SHOW_FREE_BLOCKS
-		printf("After freeing allocations:\n");
-		ShowFreeBlocks(pHeapManager);
-#endif // __SHOW_FREE_BLOCKS
-
-#ifdef __SHOW_ALLOCATIONS
-		ShowOutstandingAllocations(pHeapManager);
-#endif // __SHOW_ALLOCATIONS
-
+		//let's see what it looks like
 		pHeapManager->PrintBlockAllocatorState();
 		// do garbage collection
 		pHeapManager->GarbageCollectBlockAllocator();
 
 		// our heap should be one single block, all the memory it started with
-
-#ifdef __SHOW_FREE_BLOCKS
-		printf("After garbage collection:\n");
-		ShowFreeBlocks(pHeapManager);
-#endif // __SHOW_FREE_BLOCKS
-
-#ifdef __SHOW_ALLOCATIONS
-		ShowOutstandingAllocations(pHeapManager);
-#endif // __SHOW_ALLOCATIONS
 
 		printf("\n");		// do a large test allocation to see if garbage collection worked
 		void * pPtr = pHeapManager->Malloc(sizeHeap / 2);
@@ -633,6 +562,7 @@ bool MonsterTesting::FinalHeapManagerTesting() {
 	pHeapManager = NULL;
 
 	_aligned_free(pHeapMemory);
+
 
 	// we succeeded
 	return true;
