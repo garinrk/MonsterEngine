@@ -70,12 +70,9 @@ bool FixedSizeAllocator::ContainedInAllocator(const void * i_addrToCheck) const
 {
 	uint8_t* back_of_chunk = reinterpret_cast<uint8_t*>(base_address_) + total_size_of_FSA_;
 
-	if (i_addrToCheck <= back_of_chunk && i_addrToCheck >= base_address_) {
-		return true;
-	}
-	else {
-		return false;
-	}
+	//AWW YEAH TERNARY OPERATORS
+	return (i_addrToCheck <= back_of_chunk && i_addrToCheck >= base_address_) ? true : false;
+
 }
 
 FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const size_t i_amtOfBlocks, size_t* i_baseOfBlocks, size_t i_totalSize, GAllocator* i_allocator, void* i_fsaBase, void* i_fsaBack) :

@@ -80,10 +80,9 @@ bool BitArray::IsSet(size_t bit_number) const
 	size_t which_container = bit_number / (sizeof(bitContainer) * bits_per_byte);
 	
 	size_t val = bits_[which_container] & (BIT_CHECK << bit_pos);
-	if (val)
-		return true;
-	else
-		return false;
+
+	//OH BOY ANOTHER ONE
+	return (val) ? true : false;
 }
 
 bool BitArray::IsClear(size_t bit_number) const
@@ -95,10 +94,9 @@ bool BitArray::IsClear(size_t bit_number) const
 
 	//which container?
 	size_t val = (*(bits_ + which_container) >> bit_pos) & 1;
-	if (!val)
-		return true;
-	else
-		return false;
+
+	//AND ANOTHER ONE
+	return (val) ? false : true;
 }
 
 void BitArray::SetBit(const size_t bit_to_set)
@@ -203,7 +201,6 @@ BitArray::BitArray(const size_t amt_of_user_requested_bits, size_t amt_of_bytes,
 	
 {
 	DEBUGLOG("BitArray created for %zu bits\t%zu containers\t%zu bytes ", amt_of_user_requested_bits,amt_of_containers, amt_of_bytes);
-
 	//lets set all da containers to empty.
 	memset(bits_, 0x00, amt_of_bytes - sizeof(BitArray));
 

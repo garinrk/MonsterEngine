@@ -5,13 +5,14 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
-//#define NEW_ALLOCATOR_TESTS
 //#define CONST_TESTS
-//#define NEW_GAMEPLAY
-#define BIT_ARRAY_TESTS
+#define GAMEPLAY
 //#define NEW_TESTS
 //#define NAN_TEST
-#define FSA_TEST
+
+//#define BLOCK_ALLOCATOR_TESTS
+//#define BIT_ARRAY_TESTS
+//#define FSA_TESTS
 //#define FINAL_MEMORY_TESTING
 
 void RunConstTests();
@@ -24,14 +25,15 @@ void RunFSATest();
 void RunMMTests();
 
 int main() {
+
+	//memory leak detection
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//GAllocator::CreateInstance();
 
 
-#ifdef NEW_GAMEPLAY
-	GAllocator::CreateInstance();
+#ifdef GAMEPLAY
 	RunNewGame();
-	GAllocator::DestroyInstance();
+	MemoryManager::DestroyInstance();
 #endif
 
 #ifdef CONST_TESTS
@@ -47,9 +49,9 @@ int main() {
 	NANTests();
 #endif
 
-#ifdef NEW_ALLOCATOR_TESTS
+#ifdef BLOCK_ALLOCATOR_TESTS
 	RunGAllocTests();
-#endif // NEW_ALLOCATOR_TESTS
+#endif // BLOCK_ALLOCATOR_TESTS
 
 #ifdef BIT_ARRAY_TESTS
 	ArrayTests();
@@ -62,7 +64,7 @@ int main() {
 #ifdef FINAL_MEMORY_TESTING
 	RunMMTests();
 #endif // MM_TESTS
-
+	
 	return 0;
 
 }
@@ -71,7 +73,6 @@ void RunNewGame() {
 	MonsterPoint2D playerPos = MonsterPoint2D(30, 30);
 	Game mg = Game(100, playerPos, 3);
 	mg.Start();
-
 }
 
 void RunConstTests() {
