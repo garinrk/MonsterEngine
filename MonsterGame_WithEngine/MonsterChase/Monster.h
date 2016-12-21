@@ -21,7 +21,6 @@ class Monster {
 		Monster(std::string& new_name, int x_range_bound, int y_range_bound);
 		Monster();
 		~Monster();
-		Monster(const Monster& other);
 		bool CheckForDeath();
 		void SetRandomPos();
 		void Update();
@@ -33,6 +32,17 @@ class Monster {
 		void Zombify(Player * target_player);
 		bool is_zombie_ = false;
 
+		//move constructor
+		Monster(Monster && i_other);
+
+		//move assignment
+		Monster & operator=(const Monster && i_other);
+
+		//copy constructor
+		Monster(const Monster & i_other);
+
+		//copy assignment
+		Monster & operator=(const Monster & i_other);
 	private:
 		inline void MakeOlder(); 
 		int bound_x_;
@@ -41,6 +51,18 @@ class Monster {
 		int age_ = 1;
 		std::string name_;
 		IGameObjectController * monster_controller_;
+
+		//has a proper copy constructor,
+		//move copy constructor 
+		//assignment operator 
+		//and move assignment operator.
+
+	
+
+
+		//m_pName(dupstring(i_other.m_pName ? i_other.m_pName : "Unnamed")),
+
+
 };
 
 #include "Monster-inl.h"

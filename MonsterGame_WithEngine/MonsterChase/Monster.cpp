@@ -43,16 +43,66 @@ Monster::~Monster()
 	monster_controller_ = NULL;
 }
 
-Monster::Monster(const Monster& other)
-{
-	age_ = other.age_;
-	bound_x_ = other.bound_x_;
-	bound_y_ = other.bound_y_;
-	name_ = other.name_;
 
-	monster_controller_ = other.monster_controller_;
+//assignment
+Monster & Monster::operator=(const Monster && i_other)
+{
+
+	//std::string name
+	name_ = i_other.name_;
+
+	//bound x, bound y ints
+	bound_x_ = i_other.bound_x_;
+	bound_y_ = i_other.bound_y_;
+	
+	//int age
+	age_ = i_other.age_;
+
+	//controller
+	monster_controller_ = i_other.monster_controller_;
+
+	return *this;
+}
+
+//move
+Monster::Monster(Monster && i_other) :
+	bound_x_(i_other.bound_x_),
+	bound_y_(i_other.bound_y_),
+	age_(i_other.age_),
+	name_(i_other.name_),
+	monster_controller_(i_other.monster_controller_)
+{	
+	i_other.name_ = nullptr;
+}
+
+//copy
+Monster::Monster(const Monster & i_other) :
+	bound_x_(i_other.bound_x_),
+	bound_y_(i_other.bound_y_),
+	age_(i_other.age_),
+	name_(i_other.name_),
+	monster_controller_(i_other.monster_controller_)
+{	}
+
+Monster & Monster::operator=(const Monster & i_other)
+{	
+	//std::string name
+	name_ = i_other.name_;
+
+	//bound x, bound y ints
+	bound_x_ = i_other.bound_x_;
+	bound_y_ = i_other.bound_y_;
+
+	//int age
+	age_ = i_other.age_;
+
+	//controller
+	monster_controller_ = i_other.monster_controller_;
+
+	return *this;
 
 }
+
 
 bool Monster::CheckForDeath() {
 
@@ -89,5 +139,7 @@ void Monster::Zombify(Player * target_player) {
 	SetController(new_zombie_controller);
 	is_zombie_ = true;
 }
+
+///Special Assignment Operators
 
 

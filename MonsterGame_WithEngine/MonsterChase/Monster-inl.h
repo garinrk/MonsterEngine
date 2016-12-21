@@ -1,3 +1,4 @@
+#include "Monster.h"
 #pragma once
 
 inline void Monster::MakeOlder() {

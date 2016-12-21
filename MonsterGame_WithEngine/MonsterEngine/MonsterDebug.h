@@ -22,7 +22,7 @@ public:
 #else
 #define DEBUGLOG(fmt,...) void(0)
 #define DEBUG_LIST_DISPLAY void (0)
-#define PRINT_LIST(root) void(0)s
+#define PRINT_LIST(root) void(0)
 #endif
 
 #endif
