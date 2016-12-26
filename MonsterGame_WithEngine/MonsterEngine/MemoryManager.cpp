@@ -1,12 +1,14 @@
 #include "MemoryManager.h"
 
+using namespace MMEngine;
+
 MemoryManager* MemoryManager::manager_instance_  = NULL;
 void* MemoryManager::singleton_addr_ = NULL;
 
 MemoryManager::MemoryManager(const size_t i_blockAllocatorSize, const unsigned int i_amtOfDescriptors, const uint8_t i_initAlign) {
 	//create block allocator
-	GAllocator::CreateInstance(i_blockAllocatorSize, i_amtOfDescriptors, i_initAlign);
-	block_allocator_ = GAllocator::GetInstance();
+	MMEngine::BlockAllocator::CreateInstance(i_blockAllocatorSize, i_amtOfDescriptors, i_initAlign);
+	block_allocator_ = MMEngine::BlockAllocator::GetInstance();
 
 	//create FSAs
 	for (size_t index = 0; index < SIZEOFSIZES; index++) {
@@ -26,7 +28,7 @@ MemoryManager::~MemoryManager() {
 	}
 
 	//destroy block allocator
-	GAllocator::DestroyInstance();
+	BlockAllocator::DestroyInstance();
 }
 
 void * MemoryManager::Malloc(const size_t i_amt)

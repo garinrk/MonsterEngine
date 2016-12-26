@@ -1,6 +1,8 @@
 #include "BitArray.h"
 
-BitArray * BitArray::Create(const size_t num_of_bits, GAllocator * my_allocator)
+using namespace MMEngine;
+
+BitArray * BitArray::Create(const size_t num_of_bits, BlockAllocator * my_allocator)
 {
 	//Don't forget!
 	const size_t bits_per_byte = 8;

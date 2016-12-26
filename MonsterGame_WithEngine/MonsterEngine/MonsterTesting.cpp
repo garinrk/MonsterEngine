@@ -6,6 +6,8 @@
 #define DEFAULT_NUM_OF_FSA_BLOCKS 256
 #define DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT 4
 
+using namespace MMEngine;
+
 bool MonsterTesting::GAllocatorTests() {
 
 
@@ -13,7 +15,7 @@ bool MonsterTesting::GAllocatorTests() {
 	const unsigned int 	numDescriptors = 2048;
 	const uint8_t		initial_alignment = 4;
 	// Create a heap manager for my test heap.
-	GAllocator pHeapManager = GAllocator(sizeHeap, numDescriptors, initial_alignment);
+	BlockAllocator pHeapManager = BlockAllocator(sizeHeap, numDescriptors, initial_alignment);
 
 #ifdef TEST_SINGLE_LARGE_ALLOCATION
 	// This is a test I wrote to check to see if using the whole block if it was almost consumed by 
@@ -151,7 +153,7 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 	assert(pHeapMemory);
 
 	// Create a heap manager for my test heap.
-	GAllocator pHeapManager = GAllocator(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT);
+	BlockAllocator pHeapManager = BlockAllocator(DEFAULT_BLOCK_ALLOCATOR_SIZE, DEFAULT_NUM_OF_DESCRIPTORS, DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT);
 
 
 #ifdef TEST_SINGLE_LARGE_ALLOCATION
@@ -318,7 +320,7 @@ bool MonsterTesting::GAllocatorWithAlignmentTests() {
 bool MonsterTesting::BitArrayTests() {
 
 	for (size_t bit_count = 1; bit_count <= 1000; bit_count++) {
-		GAllocator* my_allocator = GAllocator::GetInstance();
+		BlockAllocator* my_allocator = BlockAllocator::GetInstance();
 		BitArray* my_array = BitArray::Create(bit_count, my_allocator);
 
 		size_t random_bit_to_set = rand() % bit_count;
@@ -361,17 +363,17 @@ bool MonsterTesting::BitArrayTests() {
 
 		my_array->~BitArray();
 	}
-	GAllocator::DestroyInstance();
+	BlockAllocator::DestroyInstance();
 	return true;
 }
 
 bool MonsterTesting::FSATests() {
 
-	GAllocator* my_allocator = GAllocator::GetInstance();
+	BlockAllocator* my_allocator = BlockAllocator::GetInstance();
 	for (size_t number_of_blocks = 1; number_of_blocks < 1000; number_of_blocks++) {
 
 		const size_t size_of_blocks = 128;
-		FixedSizeAllocator* my_fsa = FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks);
+		MMEngine::FixedSizeAllocator* my_fsa = MMEngine::FixedSizeAllocator::Create(my_allocator, number_of_blocks, size_of_blocks);
 		BitArray* my_ba = my_fsa->GetArray();
 
 
@@ -421,7 +423,7 @@ bool MonsterTesting::FSATests() {
 		my_fsa->~FixedSizeAllocator();
 	}
 
-	GAllocator::DestroyInstance();
+	BlockAllocator::DestroyInstance();
 	return true;
 
 }

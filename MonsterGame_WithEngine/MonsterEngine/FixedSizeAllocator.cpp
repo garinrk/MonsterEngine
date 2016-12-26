@@ -1,7 +1,8 @@
 #include "FixedSizeAllocator.h"
 
+using namespace MMEngine;
 
-FixedSizeAllocator* FixedSizeAllocator::Create(GAllocator* i_allocator, size_t i_amtOfBlocks, size_t i_sizeOfBlock) {
+FixedSizeAllocator* FixedSizeAllocator::Create(BlockAllocator* i_allocator, size_t i_amtOfBlocks, size_t i_sizeOfBlock) {
 	
 	size_t amount_of_bytes = i_sizeOfBlock * i_amtOfBlocks + sizeof(FixedSizeAllocator);
 
@@ -15,8 +16,7 @@ FixedSizeAllocator* FixedSizeAllocator::Create(GAllocator* i_allocator, size_t i
 	return new (base_of_fsa) FixedSizeAllocator(i_sizeOfBlock, i_amtOfBlocks, blocks_base_address, amount_of_bytes, i_allocator, base_of_fsa, back_of_fsa);
 }
 
-void * FixedSizeAllocator::Falloc(size_t i_amt)
-{
+void * FixedSizeAllocator::Falloc(size_t i_amt) {
 
 	if (i_amt > size_of_blocks_)
 		return nullptr;
@@ -44,7 +44,7 @@ void * FixedSizeAllocator::Falloc(size_t i_amt)
 bool FixedSizeAllocator::Free(void * i_addrToCheck)
 {
 	//is it even in here? just in case...
-	if (!ContainedInAllocator(i_addrToCheck)) {
+	if (!FixedSizeAllocator::ContainedInAllocator(i_addrToCheck)) {
 		return false;
 	}
 	
@@ -75,7 +75,7 @@ bool FixedSizeAllocator::ContainedInAllocator(const void * i_addrToCheck) const
 
 }
 
-FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const size_t i_amtOfBlocks, size_t* i_baseOfBlocks, size_t i_totalSize, GAllocator* i_allocator, void* i_fsaBase, void* i_fsaBack) :
+FixedSizeAllocator::FixedSizeAllocator(const size_t i_initSizeOfBlocks, const size_t i_amtOfBlocks, size_t* i_baseOfBlocks, size_t i_totalSize, BlockAllocator* i_allocator, void* i_fsaBase, void* i_fsaBack) :
 	size_of_blocks_(i_initSizeOfBlocks),
 	num_of_blocks_(i_amtOfBlocks),
 	base_address_(i_baseOfBlocks),

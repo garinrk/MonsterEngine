@@ -1,4 +1,4 @@
-#include "GAllocator.h"
+#include "BlockAllocator.h"
 #include "MonsterTesting.h"
 #include "Game.h"
 #include "Player.h"
@@ -23,6 +23,8 @@ void RunGAllocTests();
 void ArrayTests();
 void RunFSATest();
 void RunMMTests();
+
+using namespace MMEngine;
 
 int main() {
 
@@ -102,29 +104,29 @@ void RunNewTests(){
 	Player *p2 = new("Debug Information\n") Player("PlayerTwo");
 	delete p2;
 	//destroy the singleton.
-	GAllocator::DestroyInstance();
+	BlockAllocator::DestroyInstance();
 }
 
 void NANTests() {
 
 	//true
-	//bool test = MMEngine::IsNAN(nanf("")); 
-	bool test = MMEngine::MMath::IsNAN(nanf(""));
+	//bool test = IsNAN(nanf("")); 
+	bool test = MMath::IsNAN(nanf(""));
 
 	assert(test);
 
 
 	//false
-	bool test2 = MMEngine::MMath::IsNAN(5.0f);
-	//bool test2 = MMEngine::IsNAN(5.0f);
+	bool test2 = MMath::IsNAN(5.0f);
+	//bool test2 = IsNAN(5.0f);
 
 	assert(!test2);
 
 	
-	bool test3 = MMEngine::MMath::AreEqual(4.0f, 4.0f);
+	bool test3 = MMath::AreEqual(4.0f, 4.0f);
 	assert(test3);
 
-	bool test4 = MMEngine::MMath::AreEqual(4.0f, 4.000001f);
+	bool test4 = MMath::AreEqual(4.0f, 4.000001f);
 	assert(!test4);
 
 }

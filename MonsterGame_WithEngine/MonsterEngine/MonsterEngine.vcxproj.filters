@@ -102,9 +102,6 @@
     <ClInclude Include="PlayerController.h">
       <Filter>Header Files\Controllers</Filter>
     </ClInclude>
-    <ClInclude Include="GAllocator.h">
-      <Filter>Header Files\Allocator</Filter>
-    </ClInclude>
     <ClInclude Include="BitArray.h">
       <Filter>Header Files\MEngine</Filter>
     </ClInclude>
@@ -113,6 +110,9 @@
     </ClInclude>
     <ClInclude Include="MemoryManager.h">
       <Filter>Header Files\MemoryManagement</Filter>
+    </ClInclude>
+    <ClInclude Include="BlockAllocator.h">
+      <Filter>Header Files\Allocator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -140,9 +140,6 @@
     <ClCompile Include="PlayerController.cpp">
       <Filter>Source Files\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="GAllocator.cpp">
-      <Filter>Source Files\Allocator</Filter>
-    </ClCompile>
     <ClCompile Include="BitArray.cpp">
       <Filter>Source Files\MEngine</Filter>
     </ClCompile>
@@ -151,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="MemoryManager.cpp">
       <Filter>Source Files\MemoryManagement</Filter>
+    </ClCompile>
+    <ClCompile Include="BlockAllocator.cpp">
+      <Filter>Source Files\Allocator</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

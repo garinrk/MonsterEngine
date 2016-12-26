@@ -2,7 +2,7 @@
 
 #include "BitArray.h"
 #include "FixedSizeAllocator.h"
-#include "GAllocator.h"
+#include "BlockAllocator.h"
 #include "MemoryManager.h"
 #include "MonsterDebug.h"
 

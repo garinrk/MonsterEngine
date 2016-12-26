@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "GAllocator.h"
+#include "BlockAllocator.h"
 #include "MMath.h"
 #include "MemoryManager.h"
 #include "MonsterDebug.h"

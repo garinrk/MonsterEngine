@@ -5,6 +5,8 @@
 #define DEFAULT_NUM_OF_FSA_BLOCKS 256
 #define DEFAULT_BLOCK_ALLOCATOR_ALIGNMENT 4
 
+using namespace MMEngine;
+
 int MMEngine::RandomTrueOrFalse()
 {
 	srand((unsigned int)time(NULL));

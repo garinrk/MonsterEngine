@@ -1,10 +1,11 @@
-#include "GAllocator.h"
+#include "BlockAllocator.h"
 
+using namespace MMEngine;
 
-GAllocator* GAllocator::singleton_instance_ = NULL;
-void* GAllocator::singleton_instance_addr_ = NULL;
+BlockAllocator* BlockAllocator::singleton_instance_ = NULL;
+void* BlockAllocator::singleton_instance_addr_ = NULL;
 
-GAllocator::GAllocator(const size_t i_totalSizeOfAllocator, const unsigned int i_amtOfDescriptors, const uint8_t i_align)
+BlockAllocator::BlockAllocator(const size_t i_totalSizeOfAllocator, const unsigned int i_amtOfDescriptors, const uint8_t i_align)
 {
 	front_of_chunk_ = _aligned_malloc(i_totalSizeOfAllocator, i_align);
 	assert(front_of_chunk_ != NULL && "Null Memory Allocation in Allocator Creation");
@@ -18,12 +19,12 @@ GAllocator::GAllocator(const size_t i_totalSizeOfAllocator, const unsigned int i
 	
 }
 
-void * GAllocator::GAlloc(const size_t i_amt)
+void * BlockAllocator::GAlloc(const size_t i_amt)
 {
 	return GAlloc(i_amt, 4);
 }
 
-void * GAllocator::GAlloc(const size_t i_amt, const uint8_t i_align) {
+void * BlockAllocator::GAlloc(const size_t i_amt, const uint8_t i_align) {
 	assert(IsPowerOfTwo(i_align));
 
 	if (!IsPowerOfTwo(i_align))
@@ -38,13 +39,13 @@ void * GAllocator::GAlloc(const size_t i_amt, const uint8_t i_align) {
 	if (free_root_ == NULL)
 		return nullptr;
 	
-	_Descriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(i_amt);
+	BlockDescriptor * sufficiently_sized_block = FindSuitableUnallocatedBlock(i_amt);
 
 	//even after garbage collecting we don't have a descriptor
 	if (sufficiently_sized_block == NULL)
 		return nullptr;
 	
-	_Descriptor * new_descriptor = StealFromBlock(sufficiently_sized_block,i_amt,i_align);
+	BlockDescriptor * new_descriptor = StealFromBlock(sufficiently_sized_block,i_amt,i_align);
 
 	//TODO: If you don't fragment and just hand back a suitable block, this user_size may be more
 	new_descriptor->user_size = i_amt;
@@ -57,9 +58,9 @@ void * GAllocator::GAlloc(const size_t i_amt, const uint8_t i_align) {
 	return new_descriptor->user_ptr;
 }
 
-bool GAllocator::GFree(const void * i_addr)
+bool BlockAllocator::GFree(const void * i_addr)
 {
-	_Descriptor * to_move_to_unallocated = RemoveBlockFromList(i_addr, allocated_root_);
+	BlockDescriptor * to_move_to_unallocated = RemoveBlockFromList(i_addr, allocated_root_);
 	assert(to_move_to_unallocated != NULL && "attempted to free a non valid address");
 
 	if (to_move_to_unallocated == NULL) {
@@ -76,13 +77,13 @@ bool GAllocator::GFree(const void * i_addr)
 	return true;
 }
 
-void GAllocator::GGCollect() {
+void BlockAllocator::GGCollect() {
 
 	//looking through the list of unallocated blocks, combining any
 	//that are right next to one another, into a single larger
 	//free block
 
-	_Descriptor * conductor = unallocated_root_;
+	BlockDescriptor * conductor = unallocated_root_;
 
 	//there are no unallocated blocks to look through
 	if (unallocated_root_ == 0)
@@ -90,7 +91,7 @@ void GAllocator::GGCollect() {
 
 	while (conductor != NULL) {
 		uint8_t* addr_to_search_for = static_cast<uint8_t*>(conductor->base) + conductor->master_size;
-		_Descriptor * found_block = SearchForBlock(addr_to_search_for, unallocated_root_);
+		BlockDescriptor * found_block = SearchForBlock(addr_to_search_for, unallocated_root_);
 
 		//if it found nothing, or it's trying to combine itself, move right on.
 		if (found_block == NULL || found_block->base == conductor->base) {
@@ -106,19 +107,19 @@ void GAllocator::GGCollect() {
 	PRINT_GALLOC_STATE;
 }
 
-void GAllocator::CreateInstance(const size_t i_totalSizeOfAllocator, const unsigned int i_amtOfDescriptors, const uint8_t i_align)
+void BlockAllocator::CreateInstance(const size_t i_totalSizeOfAllocator, const unsigned int i_amtOfDescriptors, const uint8_t i_align)
 {
-	GAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(GAllocator), 4);
-	singleton_instance_ = new (singleton_instance_addr_) GAllocator(i_totalSizeOfAllocator, i_amtOfDescriptors, i_align);
+	BlockAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(BlockAllocator), 4);
+	singleton_instance_ = new (singleton_instance_addr_) BlockAllocator(i_totalSizeOfAllocator, i_amtOfDescriptors, i_align);
 }
 
-void GAllocator::CreateInstance()
+void BlockAllocator::CreateInstance()
 {
-	GAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(GAllocator), 4);
-	singleton_instance_ = new (singleton_instance_addr_) GAllocator(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
+	BlockAllocator::singleton_instance_addr_ = _aligned_malloc(sizeof(BlockAllocator), 4);
+	singleton_instance_ = new (singleton_instance_addr_) BlockAllocator(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
 }
 
-GAllocator * GAllocator::GetInstance()
+BlockAllocator * BlockAllocator::GetInstance()
 {
 	if (!singleton_instance_) {
 		CreateInstance(DEFAULT_TOTAL_SIZE, DEFAULT_NUM_DESCRIPTORS, DEFAULT_ALIGNMENT);
@@ -129,15 +130,15 @@ GAllocator * GAllocator::GetInstance()
 	}
 }
 
-void GAllocator::DestroyInstance()
+void BlockAllocator::DestroyInstance()
 {
-	singleton_instance_->~GAllocator();
+	singleton_instance_->~BlockAllocator();
 
 	_aligned_free(singleton_instance_);
 	singleton_instance_ = NULL;
 }
 
-GAllocator::~GAllocator()
+BlockAllocator::~BlockAllocator()
 {
 	if (allocated_root_ != NULL) {
 		DEBUGLOG("OUTSANDING ALLOCATIONS DETECTED IN BLOCK ALLOCATOR\n");
@@ -146,10 +147,10 @@ GAllocator::~GAllocator()
 	_aligned_free(front_of_chunk_);
 }
 
-void GAllocator::PrintList(_Descriptor * i_root)
+void BlockAllocator::PrintList(BlockDescriptor * i_root)
 {
 
-	_Descriptor * conductor = i_root;
+	BlockDescriptor * conductor = i_root;
 
 	while (conductor != NULL) {
 		DEBUGLOG("[addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->debug_id, conductor->prev, conductor->base, conductor->user_ptr, conductor->master_size, conductor->next);
@@ -161,10 +162,10 @@ void GAllocator::PrintList(_Descriptor * i_root)
 ////PRIVATES
 ////////////////
 
-void GAllocator::InitializeFreeList(const unsigned int i_amtOfDescriptors)
+void BlockAllocator::InitializeFreeList(const unsigned int i_amtOfDescriptors)
 {
 
-	front_of_pool_ = reinterpret_cast<_Descriptor*>(reinterpret_cast<uint8_t*>(back_of_chunk_) - (sizeof(_Descriptor) * i_amtOfDescriptors));
+	front_of_pool_ = reinterpret_cast<BlockDescriptor*>(reinterpret_cast<uint8_t*>(back_of_chunk_) - (sizeof(BlockDescriptor) * i_amtOfDescriptors));
 
 	//make sure we didn't create too many descriptors
 	assert(front_of_pool_ > front_of_chunk_ && "Too many descriptors, pool is larger than the total size");
@@ -176,16 +177,16 @@ void GAllocator::InitializeFreeList(const unsigned int i_amtOfDescriptors)
 	front_of_pool_->master_size = 0;
 	front_of_pool_->user_size = 0;
 
-	_Descriptor * conductor = front_of_pool_;
+	BlockDescriptor * conductor = front_of_pool_;
 
 #ifdef _DEBUG
 	conductor->debug_id = 0;
 #endif
 	
 	for (size_t i = 0; i < i_amtOfDescriptors - 1; i++) {
-		_Descriptor * new_descriptor = conductor + 1;
+		BlockDescriptor * new_descriptor = conductor + 1;
 
-		assert(new_descriptor < reinterpret_cast<_Descriptor*>(back_of_chunk_));
+		assert(new_descriptor < reinterpret_cast<BlockDescriptor*>(back_of_chunk_));
 
 		//set links
 		conductor->next = new_descriptor;
@@ -209,11 +210,11 @@ void GAllocator::InitializeFreeList(const unsigned int i_amtOfDescriptors)
 	//free list properties
 	free_root_ = front_of_pool_;
 
-	total_bytes_left -= sizeof(_Descriptor) * i_amtOfDescriptors;
+	total_bytes_left -= sizeof(BlockDescriptor) * i_amtOfDescriptors;
 
 	//initial unallocated block
 
-	_Descriptor * init_unalloc_block;
+	BlockDescriptor * init_unalloc_block;
 
 	//steals the last free block to set itself up
 	init_unalloc_block = free_root_;
@@ -230,9 +231,9 @@ void GAllocator::InitializeFreeList(const unsigned int i_amtOfDescriptors)
 	AddToUnallocatedList(init_unalloc_block);
 }
 
-void GAllocator::AddToAllocatedList(_Descriptor * i_node)
+void BlockAllocator::AddToAllocatedList(BlockDescriptor * i_node)
 {
-	_Descriptor * conductor = allocated_root_;
+	BlockDescriptor * conductor = allocated_root_;
 
 	//we are the first
 	if (allocated_root_ == 0) {
@@ -251,9 +252,9 @@ void GAllocator::AddToAllocatedList(_Descriptor * i_node)
 }
 
 
-void GAllocator::AddToUnallocatedList(_Descriptor * i_node)
+void BlockAllocator::AddToUnallocatedList(BlockDescriptor * i_node)
 {
-	_Descriptor * conductor = unallocated_root_;
+	BlockDescriptor * conductor = unallocated_root_;
 
 	if (unallocated_root_ == 0) {
 		unallocated_root_ = i_node;
@@ -270,7 +271,7 @@ void GAllocator::AddToUnallocatedList(_Descriptor * i_node)
 	}
 }
 
-void GAllocator::AddToFreeList(_Descriptor * i_node)
+void BlockAllocator::AddToFreeList(BlockDescriptor * i_node)
 {
 	//nullify descriptor
 	i_node->base = NULL;
@@ -291,7 +292,7 @@ void GAllocator::AddToFreeList(_Descriptor * i_node)
 	}
 }
 
-bool GAllocator::CheckGuardBands(_Descriptor * i_node)
+bool BlockAllocator::CheckGuardBands(BlockDescriptor * i_node)
 {
 	uint8_t* front_band_addr = static_cast<uint8_t*>(i_node->user_ptr) - BAND_SIZE;
 	for (size_t i = 0; i < BAND_SIZE; i++) {
@@ -309,7 +310,7 @@ bool GAllocator::CheckGuardBands(_Descriptor * i_node)
 	return true;
 }
 
-void GAllocator::CombineBlocks(_Descriptor * i_firstBlock, _Descriptor * i_secondBlock)
+void BlockAllocator::CombineBlocks(BlockDescriptor * i_firstBlock, BlockDescriptor * i_secondBlock)
 {
 	size_t size_of_combined_blocks = i_firstBlock->master_size + i_secondBlock->master_size;
 
@@ -320,7 +321,7 @@ void GAllocator::CombineBlocks(_Descriptor * i_firstBlock, _Descriptor * i_secon
 	AddToFreeList(i_firstBlock);
 }
 
-void GAllocator::NullRootReference(_Descriptor * i_node)
+void BlockAllocator::NullRootReference(BlockDescriptor * i_node)
 {
 	//what type of root are we? Set the appropriate reference
 	if (i_node == free_root_) {
@@ -334,7 +335,7 @@ void GAllocator::NullRootReference(_Descriptor * i_node)
 	}
 }
 
-void GAllocator::MoveRootReferencesForward(_Descriptor * i_node)
+void BlockAllocator::MoveRootReferencesForward(BlockDescriptor * i_node)
 {
 	//what type of root are we? Set the appropriate reference
 	if (i_node == free_root_) {
@@ -348,9 +349,9 @@ void GAllocator::MoveRootReferencesForward(_Descriptor * i_node)
 	}
 }
 
-_Descriptor * GAllocator::SearchForBlock(const void * i_addr, _Descriptor * i_root) const
+BlockDescriptor * BlockAllocator::SearchForBlock(const void * i_addr, BlockDescriptor * i_root) const
 {
-	_Descriptor * conductor = i_root;
+	BlockDescriptor * conductor = i_root;
 
 	while (conductor != NULL) {
 		if (conductor->base == i_addr) {
@@ -364,9 +365,9 @@ _Descriptor * GAllocator::SearchForBlock(const void * i_addr, _Descriptor * i_ro
 	return nullptr;
 }
 
-_Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t i_amt) const
+BlockDescriptor * BlockAllocator::FindSuitableUnallocatedBlock(const size_t i_amt) const
 {
-	_Descriptor * conductor = unallocated_root_;
+	BlockDescriptor * conductor = unallocated_root_;
 
 	size_t toLookFor = i_amt;
 
@@ -387,9 +388,9 @@ _Descriptor * GAllocator::FindSuitableUnallocatedBlock(const size_t i_amt) const
 	return NULL;
 }
 
-_Descriptor * GAllocator::RemoveBlockFromList(const void * i_addr, _Descriptor * i_root)
+BlockDescriptor * BlockAllocator::RemoveBlockFromList(const void * i_addr, BlockDescriptor * i_root)
 {
-	_Descriptor * conductor = i_root;
+	BlockDescriptor * conductor = i_root;
 
 	while (conductor != NULL) {
 
@@ -439,12 +440,12 @@ _Descriptor * GAllocator::RemoveBlockFromList(const void * i_addr, _Descriptor *
 	return nullptr;
 }
 
-_Descriptor * GAllocator::StealFromBlock(_Descriptor * i_victim, const size_t i_amt, const uint8_t i_align)
+BlockDescriptor * BlockAllocator::StealFromBlock(BlockDescriptor * i_victim, const size_t i_amt, const uint8_t i_align)
 {
 
 	
 	//grab a descriptor from the free list
-	_Descriptor * thief = free_root_;
+	BlockDescriptor * thief = free_root_;
 	free_root_ = free_root_->next;
 
 
@@ -521,9 +522,9 @@ _Descriptor * GAllocator::StealFromBlock(_Descriptor * i_victim, const size_t i_
 	return thief;
 }
 
-_Descriptor * GAllocator::RemoveBlockFromListByBase(const void * i_addr, _Descriptor * i_root)
+BlockDescriptor * BlockAllocator::RemoveBlockFromListByBase(const void * i_addr, BlockDescriptor * i_root)
 {
-	_Descriptor * conductor = i_root;
+	BlockDescriptor * conductor = i_root;
 
 	while (conductor != NULL) {
 
@@ -573,7 +574,7 @@ _Descriptor * GAllocator::RemoveBlockFromListByBase(const void * i_addr, _Descri
 	return nullptr;
 }
 
-bool GAllocator::IsPowerOfTwo(const uint8_t i_toCheck)
+bool BlockAllocator::IsPowerOfTwo(const uint8_t i_toCheck)
 {
 	uint8_t val = (i_toCheck != 0) && !(i_toCheck & (i_toCheck - 1));
 
@@ -583,7 +584,7 @@ bool GAllocator::IsPowerOfTwo(const uint8_t i_toCheck)
 		return false;
 }
 
-bool GAllocator::ContainsAddressInBlock(const void* i_addr) {
+bool BlockAllocator::ContainsAddressInBlock(const void* i_addr) {
 
 
 	if (i_addr <= back_of_chunk_ && i_addr >= front_of_chunk_){
@@ -596,8 +597,8 @@ bool GAllocator::ContainsAddressInBlock(const void* i_addr) {
 	
 }
 
-bool GAllocator::IsAllocatedAddress(const void* i_addr) {
-	_Descriptor * conductor = allocated_root_;
+bool BlockAllocator::IsAllocatedAddress(const void* i_addr) {
+	BlockDescriptor * conductor = allocated_root_;
 
 	while (conductor != NULL) {
 		if (conductor->user_ptr == i_addr) {
@@ -611,10 +612,10 @@ bool GAllocator::IsAllocatedAddress(const void* i_addr) {
 	return false;
 }
 
-size_t GAllocator::GetLargestFreeBlockSize() {
+size_t BlockAllocator::GetLargestFreeBlockSize() {
 	size_t largest = 0;
 	
-	_Descriptor * conductor = unallocated_root_;
+	BlockDescriptor * conductor = unallocated_root_;
 
 
 	while (conductor != NULL) {
@@ -634,10 +635,10 @@ size_t GAllocator::GetLargestFreeBlockSize() {
 	return largest;
 }
 
-void GAllocator::PrintAllocatorState() {
+void BlockAllocator::PrintAllocatorState() {
 	DEBUGLOG("===ALLOCATOR STATE===");
 
-	_Descriptor * conductor = free_root_;
+	BlockDescriptor * conductor = free_root_;
 
 	while (conductor != NULL) {
 		DEBUGLOG("FREE NODE [addr:0x%04x id:%d]: prev:0x%04x\tblockptr:%04x\tUserptr:%04x\tsize:%zu\tnext:0x%04x", conductor, conductor->debug_id, conductor->prev, conductor->base, conductor->user_ptr, conductor->master_size, conductor->next);
